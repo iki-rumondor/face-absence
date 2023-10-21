@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/asaskevich/govalidator"
@@ -10,12 +11,12 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 )
 
-func ValidateBodyJSON() gin.HandlerFunc {
+func ValidateStudentJSON() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var body request.Student
 
 		if err := c.BindJSON(&body); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, response.Student{
+			c.AbortWithStatusJSON(http.StatusBadRequest, response.StudentResponse{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -23,12 +24,13 @@ func ValidateBodyJSON() gin.HandlerFunc {
 		}
 
 		if _, err := govalidator.ValidateStruct(&body); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, response.Student{
+			c.AbortWithStatusJSON(http.StatusBadRequest, response.StudentResponse{
 				Success: false,
 				Message: err.Error(),
 			})
 			return
 		}
+		c.Set("body", body)
 		c.Next()
 	}
 }
@@ -37,7 +39,7 @@ func IsExcelFile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		file, err := c.FormFile("students")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, response.Student{
+			c.AbortWithStatusJSON(http.StatusBadRequest, response.StudentResponse{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -45,7 +47,7 @@ func IsExcelFile() gin.HandlerFunc {
 		}
 
 		if fileExt := strings.ToLower(file.Filename[strings.LastIndex(file.Filename, ".")+1:]); fileExt != "xlsx" {
-			c.JSON(http.StatusBadRequest, response.Student{
+			c.AbortWithStatusJSON(http.StatusBadRequest, response.StudentResponse{
 				Success: false,
 				Message: "file uploaded is not xlsx file",
 			})
@@ -54,3 +56,20 @@ func IsExcelFile() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func GetIDParam() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, response.StudentResponse{
+				Success: false,
+				Message: "path variables is not valid, please use a number",
+			})
+			return
+		}
+		c.Set("studentID", uint(id))
+		c.Next()
+	}
+}
+
+
