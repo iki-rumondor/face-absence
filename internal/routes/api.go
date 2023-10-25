@@ -11,19 +11,21 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 
 	router.MaxMultipartMemory = 10 << 20
 
-	siswa := router.Group("/master")
+	publicMaster := router.Group("/master")
+	authorizationMaster := router.Group("/master")
+	authorizationMaster.Use(middleware.ValidateHeader())
 	{
-		siswa.GET("/siswa", handlers.StudentHandler.GetAllStudentsData)
-		siswa.POST("/siswa", middleware.IsExcelFile(), handlers.StudentHandler.CreateStudentsData)
-		siswa.GET("/siswa/:uuid", handlers.StudentHandler.GetStudentData)
-		siswa.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
-		siswa.DELETE("/siswa/:uuid", handlers.StudentHandler.DeleteStudentData)
+		publicMaster.GET("/siswa", handlers.StudentHandler.GetAllStudentsData)
+		publicMaster.GET("/siswa/:uuid", handlers.StudentHandler.GetStudentData)
+		authorizationMaster.POST("/siswa", middleware.IsExcelFile(), handlers.StudentHandler.ImportStudentsData)
+		authorizationMaster.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
+		authorizationMaster.DELETE("/siswa/:uuid", handlers.StudentHandler.DeleteStudentData)
 	}
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/register")
-		auth.POST("/login")
+		auth.POST("/login", middleware.ValidateLogin(), handlers.AuthHandler.Login)
+		auth.POST("/verify-token", middleware.ValidateHeader(), handlers.AuthHandler.VerifyToken)
 	}
 
 	return router

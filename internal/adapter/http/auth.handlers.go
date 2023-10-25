@@ -24,7 +24,7 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 	body, ok := c.Get("login")
 
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.Message{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
 			Success: false,
 			Message: "something went wrong at user service",
 		})
@@ -41,7 +41,7 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 	jwt, err := h.Service.VerifyUser(&user)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.Message{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -58,14 +58,14 @@ func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 	jwt := c.GetString("jwt")
 
 	if err := h.Service.VerifyToken(jwt); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.Message{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
 			Success: false,
 			Message: err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.Message{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "your JWT token is authenticated and good to go",
 	})
