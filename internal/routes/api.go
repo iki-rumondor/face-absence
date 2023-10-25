@@ -6,18 +6,24 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/middleware"
 )
 
-func StartServer(handler *customHTTP.StudentHandlers) *gin.Engine {
+func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 	router := gin.Default()
 
 	router.MaxMultipartMemory = 10 << 20
 
 	siswa := router.Group("/master")
 	{
-		siswa.GET("/siswa", handler.GetAllStudentsData)
-		siswa.POST("/siswa", middleware.IsExcelFile(), handler.CreateStudentsData)
-		siswa.GET("/siswa/:uuid", handler.GetStudentData)
-		siswa.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handler.UpdateStudentData)
-		siswa.DELETE("/siswa/:uuid", handler.DeleteStudentData)
+		siswa.GET("/siswa", handlers.StudentHandler.GetAllStudentsData)
+		siswa.POST("/siswa", middleware.IsExcelFile(), handlers.StudentHandler.CreateStudentsData)
+		siswa.GET("/siswa/:uuid", handlers.StudentHandler.GetStudentData)
+		siswa.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
+		siswa.DELETE("/siswa/:uuid", handlers.StudentHandler.DeleteStudentData)
+	}
+
+	auth := router.Group("/auth")
+	{
+		auth.POST("/register")
+		auth.POST("/login")
 	}
 
 	return router

@@ -11,6 +11,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/routes"
 )
 
+
 func main() {
 	gormDB, err := database.NewMysqlDB()
 	if err != nil{
@@ -20,10 +21,19 @@ func main() {
 	
 	gormDB.Debug().AutoMigrate(&domain.Student{})
 
-	repo := repository.NewStudentRepository(gormDB)
-	service := application.NewStudentService(repo)
-	handler := customHTTP.NewStudentHandler(service)
+	student_repo := repository.NewStudentRepository(gormDB)
+	student_service := application.NewStudentService(student_repo)
+	student_handler := customHTTP.NewStudentHandler(student_service)
+	
+	auth_repo := repository.NewAuthRepository(gormDB)
+	auth_service := application.NewAuthService(auth_repo)
+	auth_handler := customHTTP.NewAuthHandler(auth_service)
+
+	handlers := &customHTTP.Handlers{
+		StudentHandler: student_handler,
+		AuthHandler: auth_handler,
+	}
 
 	var PORT = ":8082"
-	routes.StartServer(handler).Run(PORT)
+	routes.StartServer(handlers).Run(PORT)
 }
