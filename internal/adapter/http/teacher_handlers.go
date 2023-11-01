@@ -45,7 +45,7 @@ func (h *TeacherHandlers) CreateTeacher(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "berhasil menambahkan admin guru baru",
+		Message: "teacher has been saved successfully",
 	})
 
 }
@@ -78,7 +78,7 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "data guru berhasil didapatkan",
+		Message: "your request has been executed successfully",
 		Data:    res,
 	})
 
@@ -110,8 +110,42 @@ func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "data guru berhasil didapatkan",
+		Message: "your request has been executed successfully",
 		Data:    res,
+	})
+
+}
+
+func (h *TeacherHandlers) UpdateTeacher(c *gin.Context) {
+
+	var body request.UpdateTeacher
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if _, err := govalidator.ValidateStruct(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	uuid := c.Param("uuid")
+	body.Uuid = uuid
+	
+	if _, err := h.Service.UpdateTeacher(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "students has been updated successfully",
 	})
 
 }

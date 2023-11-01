@@ -15,7 +15,7 @@ func NewTeacherRepository(db *gorm.DB) TeacherRepository {
 	}
 }
 
-func (r *TeacherRepoImplementation) CreateUser(user *domain.User) (*domain.User, error) {
+func (r *TeacherRepoImplementation) SaveUser(user *domain.User) (*domain.User, error) {
 	if err := r.db.Save(user).Error; err != nil {
 		return nil, err
 	}
@@ -49,7 +49,28 @@ func (r *TeacherRepoImplementation) FindTeacher(uuid string) (*domain.Teacher, e
 	return &teacher, nil
 }
 
+func (r *TeacherRepoImplementation) UpdateTeacher(user *domain.User, teacher *domain.Teacher) (*domain.Teacher, error) {
 
+	var result domain.Teacher
+
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(user).Where("uuid = ?", user.Uuid).Update("nama", user.Nama).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(teacher).Where("nip = ?", teacher.Nip).Updates(teacher).First(&result).Error; err != nil {
+			return err
+		}
+		
+		return nil
+	});
+
+	if err != nil{
+		return nil, err
+	}
+
+	return &result, nil
+}
 
 func (r *TeacherRepoImplementation) DeleteUser(id uint) error {
 	if err := r.db.Delete(&domain.User{}, "id = ?", id).Error; err != nil {

@@ -31,6 +31,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.POST("/", handlers.TeacherHandler.CreateTeacher)
 		admin.GET("/", handlers.TeacherHandler.GetTeachers)
 		admin.GET("/:uuid", handlers.TeacherHandler.GetTeacher)
+		admin.PUT("/:uuid", handlers.TeacherHandler.UpdateTeacher)
 	}
 
 	return router

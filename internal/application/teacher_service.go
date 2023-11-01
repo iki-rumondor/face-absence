@@ -30,7 +30,7 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 		RoleID:   1,
 	}
 
-	user, err := s.Repo.CreateUser(user)
+	user, err := s.Repo.SaveUser(user)
 
 	if err != nil {
 		return err
@@ -76,5 +76,27 @@ func (s *TeacherService) GetTeacher(uuid string) (*domain.Teacher, error) {
 	}
 
 	return teacher, nil
+
+}
+
+func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) (*domain.Teacher, error) {
+
+	user := &domain.User{
+		Uuid: request.Uuid,
+		Nama: request.Nama,
+	}
+
+	teacher := &domain.Teacher{
+		Nip: request.NIP,
+		JK: request.JK,
+	}
+	
+	result, err := s.Repo.UpdateTeacher(user, teacher)
+	
+	if err != nil{
+		return nil, fmt.Errorf("failed to update teachers: %s", err.Error())
+	}
+
+	return result, nil
 
 }
