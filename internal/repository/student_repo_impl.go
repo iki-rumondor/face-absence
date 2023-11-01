@@ -19,22 +19,22 @@ func (r *StudentRepoImplementation) SaveList(students *domain.ListOfStudent) err
 	return r.db.Save(students.Students).Error
 }
 
-func (r *StudentRepoImplementation) FindAllStudentUsers() (*[]domain.User, error) {
-	var users []domain.User
-	if err := r.db.Preload("Student").Preload("Role").Find(&users).Error; err != nil {
+func (r *StudentRepoImplementation) FindAllStudentUsers() (*[]domain.Student, error) {
+	var students []domain.Student
+	if err := r.db.Preload("User").Preload("User.Role").Find(&students).Error; err != nil {
 		return nil, err
 	}
-	return &users, nil
+	return &students, nil
 }
 
-func (r *StudentRepoImplementation) FindStudentUser(uuid string) (*domain.User, error) {
-	var user domain.User
+func (r *StudentRepoImplementation) FindStudentUser(uuid string) (*domain.Student, error) {
+	var student domain.Student
 
-	if err := r.db.Preload("Student").Preload("Role").First(&user, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Joins("User").Preload("User.Role").First(&student, "User.uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return &student, nil
 }
 
 func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, error) {
@@ -96,6 +96,14 @@ func (r *StudentRepoImplementation) DeleteStudentUser(student *domain.Student, u
 	return nil
 }
 
+func (r *StudentRepoImplementation) SaveStudent(student *domain.Student) error {
+	if err := r.db.Save(student).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *StudentRepoImplementation) CreateUser(user *domain.User) (*domain.User, error) {
 	if err := r.db.Create(user).Error; err != nil {
 		return nil, err
@@ -104,8 +112,8 @@ func (r *StudentRepoImplementation) CreateUser(user *domain.User) (*domain.User,
 	return user, nil
 }
 
-func (r *StudentRepoImplementation) SaveStudent(student *domain.Student) error {
-	if err := r.db.Save(student).Error; err != nil {
+func (r *StudentRepoImplementation) DeleteUser(user *domain.User) error {
+	if err := r.db.Delete(user).Error; err != nil {
 		return err
 	}
 

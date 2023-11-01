@@ -3,6 +3,7 @@ package application
 import (
 	"errors"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
 	"github.com/iki-rumondor/init-golang-service/internal/utils"
@@ -32,6 +33,7 @@ func (s *AuthService) VerifyUser(user *domain.User) (string, error) {
 
 	data := map[string]interface{}{
 		"id": result.ID,
+		"role": result.RoleID,
 	}
 
 	// create jwt token
@@ -43,11 +45,13 @@ func (s *AuthService) VerifyUser(user *domain.User) (string, error) {
 	return jwt, nil
 }
 
-func (s *AuthService) VerifyToken(jwt string) error {
+func (s *AuthService) VerifyToken(jwt string) (*jwt.MapClaims, error) {
 	// find user by email from database
-	if err := utils.VerifyToken(jwt); err != nil {
-		return err
+	mapClaims, err := utils.VerifyToken(jwt)
+	
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return &mapClaims, nil
 }

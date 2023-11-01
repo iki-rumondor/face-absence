@@ -42,7 +42,6 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 	}()
 
 	var failedStudent []response.FailedStudent
-	fmt.Println(len(rows))
 
 	for i := 1; i < len(rows); i++ {
 		cols := rows[i]
@@ -52,7 +51,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 			Nama:     cols[0],
 			Email:    cols[1],
 			Password: cols[2],
-			RoleID:   1,
+			RoleID:   2,
 		})
 
 		if err != nil {
@@ -78,6 +77,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 				Description: "failed create student",
 				Error:       err.Error(),
 			})
+			s.Repo.DeleteUser(user)
 			continue
 		}
 
@@ -88,53 +88,53 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 
 func (s *StudentService) GetAllStudentUsers() (*[]response.StudentUser, error) {
 
-	users, err := s.Repo.FindAllStudentUsers()
+	students, err := s.Repo.FindAllStudentUsers()
 	if err != nil {
 		return nil, err
 	}
 
-	var students []response.StudentUser
-	for _, user := range *users {
-		students = append(students, response.StudentUser{
-			ID:        user.ID,
-			Uuid:      user.Uuid,
-			Nama:      user.Nama,
-			Email:     user.Email,
-			JK:        user.Student.JK,
-			NIS:       user.Student.NIS,
-			Kelas:     user.Student.Kelas,
-			Semester:  user.Student.Semester,
-			Role:      user.Role.Name,
-			CreatedAt: user.Student.CreatedAt,
-			UpdatedAt: user.Student.UpdatedAt,
+	var res []response.StudentUser
+	for _, student := range *students {
+		res = append(res, response.StudentUser{
+			ID:        student.ID,
+			Uuid:      student.User.Uuid,
+			Nama:      student.User.Nama,
+			Email:     student.User.Email,
+			JK:        student.JK,
+			NIS:       student.NIS,
+			Kelas:     student.Kelas,
+			Semester:  student.Semester,
+			Role:      student.User.Role.Name,
+			CreatedAt: student.CreatedAt,
+			UpdatedAt: student.UpdatedAt,
 		})
 	}
 
-	return &students, nil
+	return &res, nil
 }
 
 func (s *StudentService) GetStudentUser(uuid string) (*response.StudentUser, error) {
 
-	user, err := s.Repo.FindStudentUser(uuid)
+	student, err := s.Repo.FindStudentUser(uuid)
 	if err != nil {
 		return nil, err
 	}
 
-	student := response.StudentUser{
-		ID:        user.ID,
-		Uuid:      user.Uuid,
-		Nama:      user.Nama,
-		Email:     user.Email,
-		JK:        user.Student.JK,
-		NIS:       user.Student.NIS,
-		Kelas:     user.Student.Kelas,
-		Semester:  user.Student.Semester,
-		Role:      user.Role.Name,
-		CreatedAt: user.Student.CreatedAt,
-		UpdatedAt: user.Student.UpdatedAt,
+	res := response.StudentUser{
+		ID:        student.ID,
+		Uuid:      student.User.Uuid,
+		Nama:      student.User.Nama,
+		Email:     student.User.Email,
+		JK:        student.JK,
+		NIS:       student.NIS,
+		Kelas:     student.Kelas,
+		Semester:  student.Semester,
+		Role:      student.User.Role.Name,
+		CreatedAt: student.CreatedAt,
+		UpdatedAt: student.UpdatedAt,
 	}
 
-	return &student, nil
+	return &res, nil
 }
 
 func (s *StudentService) GetStudent(uuid string) (*domain.Student, error) {

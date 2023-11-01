@@ -113,6 +113,10 @@ func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 	student.UserID = result.UserID
 
 	if err := h.Service.UpdateStudentUser(&student); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			Success: false,
+			Message: err.Error(),
+		})
 		return
 	}
 

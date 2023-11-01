@@ -11,21 +11,19 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 
 	router.MaxMultipartMemory = 10 << 20
 
-	publicMaster := router.Group("/master")
-	authorizationMaster := router.Group("/master")
-	authorizationMaster.Use(middleware.ValidateHeader())
+	public := router.Group("")
 	{
-		publicMaster.GET("/siswa", handlers.StudentHandler.GetAllStudentsData)
-		publicMaster.GET("/siswa/:uuid", handlers.StudentHandler.GetStudentData)
-		authorizationMaster.POST("/siswa", middleware.IsExcelFile(), handlers.StudentHandler.ImportStudentsData)
-		authorizationMaster.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
-		authorizationMaster.DELETE("/siswa/:uuid", handlers.StudentHandler.DeleteStudentData)
+		public.POST("/auth/login", handlers.AuthHandler.Login)
+		public.GET("/auth/verify-token", middleware.ValidateHeader(), handlers.AuthHandler.VerifyToken)
 	}
 
-	auth := router.Group("/auth")
+	master := router.Group("/master").Use(middleware.ValidateHeader(), middleware.IsAdmin())
 	{
-		auth.POST("/login", middleware.ValidateLogin(), handlers.AuthHandler.Login)
-		auth.POST("/verify-token", middleware.ValidateHeader(), handlers.AuthHandler.VerifyToken)
+		master.GET("/siswa", handlers.StudentHandler.GetAllStudentsData)
+		master.GET("/siswa/:uuid", handlers.StudentHandler.GetStudentData)
+		master.POST("/siswa", middleware.IsExcelFile(), handlers.StudentHandler.ImportStudentsData)
+		master.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
+		master.DELETE("/siswa/:uuid", handlers.StudentHandler.DeleteStudentData)
 	}
 
 	return router

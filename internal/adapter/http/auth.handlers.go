@@ -3,6 +3,7 @@ package customHTTP
 import (
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -21,21 +22,24 @@ func NewAuthHandler(service *application.AuthService) *AuthHandlers {
 }
 
 func (h *AuthHandlers) Login(c *gin.Context) {
-	body, ok := c.Get("login")
-
-	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: "something went wrong at user service",
+	var body request.Login
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
 		})
 		return
 	}
 
-	var login = body.(request.Login)
+	if _, err := govalidator.ValidateStruct(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
 
 	user := domain.User{
-		Email:    login.Email,
-		Password: login.Password,
+		Email:    body.Email,
+		Password: body.Password,
 	}
 
 	jwt, err := h.Service.VerifyUser(&user)
@@ -57,7 +61,9 @@ func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 
 	jwt := c.GetString("jwt")
 
-	if err := h.Service.VerifyToken(jwt); err != nil {
+	mapClaims, err := h.Service.VerifyToken(jwt)
+
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
 			Success: false,
 			Message: err.Error(),
@@ -68,5 +74,6 @@ func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "your JWT token is authenticated and good to go",
+		Data:    mapClaims,
 	})
 }

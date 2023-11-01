@@ -9,6 +9,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
 	"github.com/iki-rumondor/init-golang-service/internal/routes"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -17,21 +18,8 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
-
-	var roles = []domain.Role{
-		{
-
-			Name: "Siswa",
-		},
-		{
-			Name: "Admin",
-		},
-	}
-
-	gormDB.Debug().AutoMigrate(&domain.Role{})
-	gormDB.Create(&roles)
-	gormDB.Debug().AutoMigrate(&domain.Student{})
-	gormDB.Debug().AutoMigrate(&domain.User{})
+	
+	// migration(gormDB)
 
 	student_repo := repository.NewStudentRepository(gormDB)
 	student_service := application.NewStudentService(student_repo)
@@ -48,4 +36,35 @@ func main() {
 
 	var PORT = ":8082"
 	routes.StartServer(handlers).Run(PORT)
+}
+
+func migration(db *gorm.DB) {
+	
+	db.Migrator().DropTable(&domain.Role{})
+	db.Migrator().DropTable(&domain.Student{})
+	db.Migrator().DropTable(&domain.User{})
+
+	db.Migrator().CreateTable(&domain.Role{})
+	db.Migrator().CreateTable(&domain.User{})
+	db.Migrator().CreateTable(&domain.Student{})
+
+	var roles = []domain.Role{
+		{
+
+			Name: "Siswa",
+		},
+		{
+			Name: "Admin",
+		},
+	}
+	db.Create(&roles)
+
+	var user = domain.User{
+		Uuid: "1",
+		Nama: "Admin",
+		Email: "admin@admin.com",
+		Password: "123456",
+		RoleID: 1,
+	}
+	db.Create(&user)
 }
