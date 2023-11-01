@@ -58,10 +58,10 @@ func migration(db *gorm.DB) {
 	var roles = []domain.Role{
 		{
 
-			Name: "Siswa",
+			Name: "Admin",
 		},
 		{
-			Name: "Admin",
+			Name: "Siswa",
 		},
 	}
 	db.Create(&roles)

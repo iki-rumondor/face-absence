@@ -31,6 +31,17 @@ func (r *TeacherRepoImplementation) CreateTeacher(teacher *domain.Teacher) (*dom
 	return teacher, nil
 }
 
+func (r *TeacherRepoImplementation) FindTeachers() (*[]domain.Teacher, error) {
+	var teachers []domain.Teacher
+	if err := r.db.Preload("User.Role").Find(&teachers).Error; err != nil {
+		return nil, err
+	}
+
+	return &teachers, nil
+}
+
+
+
 func (r *TeacherRepoImplementation) DeleteUser(id uint) error {
 	if err := r.db.Delete(&domain.User{}, "id = ?", id).Error; err != nil {
 		return err

@@ -29,6 +29,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 	admin := router.Group("/master/admin").Use(middleware.ValidateHeader(), middleware.IsAdmin())
 	{
 		admin.POST("/", handlers.TeacherHandler.CreateTeacher)
+		admin.GET("/", handlers.TeacherHandler.GetTeachers)
 	}
 
 	return router

@@ -46,3 +46,15 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 	return nil
 
 }
+
+func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
+
+	teachers, err := s.Repo.FindTeachers()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return teachers, nil
+
+}

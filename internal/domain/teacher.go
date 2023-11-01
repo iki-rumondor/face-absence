@@ -27,7 +27,3 @@ func (t *Teacher) BeforeSave(tx *gorm.DB) error {
 
 	return nil
 }
-
-type Teachers struct {
-	Teachers []*Teacher
-}
