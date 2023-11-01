@@ -23,8 +23,8 @@ type Student struct {
 func (s *Student) BeforeSave(tx *gorm.DB) error {
 
 	var student Student
-	if err := tx.First(&student, "nis = ? AND id != ?", s.NIS, s.ID).Error; !errors.Is(err, gorm.ErrRecordNotFound){
-		return errors.New("the nis is has already registered")
+	if result := tx.First(&student, "nis = ? AND id != ?", s.NIS, s.ID).RowsAffected; result > 0{
+		return errors.New("the nis has already registered")
 	}
 
 	return nil

@@ -25,7 +25,7 @@ func (u *User) BeforeSave(tx *gorm.DB) error {
 
 	var user User
 	if result := tx.First(&user, "email = ? AND id != ?", u.Email, u.ID).RowsAffected; result > 0{
-		return errors.New("the email is has already been taken")
+		return errors.New("the email has already been taken")
 	}
 
 	hashPass, err := utils.HashPassword(u.Password)

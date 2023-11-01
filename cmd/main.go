@@ -18,20 +18,25 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
-	
-	// migration(gormDB)
 
-	student_repo := repository.NewStudentRepository(gormDB)
-	student_service := application.NewStudentService(student_repo)
-	student_handler := customHTTP.NewStudentHandler(student_service)
+	// migration(gormDB)
 
 	auth_repo := repository.NewAuthRepository(gormDB)
 	auth_service := application.NewAuthService(auth_repo)
 	auth_handler := customHTTP.NewAuthHandler(auth_service)
 
+	student_repo := repository.NewStudentRepository(gormDB)
+	student_service := application.NewStudentService(student_repo)
+	student_handler := customHTTP.NewStudentHandler(student_service)
+
+	teacher_repo := repository.NewTeacherRepository(gormDB)
+	teacher_service := application.NewTeacherService(teacher_repo)
+	teacher_handler := customHTTP.NewTeacherHandler(teacher_service)
+
 	handlers := &customHTTP.Handlers{
 		StudentHandler: student_handler,
 		AuthHandler:    auth_handler,
+		TeacherHandler: teacher_handler,
 	}
 
 	var PORT = ":8082"
@@ -39,14 +44,16 @@ func main() {
 }
 
 func migration(db *gorm.DB) {
-	
+
 	db.Migrator().DropTable(&domain.Role{})
 	db.Migrator().DropTable(&domain.Student{})
 	db.Migrator().DropTable(&domain.User{})
+	db.Migrator().DropTable(&domain.Teacher{})
 
 	db.Migrator().CreateTable(&domain.Role{})
 	db.Migrator().CreateTable(&domain.User{})
 	db.Migrator().CreateTable(&domain.Student{})
+	db.Migrator().CreateTable(&domain.Teacher{})
 
 	var roles = []domain.Role{
 		{
@@ -60,11 +67,11 @@ func migration(db *gorm.DB) {
 	db.Create(&roles)
 
 	var user = domain.User{
-		Uuid: "1",
-		Nama: "Admin",
-		Email: "admin@admin.com",
+		Uuid:     "1",
+		Nama:     "Admin",
+		Email:    "admin@admin.com",
 		Password: "123456",
-		RoleID: 1,
+		RoleID:   1,
 	}
 	db.Create(&user)
 }

@@ -17,13 +17,18 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		public.GET("/auth/verify-token", middleware.ValidateHeader(), handlers.AuthHandler.VerifyToken)
 	}
 
-	master := router.Group("/master").Use(middleware.ValidateHeader(), middleware.IsAdmin())
+	siswa := router.Group("/master/siswa").Use(middleware.ValidateHeader(), middleware.IsAdmin())
 	{
-		master.GET("/siswa", handlers.StudentHandler.GetAllStudentsData)
-		master.GET("/siswa/:uuid", handlers.StudentHandler.GetStudentData)
-		master.POST("/siswa", middleware.IsExcelFile(), handlers.StudentHandler.ImportStudentsData)
-		master.PUT("/siswa/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
-		master.DELETE("/siswa/:uuid", handlers.StudentHandler.DeleteStudentData)
+		siswa.GET("/", handlers.StudentHandler.GetAllStudentsData)
+		siswa.GET("/:uuid", handlers.StudentHandler.GetStudentData)
+		siswa.POST("/", middleware.IsExcelFile(), handlers.StudentHandler.ImportStudentsData)
+		siswa.PUT("/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
+		siswa.DELETE("/:uuid", handlers.StudentHandler.DeleteStudentData)
+	}
+
+	admin := router.Group("/master/admin").Use(middleware.ValidateHeader(), middleware.IsAdmin())
+	{
+		admin.POST("/", handlers.TeacherHandler.CreateTeacher)
 	}
 
 	return router
