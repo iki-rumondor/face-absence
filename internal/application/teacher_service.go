@@ -1,10 +1,14 @@
 package application
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
+	"gorm.io/gorm"
 )
 
 type TeacherService struct {
@@ -56,5 +60,21 @@ func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
 	}
 
 	return teachers, nil
+
+}
+
+func (s *TeacherService) GetTeacher(uuid string) (*domain.Teacher, error) {
+
+	teacher, err := s.Repo.FindTeacher(uuid)
+
+	if errors.Is(err, gorm.ErrRecordNotFound){
+		return nil, fmt.Errorf("guru dengan uuid %s tidak ditemukan", uuid)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return teacher, nil
 
 }

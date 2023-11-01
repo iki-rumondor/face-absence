@@ -40,6 +40,15 @@ func (r *TeacherRepoImplementation) FindTeachers() (*[]domain.Teacher, error) {
 	return &teachers, nil
 }
 
+func (r *TeacherRepoImplementation) FindTeacher(uuid string) (*domain.Teacher, error) {
+	var teacher domain.Teacher
+	if err := r.db.Joins("User").Preload("User.Role").First(&teacher, "User.uuid = ?", uuid).Error; err != nil {
+		return nil, err
+	}
+
+	return &teacher, nil
+}
+
 
 
 func (r *TeacherRepoImplementation) DeleteUser(id uint) error {

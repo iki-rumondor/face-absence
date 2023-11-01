@@ -40,3 +40,5 @@ func IsAdmin() gin.HandlerFunc {
 
 	}
 }
+
+

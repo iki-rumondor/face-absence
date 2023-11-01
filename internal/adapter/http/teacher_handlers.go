@@ -83,3 +83,35 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 	})
 
 }
+
+func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
+
+	uuid := c.Param("uuid")
+	teacher, err := h.Service.GetTeacher(uuid)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	res := &response.Teacher{
+		ID:        teacher.ID,
+		Uuid:      teacher.User.Uuid,
+		Nama:      teacher.User.Nama,
+		Email:     teacher.User.Email,
+		Nip:       teacher.Nip,
+		JK:        teacher.JK,
+		Role:      teacher.User.Role.Name,
+		CreatedAt: teacher.CreatedAt,
+		UpdatedAt: teacher.UpdatedAt,
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "data guru berhasil didapatkan",
+		Data:    res,
+	})
+
+}
