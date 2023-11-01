@@ -145,7 +145,25 @@ func (h *TeacherHandlers) UpdateTeacher(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "students has been updated successfully",
+		Message: "teacher has been updated successfully",
+	})
+
+}
+
+func (h *TeacherHandlers) DeleteTeacher(c *gin.Context) {
+
+	uuid := c.Param("uuid")
+	
+	if err := h.Service.DeleteTeacherByUuid(uuid); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "teacher has been deleted successfully",
 	})
 
 }

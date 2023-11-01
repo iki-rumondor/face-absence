@@ -61,15 +61,48 @@ func (r *TeacherRepoImplementation) UpdateTeacher(user *domain.User, teacher *do
 		if err := tx.Model(teacher).Where("nip = ?", teacher.Nip).Updates(teacher).First(&result).Error; err != nil {
 			return err
 		}
-		
-		return nil
-	});
 
-	if err != nil{
+		return nil
+	})
+
+	if err != nil {
 		return nil, err
 	}
 
 	return &result, nil
+}
+
+func (r *TeacherRepoImplementation) FindUserByUuid(uuid string) (*domain.User, error) {
+	var user domain.User
+
+	if err := r.db.First(&user, "uuid = ?", uuid).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
+}
+
+func (r *TeacherRepoImplementation) DeleteWithUser(user *domain.User) error {
+
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+
+		if err := tx.Delete(&domain.Teacher{}, "user_id = ?", user.ID).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Delete(user).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *TeacherRepoImplementation) DeleteUser(id uint) error {

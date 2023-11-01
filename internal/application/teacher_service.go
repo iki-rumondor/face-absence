@@ -67,8 +67,8 @@ func (s *TeacherService) GetTeacher(uuid string) (*domain.Teacher, error) {
 
 	teacher, err := s.Repo.FindTeacher(uuid)
 
-	if errors.Is(err, gorm.ErrRecordNotFound){
-		return nil, fmt.Errorf("guru dengan uuid %s tidak ditemukan", uuid)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("teacher with uuid %s is not found", uuid)
 	}
 
 	if err != nil {
@@ -88,15 +88,30 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) (*domain.
 
 	teacher := &domain.Teacher{
 		Nip: request.NIP,
-		JK: request.JK,
+		JK:  request.JK,
 	}
-	
+
 	result, err := s.Repo.UpdateTeacher(user, teacher)
-	
-	if err != nil{
+
+	if err != nil {
 		return nil, fmt.Errorf("failed to update teachers: %s", err.Error())
 	}
 
 	return result, nil
+
+}
+
+func (s *TeacherService) DeleteTeacherByUuid(uuid string) error {
+
+	user, err := s.Repo.FindUserByUuid(uuid)
+	if err != nil {
+		return fmt.Errorf("teacher with uuid %s is not found", uuid)
+	}
+
+	if err := s.Repo.DeleteWithUser(user); err != nil {
+		return fmt.Errorf("failed to delete teacher: %s", err.Error())
+	}
+
+	return nil
 
 }

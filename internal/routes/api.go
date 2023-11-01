@@ -32,6 +32,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.GET("/", handlers.TeacherHandler.GetTeachers)
 		admin.GET("/:uuid", handlers.TeacherHandler.GetTeacher)
 		admin.PUT("/:uuid", handlers.TeacherHandler.UpdateTeacher)
+		admin.DELETE("/:uuid", handlers.TeacherHandler.DeleteTeacher)
 	}
 
 	return router
