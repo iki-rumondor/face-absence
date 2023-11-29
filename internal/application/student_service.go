@@ -93,7 +93,7 @@ func (s *StudentService) GetAllStudentUsers() (*[]response.StudentUser, error) {
 		return nil, err
 	}
 
-	var res []response.StudentUser
+	var res =  []response.StudentUser{}
 	for _, student := range *students {
 		res = append(res, response.StudentUser{
 			ID:        student.ID,

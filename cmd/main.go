@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/database"
 	customHTTP "github.com/iki-rumondor/init-golang-service/internal/adapter/http"
@@ -9,17 +11,37 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
 	"github.com/iki-rumondor/init-golang-service/internal/routes"
-	"gorm.io/gorm"
 )
 
 func main() {
-	gormDB, err := database.NewMysqlDB()
+	gormDB, err := database.NewPostgresDB()
 	if err != nil {
 		log.Fatal(err.Error())
 		return
 	}
 
-	// migration(gormDB)
+	for _, model := range domain.RegisterModel() {
+		if err := gormDB.Debug().AutoMigrate(model.Model); err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+	}
+
+	if err := gormDB.First(&domain.Role{}).Error; err != nil {
+		gormDB.Create(&[]domain.Role{
+			{Name: "Admin"},
+			{Name: "Siswa"},
+		})
+		gormDB.Create(&domain.User{
+			Uuid:     "admin",
+			Nama:     "Admin",
+			Email:    "admin@admin.com",
+			Password: "123456",
+			RoleID:   1,
+		})
+	}
+
+	fmt.Println("Database migrated succeesfully")
 
 	auth_repo := repository.NewAuthRepository(gormDB)
 	auth_service := application.NewAuthService(auth_repo)
@@ -39,39 +61,10 @@ func main() {
 		TeacherHandler: teacher_handler,
 	}
 
-	var PORT = ":8082"
-	routes.StartServer(handlers).Run(PORT)
-}
-
-func migration(db *gorm.DB) {
-
-	db.Migrator().DropTable(&domain.Role{})
-	db.Migrator().DropTable(&domain.Student{})
-	db.Migrator().DropTable(&domain.User{})
-	db.Migrator().DropTable(&domain.Teacher{})
-
-	db.Migrator().CreateTable(&domain.Role{})
-	db.Migrator().CreateTable(&domain.User{})
-	db.Migrator().CreateTable(&domain.Student{})
-	db.Migrator().CreateTable(&domain.Teacher{})
-
-	var roles = []domain.Role{
-		{
-
-			Name: "Admin",
-		},
-		{
-			Name: "Siswa",
-		},
+	var PORT = os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "8080"
 	}
-	db.Create(&roles)
 
-	var user = domain.User{
-		Uuid:     "1",
-		Nama:     "Admin",
-		Email:    "admin@admin.com",
-		Password: "123456",
-		RoleID:   1,
-	}
-	db.Create(&user)
+	routes.StartServer(gormDB, handlers).Run(":" + PORT)
 }

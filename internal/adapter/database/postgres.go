@@ -14,8 +14,9 @@ func NewPostgresDB() (*gorm.DB, error) {
 	if err != nil{
 		return nil, err
 	}
-	strConn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname%s sslmode=%s", env["host"], env["port"], env["user"], env["password"], env["name"], env["sslmode"])
+	strConn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", env["host"], env["port"], env["user"], env["password"], env["name"], env["sslmode"])
 
+	fmt.Println(strConn)
 	gormDB, err := gorm.Open(postgres.Open(strConn), &gorm.Config{})
 	if err != nil {
 		return nil, err

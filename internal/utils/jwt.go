@@ -6,7 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var secretKey = "r4hasia"
+var secretKey = "fabsence"
 
 func GenerateToken(data map[string]interface{}) (string, error) {
 	claims := jwt.MapClaims(data)
@@ -19,7 +19,7 @@ func GenerateToken(data map[string]interface{}) (string, error) {
 	return signedToken, nil
 }
 
-func VerifyToken(strToken string) (jwt.MapClaims ,error) {
+func VerifyToken(strToken string) (jwt.MapClaims, error) {
 	errResponse := errors.New("please ensure you have the right credentials to proceed")
 
 	token, _ := jwt.Parse(strToken, func(t *jwt.Token) (interface{}, error) {
@@ -30,7 +30,7 @@ func VerifyToken(strToken string) (jwt.MapClaims ,error) {
 	})
 
 	mapClaims, ok := token.Claims.(jwt.MapClaims)
-	
+
 	if !ok || !token.Valid {
 		return nil, errResponse
 	}
