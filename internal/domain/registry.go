@@ -6,7 +6,6 @@ type Model struct {
 
 func RegisterModel() []Model {
 	return []Model{
-		{Model: Role{}},
 		{Model: User{}},
 		{Model: Student{}},
 		{Model: Teacher{}},

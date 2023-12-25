@@ -37,57 +37,57 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 		}
 	}()
 
-	failed, err := h.Service.ImportStudents(pathFile)
+	// failed, err := h.Service.ImportStudents(pathFile)
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
-		return
-	}
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+	// 		Success: false,
+	// 		Message: err.Error(),
+	// 	})
+	// 	return
+	// }
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
-		Success: true,
-		Message: "students has been saved successfully",
-		Data:    failed,
-	})
+	// c.JSON(http.StatusCreated, response.SuccessResponse{
+	// 	Success: true,
+	// 	Message: "students has been saved successfully",
+	// 	Data:    failed,
+	// })
 }
 
-func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
-	users, err := h.Service.GetAllStudentUsers()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
-		return
-	}
+// func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
+// 	users, err := h.Service.GetAllStudentUsers()
+// 	if err != nil {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+// 			Success: false,
+// 			Message: err.Error(),
+// 		})
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, response.SuccessResponse{
-		Success: true,
-		Message: "get all students has been successfully",
-		Data:    users,
-	})
-}
+// 	c.JSON(http.StatusOK, response.SuccessResponse{
+// 		Success: true,
+// 		Message: "get all students has been successfully",
+// 		Data:    users,
+// 	})
+// }
 
-func (h *StudentHandlers) GetStudentData(c *gin.Context) {
+// func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 
-	student, err := h.Service.GetStudentUser(c.Param("uuid"))
+// 	student, err := h.Service.GetStudentUser(c.Param("uuid"))
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
-	}
+// 	if err != nil {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+// 			Success: false,
+// 			Message: err.Error(),
+// 		})
+// 	}
 
-	c.JSON(http.StatusOK, response.SuccessResponse{
-		Success: true,
-		Message: fmt.Sprintf("student with uuid %s is found", student.Uuid),
-		Data:    student,
-	})
-}
+// 	c.JSON(http.StatusOK, response.SuccessResponse{
+// 		Success: true,
+// 		Message: fmt.Sprintf("student with uuid %s is found", student.Uuid),
+// 		Data:    student,
+// 	})
+// }
 
 func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 

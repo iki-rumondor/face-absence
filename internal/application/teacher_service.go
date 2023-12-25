@@ -2,10 +2,10 @@ package application
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
 	"gorm.io/gorm"
@@ -22,33 +22,49 @@ func NewTeacherService(repo repository.TeacherRepository) *TeacherService {
 }
 
 func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
-	user := &domain.User{
-		Uuid:     uuid.NewString(),
-		Nama:     request.Nama,
-		Email:    request.Email,
-		Password: request.NIP,
-		RoleID:   1,
+
+	if user, _ := s.Repo.FindUserByUsername(request.Username); user != nil {
+		return &response.Error{
+			Code:    404,
+			Message: "Username has already been taken",
+		}
 	}
 
-	user, err := s.Repo.SaveUser(user)
+	if user, _ := s.Repo.FindTeacherByColumn("nip", request.Nip); user != nil {
+		return &response.Error{
+			Code:    404,
+			Message: "Nip has already been taken",
+		}
+	}
 
-	if err != nil {
-		return err
+	user := &domain.User{
+		Nama:     request.Nama,
+		Username: request.Username,
+		Password: request.Password,
 	}
 
 	teacher := &domain.Teacher{
-		Nip:    request.NIP,
-		JK:     request.JK,
-		UserID: user.ID,
+		Uuid:          uuid.NewString(),
+		Nuptk:         request.Nuptk,
+		Nip:           request.Nip,
+		StatusPegawai: request.StatusPegawai,
+		JK:            request.JK,
+		TempatLahir:   request.TempatLahir,
+		TanggalLahir:  request.TanggalLahir,
+		NoHp:          request.NoHp,
+		Jabatan:       request.Jabatan,
+		TotalJtm:      request.TotalJtm,
+		Alamat:        request.Alamat,
 	}
 
-	if _, err := s.Repo.CreateTeacher(teacher); err != nil {
-		s.Repo.DeleteUser(teacher.UserID)
-		return err
+	if err := s.Repo.CreateTeacherUser(teacher, user); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to create user: " + err.Error(),
+		}
 	}
 
 	return nil
-
 }
 
 func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
@@ -56,7 +72,10 @@ func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
 	teachers, err := s.Repo.FindTeachers()
 
 	if err != nil {
-		return nil, err
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all teachers" + err.Error(),
+		}
 	}
 
 	return teachers, nil
@@ -65,51 +84,96 @@ func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
 
 func (s *TeacherService) GetTeacher(uuid string) (*domain.Teacher, error) {
 
-	teacher, err := s.Repo.FindTeacher(uuid)
+	teacher, err := s.Repo.FindTeacherByUuid(uuid)
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, fmt.Errorf("teacher with uuid %s is not found", uuid)
+		return nil, &response.Error{
+			Code:    404,
+			Message: "Teacher with uuid is not found",
+		}
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get teacher: " + err.Error(),
+		}
 	}
 
 	return teacher, nil
 
 }
 
-func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) (*domain.Teacher, error) {
+func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
+
+	teacherInDB, err := s.Repo.FindTeacherByUuid(request.Uuid)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return &response.Error{
+			Code:    404,
+			Message: "Teacher with uuid is not found",
+		}
+	}
+
+	if err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to get teacher: " + err.Error(),
+		}
+	}
 
 	user := &domain.User{
-		Uuid: request.Uuid,
-		Nama: request.Nama,
+		Nama:     request.Nama,
+		Username: request.Username,
 	}
 
 	teacher := &domain.Teacher{
-		Nip: request.NIP,
-		JK:  request.JK,
+		Uuid:          request.Uuid,
+		Nuptk:         request.Nuptk,
+		Nip:           request.Nip,
+		StatusPegawai: request.StatusPegawai,
+		JK:            request.JK,
+		TempatLahir:   request.TempatLahir,
+		TanggalLahir:  request.TanggalLahir,
+		NoHp:          request.NoHp,
+		Jabatan:       request.Jabatan,
+		TotalJtm:      request.TotalJtm,
+		Alamat:        request.Alamat,
+		UserID:        teacherInDB.UserID,
 	}
 
-	result, err := s.Repo.UpdateTeacher(user, teacher)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to update teachers: %s", err.Error())
+	if err := s.Repo.UpdateTeacherUser(teacher, user); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to update teacher: " + err.Error(),
+		}
 	}
 
-	return result, nil
+	return nil
 
 }
 
-func (s *TeacherService) DeleteTeacherByUuid(uuid string) error {
+func (s *TeacherService) DeleteTeacher(uuid string) error {
 
-	user, err := s.Repo.FindUserByUuid(uuid)
-	if err != nil {
-		return fmt.Errorf("teacher with uuid %s is not found", uuid)
+	teacherInDB, err := s.Repo.FindTeacherByUuid(uuid)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return &response.Error{
+			Code:    404,
+			Message: "Teacher with uuid is not found",
+		}
 	}
 
-	if err := s.Repo.DeleteWithUser(user); err != nil {
-		return fmt.Errorf("failed to delete teacher: %s", err.Error())
+	if err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to get teacher: " + err.Error(),
+		}
+	}
+
+	if err := s.Repo.DeleteTeacherUser(teacherInDB.UserID); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to delete teacher: " + err.Error(),
+		}
 	}
 
 	return nil

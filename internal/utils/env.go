@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -9,23 +8,23 @@ import (
 
 func GetDatabaseEnv() (map[string]interface{}, error) {
 	if err := godotenv.Load(); err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
-
-	dbHost := os.Getenv("PGHOST")
-	dbPort := os.Getenv("PGPORT")
-	dbUser := os.Getenv("PGUSER")
-	dbPassword := os.Getenv("PGPASSWORD")
-	dbName := os.Getenv("PGNAME")
+	
+	dbHost := os.Getenv("DBHOST")
+	dbPort := os.Getenv("DBPORT")
+	dbUser := os.Getenv("DBUSER")
+	dbPassword := os.Getenv("DBPASSWORD")
+	dbName := os.Getenv("DBNAME")
 	sslMode := os.Getenv("SSLMODE")
 
 	var infoDB = map[string]interface{}{
-		"host":     dbHost,
-		"port":     dbPort,
-		"user":     dbUser,
+		"host": dbHost,
+		"port": dbPort,
+		"user": dbUser,
 		"password": dbPassword,
-		"name":     dbName,
-		"sslmode":  sslMode,
+		"name": dbName,
+		"sslmode": sslMode,
 	}
 
 	return infoDB, nil

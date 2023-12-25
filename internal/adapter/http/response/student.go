@@ -6,7 +6,7 @@ type StudentUser struct {
 	ID        uint      `json:"id"`
 	Uuid      string    `json:"uuid"`
 	Nama      string    `json:"nama"`
-	Email     string    `json:"email"`
+	Username  string    `json:"username"`
 	NIS       string    `json:"nis"`
 	JK        string    `json:"jk"`
 	Kelas     string    `json:"kelas"`

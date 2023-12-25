@@ -13,29 +13,48 @@ func IsAdmin() gin.HandlerFunc {
 		mc := c.MustGet("map_claims")
 		mapClaims := mc.(jwt.MapClaims)
 
-		role := uint(mapClaims["role"].(float64))
-
-		if role != 1 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
+		role := mapClaims["role"].(string)
+		if role != "ADMIN" {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
 				Success: false,
 				Message: "access denied due to invalid credentials",
 			})
 			return
 		}
-		
 		c.Next()
 	}
 }
 
-func SetUserID() gin.HandlerFunc {
+func IsTeacher() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		mc := c.MustGet("map_claims")
 		mapClaims := mc.(jwt.MapClaims)
 
-		userID := uint(mapClaims["id"].(float64))
-
-		c.Set("user_id", userID)
+		role := mapClaims["role"].(string)
+		if role != "GURU" {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+				Success: false,
+				Message: "access denied due to invalid credentials",
+			})
+			return
+		}
 		c.Next()
+	}
+}
 
+func IsStudent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		mc := c.MustGet("map_claims")
+		mapClaims := mc.(jwt.MapClaims)
+
+		role := mapClaims["role"].(string)
+		if role != "SANTRI" {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+				Success: false,
+				Message: "access denied due to invalid credentials",
+			})
+			return
+		}
+		c.Next()
 	}
 }

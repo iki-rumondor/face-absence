@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	gormDB, err := database.NewPostgresDB()
+	gormDB, err := database.NewMysqlDB()
 	if err != nil {
 		log.Fatal(err.Error())
 		return
@@ -27,17 +27,11 @@ func main() {
 		}
 	}
 
-	if err := gormDB.First(&domain.Role{}).Error; err != nil {
-		gormDB.Create(&[]domain.Role{
-			{Name: "Admin"},
-			{Name: "Siswa"},
-		})
+	if err := gormDB.First(&domain.User{}).Error; err != nil {
 		gormDB.Create(&domain.User{
-			Uuid:     "admin",
 			Nama:     "Admin",
-			Email:    "admin@admin.com",
+			Username: "admin",
 			Password: "123456",
-			RoleID:   1,
 		})
 	}
 
@@ -66,5 +60,5 @@ func main() {
 		PORT = "8080"
 	}
 
-	routes.StartServer(gormDB, handlers).Run(":" + PORT)
+	routes.StartServer(handlers).Run(":" + PORT)
 }

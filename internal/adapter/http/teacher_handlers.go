@@ -8,6 +8,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
+	"github.com/iki-rumondor/init-golang-service/internal/utils"
 )
 
 type TeacherHandlers struct {
@@ -37,26 +38,23 @@ func (h *TeacherHandlers) CreateTeacher(c *gin.Context) {
 	}
 
 	if err := h.Service.CreateTeacher(body); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Message: err.Error(),
-		})
+		utils.HandleError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "teacher has been saved successfully",
+		Message: "Teacher has been saved successfully",
 	})
 
 }
+
 func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 
 	teachers, err := h.Service.GetTeachers()
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Message: err.Error(),
-		})
+		utils.HandleError(c, err)
 		return
 	}
 
@@ -64,15 +62,22 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 
 	for _, teacher := range *teachers {
 		res = append(res, &response.Teacher{
-			ID:        teacher.ID,
-			Uuid:      teacher.User.Uuid,
-			Nama:      teacher.User.Nama,
-			Email:     teacher.User.Email,
-			Nip:       teacher.Nip,
-			JK:        teacher.JK,
-			Role:      teacher.User.Role.Name,
-			CreatedAt: teacher.CreatedAt,
-			UpdatedAt: teacher.UpdatedAt,
+			ID:            teacher.ID,
+			Uuid:          teacher.Uuid,
+			Nama:          teacher.User.Nama,
+			Username:      teacher.User.Username,
+			JK:            teacher.JK,
+			Nip:           teacher.Nip,
+			Nuptk:         teacher.Nuptk,
+			StatusPegawai: teacher.StatusPegawai,
+			TempatLahir:   teacher.TempatLahir,
+			TanggalLahir:  teacher.TanggalLahir,
+			NoHp:          teacher.NoHp,
+			Jabatan:       teacher.Jabatan,
+			TotalJtm:      teacher.TotalJtm,
+			Alamat:        teacher.Alamat,
+			CreatedAt:     teacher.CreatedAt,
+			UpdatedAt:     teacher.UpdatedAt,
 		})
 	}
 
@@ -90,22 +95,27 @@ func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
 	teacher, err := h.Service.GetTeacher(uuid)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Message: err.Error(),
-		})
+		utils.HandleError(c, err)
 		return
 	}
 
 	res := &response.Teacher{
-		ID:        teacher.ID,
-		Uuid:      teacher.User.Uuid,
-		Nama:      teacher.User.Nama,
-		Email:     teacher.User.Email,
-		Nip:       teacher.Nip,
-		JK:        teacher.JK,
-		Role:      teacher.User.Role.Name,
-		CreatedAt: teacher.CreatedAt,
-		UpdatedAt: teacher.UpdatedAt,
+		ID:            teacher.ID,
+		Uuid:          teacher.Uuid,
+		Nama:          teacher.User.Nama,
+		Username:      teacher.User.Username,
+		JK:            teacher.JK,
+		Nip:           teacher.Nip,
+		Nuptk:         teacher.Nuptk,
+		StatusPegawai: teacher.StatusPegawai,
+		TempatLahir:   teacher.TempatLahir,
+		TanggalLahir:  teacher.TanggalLahir,
+		NoHp:          teacher.NoHp,
+		Jabatan:       teacher.Jabatan,
+		TotalJtm:      teacher.TotalJtm,
+		Alamat:        teacher.Alamat,
+		CreatedAt:     teacher.CreatedAt,
+		UpdatedAt:     teacher.UpdatedAt,
 	}
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
@@ -135,11 +145,9 @@ func (h *TeacherHandlers) UpdateTeacher(c *gin.Context) {
 
 	uuid := c.Param("uuid")
 	body.Uuid = uuid
-	
-	if _, err := h.Service.UpdateTeacher(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Message: err.Error(),
-		})
+
+	if err := h.Service.UpdateTeacher(&body); err != nil {
+		utils.HandleError(c, err)
 		return
 	}
 
@@ -153,11 +161,9 @@ func (h *TeacherHandlers) UpdateTeacher(c *gin.Context) {
 func (h *TeacherHandlers) DeleteTeacher(c *gin.Context) {
 
 	uuid := c.Param("uuid")
-	
-	if err := h.Service.DeleteTeacherByUuid(uuid); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Message: err.Error(),
-		})
+
+	if err := h.Service.DeleteTeacher(uuid); err != nil {
+		utils.HandleError(c, err)
 		return
 	}
 
@@ -165,5 +171,4 @@ func (h *TeacherHandlers) DeleteTeacher(c *gin.Context) {
 		Success: true,
 		Message: "teacher has been deleted successfully",
 	})
-
 }

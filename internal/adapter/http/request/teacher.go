@@ -1,15 +1,34 @@
 package request
 
 type CreateTeacher struct {
-	Nama  string `json:"nama" valid:"required~field nama tidak ditemukan"`
-	Email string `json:"email" valid:"required~field email tidak ditemukan, email"`
-	NIP   string `json:"nip" valid:"required~field nip tidak ditemukan"`
-	JK    string `json:"jenis_kelamin" valid:"required~field jenis kelamin tidak ditemukan"`
+	Nuptk         string `json:"nuptk" valid:"required~field nuptk tidak ditemukan"`
+	StatusPegawai string `json:"status_pegawai" valid:"required~field status_pegawai tidak ditemukan"`
+	Nip           string `json:"nip" valid:"required~field nip tidak ditemukan"`
+	JK            string `json:"jk" valid:"required~field jk tidak ditemukan"`
+	TempatLahir   string `json:"tempat_lahir" valid:"required~field tempat_lahir tidak ditemukan"`
+	TanggalLahir  string `json:"tanggal_lahir" valid:"required~field nama tidak ditemukan"`
+	NoHp          string `json:"no_hp" valid:"required~field no_hp tidak ditemukan"`
+	Jabatan       string `json:"jabatan" valid:"required~field jabatan tidak ditemukan"`
+	TotalJtm      string `json:"total_jtm" valid:"required~field total_jtm tidak ditemukan"`
+	Alamat        string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
+	Nama          string `json:"nama" valid:"required~field nama tidak ditemukan"`
+	Username      string `json:"username" valid:"required~field username tidak ditemukan"`
+	Password      string `json:"password" valid:"required~field password tidak ditemukan"`
 }
 
+
 type UpdateTeacher struct {
-	Uuid  string
-	Nama  string `json:"nama" valid:"required~field nama tidak ditemukan"`
-	NIP   string `json:"nip" valid:"required~field nip tidak ditemukan"`
-	JK    string `json:"jenis_kelamin" valid:"required~field jenis kelamin tidak ditemukan"`
+	Uuid          string
+	Nuptk         string `json:"nuptk" valid:"required~field nuptk tidak ditemukan"`
+	StatusPegawai string `json:"status_pegawai" valid:"required~field status_pegawai tidak ditemukan"`
+	Nip           string `json:"nip" valid:"required~field nip tidak ditemukan"`
+	JK            string `json:"jk" valid:"required~field jk tidak ditemukan"`
+	TempatLahir   string `json:"tempat_lahir" valid:"required~field tempat_lahir tidak ditemukan"`
+	TanggalLahir  string `json:"tanggal_lahir" valid:"required~field nama tidak ditemukan"`
+	NoHp          string `json:"no_hp" valid:"required~field no_hp tidak ditemukan"`
+	Jabatan       string `json:"jabatan" valid:"required~field jabatan tidak ditemukan"`
+	TotalJtm      string `json:"total_jtm" valid:"required~field total_jtm tidak ditemukan"`
+	Alamat        string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
+	Nama          string `json:"nama" valid:"required~field nama tidak ditemukan"`
+	Username      string `json:"username" valid:"required~field username tidak ditemukan"`
 }

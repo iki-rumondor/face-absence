@@ -3,13 +3,12 @@ package repository
 import "github.com/iki-rumondor/init-golang-service/internal/domain"
 
 type TeacherRepository interface {
-	SaveUser(*domain.User) (*domain.User, error)
-	CreateTeacher(*domain.Teacher) (*domain.Teacher, error)
+	CreateTeacherUser(*domain.Teacher, *domain.User) error
 	FindTeachers() (*[]domain.Teacher, error)
-	FindTeacher(string) (*domain.Teacher, error)
-	FindUserByUuid(string) (*domain.User, error)
-	UpdateTeacher(*domain.User, *domain.Teacher) (*domain.Teacher, error)
-	DeleteWithUser(*domain.User) error
+	FindTeacherByUuid(string) (*domain.Teacher, error)
+	FindTeacherByColumn(column, data string) (*domain.Teacher, error)
+	UpdateTeacherUser(*domain.Teacher, *domain.User) error
+	DeleteTeacherUser(userID uint) error
 
-	DeleteUser(uint) error
+	FindUserByUsername(string) (*domain.User, error)
 }

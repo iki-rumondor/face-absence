@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -38,11 +39,11 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 	}
 
 	user := domain.User{
-		Email:    body.Email,
+		Username: body.Username,
 		Password: body.Password,
 	}
 
-	jwt, err := h.Service.VerifyUser(&user)
+	jwt, err := h.Service.VerifyUser(body.Role, &user)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
@@ -59,18 +60,9 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 
 func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 
-	jwt := c.GetString("jwt")
-
-	mapClaims, err := h.Service.VerifyToken(jwt)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
-		return
-	}
-
+	mc := c.MustGet("map_claims")
+	mapClaims := mc.(jwt.MapClaims)
+	
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "your JWT token is authenticated and good to go",

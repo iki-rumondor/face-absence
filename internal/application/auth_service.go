@@ -19,9 +19,10 @@ func NewAuthService(repo repository.AuthRepository) *AuthService {
 	}
 }
 
-func (s *AuthService) VerifyUser(user *domain.User) (string, error) {
-	// find user by email from database
-	result, err := s.Repo.FindByEmail(user.Email)
+func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error) {
+
+	// find user from database
+	result, err := s.Repo.FindByUsername(user.Username)
 	if err != nil {
 		return "", errors.New("sorry, the provided email is not registered in our system")
 	}
@@ -33,7 +34,7 @@ func (s *AuthService) VerifyUser(user *domain.User) (string, error) {
 
 	data := map[string]interface{}{
 		"id": result.ID,
-		"role": result.RoleID,
+		"role" : role,
 	}
 
 	// create jwt token
@@ -48,7 +49,7 @@ func (s *AuthService) VerifyUser(user *domain.User) (string, error) {
 func (s *AuthService) VerifyToken(jwt string) (*jwt.MapClaims, error) {
 	// find user by email from database
 	mapClaims, err := utils.VerifyToken(jwt)
-	
+
 	if err != nil {
 		return nil, err
 	}
