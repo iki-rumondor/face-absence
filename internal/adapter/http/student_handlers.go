@@ -6,10 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
+	"github.com/iki-rumondor/init-golang-service/internal/domain"
+	"github.com/iki-rumondor/init-golang-service/internal/utils"
 )
 
 type StudentHandlers struct {
@@ -23,12 +26,22 @@ func NewStudentHandler(service *application.StudentService) *StudentHandlers {
 }
 
 func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
-	file, _ := c.FormFile("students")
+	file, err := c.FormFile("students")
+	if err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "Your request file is not valid",
+		})
+		return
+	}
 	tempFolder := "internal/temp"
 	pathFile := filepath.Join(tempFolder, file.Filename)
 
 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
-		fmt.Println(err.Error())
+		utils.HandleError(c, &response.Error{
+			Code:    500,
+			Message: "Something went wrong when uploaded file",
+		})
 	}
 
 	defer func() {
@@ -37,111 +50,106 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 		}
 	}()
 
-	// failed, err := h.Service.ImportStudents(pathFile)
+	failed, err := h.Service.ImportStudents(pathFile)
 
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-	// 		Success: false,
-	// 		Message: err.Error(),
-	// 	})
-	// 	return
-	// }
-
-	// c.JSON(http.StatusCreated, response.SuccessResponse{
-	// 	Success: true,
-	// 	Message: "students has been saved successfully",
-	// 	Data:    failed,
-	// })
-}
-
-// func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
-// 	users, err := h.Service.GetAllStudentUsers()
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-// 			Success: false,
-// 			Message: err.Error(),
-// 		})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, response.SuccessResponse{
-// 		Success: true,
-// 		Message: "get all students has been successfully",
-// 		Data:    users,
-// 	})
-// }
-
-// func (h *StudentHandlers) GetStudentData(c *gin.Context) {
-
-// 	student, err := h.Service.GetStudentUser(c.Param("uuid"))
-
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-// 			Success: false,
-// 			Message: err.Error(),
-// 		})
-// 	}
-
-// 	c.JSON(http.StatusOK, response.SuccessResponse{
-// 		Success: true,
-// 		Message: fmt.Sprintf("student with uuid %s is found", student.Uuid),
-// 		Data:    student,
-// 	})
-// }
-
-func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
-
-	body, ok := c.Get("body")
-	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: "something went wrong at internal server",
-		})
-	}
-
-	var student request.Student = body.(request.Student)
-
-	result, err := h.Service.GetStudent(c.Param("uuid"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
-	}
-
-	student.ID = result.ID
-	student.UserID = result.UserID
-
-	if err := h.Service.UpdateStudentUser(&student); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
+		utils.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, response.SuccessResponse{
+	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: fmt.Sprintf("student with nis %s has been updated successfully", student.NIS),
+		Message: "students has been saved successfully",
+		Data:    failed,
 	})
 }
 
-func (h *StudentHandlers) DeleteStudentData(c *gin.Context) {
-
-	result, err := h.Service.GetStudent(c.Param("uuid"))
+func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
+	users, err := h.Service.GetAllStudents()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
-	}
-
-	if err := h.Service.DeleteStudentUser(result); err != nil {
+		utils.HandleError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: fmt.Sprintf("student with nis %s has been updated successfully", result.NIS),
+		Message: "get all students has been successfully",
+		Data:    users,
+	})
+}
+
+func (h *StudentHandlers) GetStudentData(c *gin.Context) {
+
+	student, err := h.Service.GetStudent(c.Param("uuid"))
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: fmt.Sprintf("student with uuid %s is found", student.Uuid),
+		Data:    student,
+	})
+}
+
+func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
+
+	var body request.UpdateStudent
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if _, err := govalidator.ValidateStruct(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+	
+	uuid := c.Param("uuid")
+
+	student := domain.Student{
+		Uuid: uuid,
+		NIS: body.NIS,
+		JK: body.JK,
+		TempatLahir: body.TempatLahir,
+		TanggalLahir: body.TanggalLahir,
+		Alamat: body.Alamat,
+		ClassID: body.ClassID,
+	}
+
+	user := domain.User{
+		Nama: body.Nama,
+		Username: body.Username,
+	}
+
+	if err := h.Service.UpdateStudent(&student, &user); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: fmt.Sprintf("student with uuid %s has been updated successfully", uuid),
+	})
+}
+
+func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
+
+	uuid := c.Param("uuid")
+
+	if err := h.Service.DeleteStudent(uuid); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: fmt.Sprintf("student with uuid %s has been deleted successfully", uuid),
 	})
 }

@@ -34,6 +34,8 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
 		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.CreateTeacher)
 		admin.DELETE("master/teachers/:uuid", handlers.TeacherHandler.DeleteTeacher)
+
+		admin.POST("master/students", handlers.StudentHandler.ImportStudentsData)
 	}
 
 	// siswa := router.Group("/master/siswa").Use(middleware.IsValidJWT(db), middleware.IsAdmin())

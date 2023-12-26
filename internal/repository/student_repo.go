@@ -5,14 +5,12 @@ import (
 )
 
 type StudentRepository interface {
-	// SaveList(*domain.ListOfStudent) error
-	SaveStudent(*domain.Student) error
-	FindAllStudentUsers() (*[]domain.Student, error)
-	FindStudentUser(string) (*domain.Student, error)
+	FindAllStudents() (*[]domain.Student, error)
 	FindStudent(string) (*domain.Student, error)
-	UpdateStudentUser(*domain.Student, *domain.User) error
-	DeleteStudentUser(*domain.Student, *domain.User) error
+	UpdateStudent(*domain.Student, *domain.User) error
+	DeleteStudent(userID uint) error
 
 	CreateUser(*domain.User) (*domain.User, error)
-	DeleteUser(*domain.User) error
+	SaveStudent(*domain.Student) error
+	DeleteUser(*domain.User)
 }

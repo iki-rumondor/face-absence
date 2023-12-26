@@ -15,46 +15,25 @@ func NewStudentRepository(db *gorm.DB) StudentRepository {
 	}
 }
 
-func (r *StudentRepoImplementation) SaveList(students *domain.ListOfStudent) error {
-	return r.db.Save(students.Students).Error
-}
-
-func (r *StudentRepoImplementation) FindAllStudentUsers() (*[]domain.Student, error) {
+func (r *StudentRepoImplementation) FindAllStudents() (*[]domain.Student, error) {
 	var students []domain.Student
-	if err := r.db.Preload("User").Preload("User.Role").Find(&students).Error; err != nil {
+	if err := r.db.Preload("User").Find(&students).Error; err != nil {
 		return nil, err
 	}
 	return &students, nil
 }
 
-func (r *StudentRepoImplementation) FindStudentUser(uuid string) (*domain.Student, error) {
-	var student domain.Student
-
-	if err := r.db.Joins("User").Preload("User.Role").First(&student, "User.uuid = ?", uuid).Error; err != nil {
-		return nil, err
-	}
-
-	return &student, nil
-}
-
 func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, error) {
-	var user domain.User
 	var student domain.Student
-
-	if err := r.db.First(&user, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("User").First(&student, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
-
-	if err := r.db.First(&student, "user_id = ?", user.ID).Error; err != nil {
-		return nil, err
-	}
-
 	return &student, nil
 }
 
-func (r *StudentRepoImplementation) UpdateStudentUser(student *domain.Student, user *domain.User) error {
+func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student, user *domain.User) error {
 
-	err := r.db.Transaction(func(tx *gorm.DB) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
 
 		if err := tx.Model(student).Updates(student).Error; err != nil {
 			return err
@@ -67,55 +46,43 @@ func (r *StudentRepoImplementation) UpdateStudentUser(student *domain.Student, u
 		return nil
 	})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
-func (r *StudentRepoImplementation) DeleteStudentUser(student *domain.Student, user *domain.User) error {
+func (r *StudentRepoImplementation) DeleteStudent(userID uint) error {
 
-	err := r.db.Transaction(func(tx *gorm.DB) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
 
-		if err := tx.Delete(&student).Error; err != nil {
+		if err := tx.Delete(&domain.Student{}, "user_id = ?", userID).Error; err != nil {
 			return err
 		}
 
-		if err := tx.Delete(&user).Error; err != nil {
+		if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
 			return err
 		}
 
 		return nil
 	})
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *StudentRepoImplementation) SaveStudent(student *domain.Student) error {
-	if err := r.db.Save(student).Error; err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (r *StudentRepoImplementation) CreateUser(user *domain.User) (*domain.User, error) {
-	if err := r.db.Create(user).Error; err != nil {
+
+	if err := r.db.Create(user).Error; err != nil{
 		return nil, err
 	}
 
 	return user, nil
 }
 
-func (r *StudentRepoImplementation) DeleteUser(user *domain.User) error {
-	if err := r.db.Delete(user).Error; err != nil {
+func (r *StudentRepoImplementation) SaveStudent(student *domain.Student) (error) {
+
+	if err := r.db.Save(student).Error; err != nil{
 		return err
 	}
 
 	return nil
+}
+
+func (r *StudentRepoImplementation) DeleteUser(user *domain.User) {
+
+	r.db.Delete(user)
 }

@@ -12,6 +12,7 @@ type User struct {
 	Nama     string `gorm:"not null; varchar(120)"`
 	Username string `gorm:"not null; unique; varchar(120)"`
 	Password string `gorm:"not null; varchar(120)"`
+	Avatar   *string
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -26,4 +27,3 @@ func (u *User) BeforeSave(tx *gorm.DB) error {
 	u.Password = hashPass
 	return nil
 }
-

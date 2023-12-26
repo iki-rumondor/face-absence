@@ -1,35 +1,21 @@
 package domain
 
 import (
-	"errors"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Student struct {
-	ID       uint   `gorm:"primaryKey"`
-	NIS      string `gorm:"not_null; unique; varchar(20)"`
-	Kelas    string `gorm:"not_null; varchar(10)"`
-	JK       string `gorm:"not_null; varchar(10)"`
-	Semester string `gorm:"not_null; varchar(5)"`
-	User     User
-	UserID   uint
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-func (s *Student) BeforeSave(tx *gorm.DB) error {
-
-	var student Student
-	if result := tx.First(&student, "nis = ? AND id != ?", s.NIS, s.ID).RowsAffected; result > 0{
-		return errors.New("the nis has already registered")
-	}
-
-	return nil
-}
-
-type ListOfStudent struct {
-	Students []Student
+	ID           uint    `gorm:"primaryKey"`
+	Uuid         string  `gorm:"not_null; unique;"`
+	NIS          string  `gorm:"not_null; unique; varchar(20)"`
+	JK           string  `gorm:"not_null; varchar(10)"`
+	TempatLahir  string  `gorm:"not_null; varchar(120)"`
+	TanggalLahir string  `gorm:"not_null; varchar(120)"`
+	Alamat       string  `gorm:"not_null; varchar(120)"`
+	UserID       uint
+	ClassID      uint
+	Class        *Class
+	User         *User
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
