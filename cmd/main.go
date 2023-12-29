@@ -57,12 +57,17 @@ func main() {
 	subject_service := application.NewSubjectService(subject_repo)
 	subject_handler := customHTTP.NewSubjectHandler(subject_service)
 
+	sy_repo := repository.NewSchoolYearRepository(gormDB)
+	sy_service := application.NewSchoolYearService(sy_repo)
+	sy_handler := customHTTP.NewSchoolYearHandler(sy_service)
+
 	handlers := &customHTTP.Handlers{
-		StudentHandler: student_handler,
-		AuthHandler:    auth_handler,
-		TeacherHandler: teacher_handler,
-		ClassHandler:   class_handler,
-		SubjectHandler: subject_handler,
+		StudentHandler:    student_handler,
+		AuthHandler:       auth_handler,
+		TeacherHandler:    teacher_handler,
+		ClassHandler:      class_handler,
+		SubjectHandler:    subject_handler,
+		SchoolYearHandler: sy_handler,
 	}
 
 	var PORT = os.Getenv("PORT")

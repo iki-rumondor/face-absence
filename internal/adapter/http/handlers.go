@@ -6,4 +6,5 @@ type Handlers struct {
 	TeacherHandler *TeacherHandlers
 	ClassHandler   *ClassHandler
 	SubjectHandler   *SubjectHandler
+	SchoolYearHandler   *SchoolYearHandler
 }
