@@ -1,7 +1,8 @@
 package customHTTP
 
-type Handlers struct{
+type Handlers struct {
 	StudentHandler *StudentHandlers
-	AuthHandler *AuthHandlers
+	AuthHandler    *AuthHandlers
 	TeacherHandler *TeacherHandlers
+	ClassHandler   *ClassHandler
 }
