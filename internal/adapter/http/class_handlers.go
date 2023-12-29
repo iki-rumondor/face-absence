@@ -67,7 +67,7 @@ func (h *ClassHandler) GetAllClasses(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "Success to find all classes",
 		Data:    classes,
@@ -85,7 +85,7 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "Success to find class by uuid",
 		Data:    class,
@@ -129,10 +129,9 @@ func (h *ClassHandler) UpdateClass(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "Success to update class by uuid",
-		Data:    class,
 	})
 
 }
@@ -155,10 +154,9 @@ func (h *ClassHandler) DeleteClass(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "Success to delete class by uuid",
-		Data:    class,
 	})
 
 }
