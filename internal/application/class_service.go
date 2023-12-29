@@ -22,7 +22,7 @@ func NewClassService(repo repository.ClassRepository) *ClassService {
 
 func (s *ClassService) CreateClass(class *domain.Class) error {
 
-	if err := s.Repo.SaveClass(class); err != nil {
+	if err := s.Repo.CreateClass(class); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "Failed to create class: " + err.Error(),
@@ -90,7 +90,7 @@ func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
 
 func (s *ClassService) UpdateClass(class *domain.Class) error {
 
-	if err := s.Repo.SaveClass(class); err != nil {
+	if err := s.Repo.UpdateClass(class); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "Failed to update class: " + err.Error(),

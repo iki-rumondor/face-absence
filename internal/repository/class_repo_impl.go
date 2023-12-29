@@ -15,8 +15,12 @@ func NewClassRepository(db *gorm.DB) ClassRepository {
 	}
 }
 
-func (r *ClassRepoImplementation) SaveClass(class *domain.Class) error {
-	return r.db.Save(&class).Error
+func (r *ClassRepoImplementation) CreateClass(class *domain.Class) error {
+	return r.db.Create(class).Error
+}
+
+func (r *ClassRepoImplementation) UpdateClass(class *domain.Class) error {
+	return r.db.Model(class).Where("id = ?", class.ID).Updates(class).Error
 }
 
 func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {

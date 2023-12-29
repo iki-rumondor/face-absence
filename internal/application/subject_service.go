@@ -22,7 +22,7 @@ func NewSubjectService(repo repository.SubjectRepository) *SubjectService {
 
 func (s *SubjectService) CreateSubject(model *domain.Subject) error {
 
-	if err := s.Repo.SaveSubject(model); err != nil {
+	if err := s.Repo.CreateSubject(model); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "Subject was not created successfully: " + err.Error(),
@@ -88,7 +88,7 @@ func (s *SubjectService) GetSubject(uuid string) (*response.SubjectResponse, err
 
 func (s *SubjectService) UpdateSubject(model *domain.Subject) error {
 
-	if err := s.Repo.SaveSubject(model); err != nil {
+	if err := s.Repo.UpdateSubject(model); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "Subject was not updated successfully: " + err.Error(),

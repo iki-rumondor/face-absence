@@ -22,7 +22,7 @@ func NewSchoolYearService(repo repository.SchoolYearRepository) *SchoolYearServi
 
 func (s *SchoolYearService) CreateSchoolYear(model *domain.SchoolYear) error {
 
-	if err := s.Repo.SaveSchoolYear(model); err != nil {
+	if err := s.Repo.CreateSchoolYear(model); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "SchoolYear was not created successfully: " + err.Error(),
@@ -88,7 +88,7 @@ func (s *SchoolYearService) GetSchoolYear(uuid string) (*response.SchoolYearResp
 
 func (s *SchoolYearService) UpdateSchoolYear(model *domain.SchoolYear) error {
 
-	if err := s.Repo.SaveSchoolYear(model); err != nil {
+	if err := s.Repo.UpdateSchoolYear(model); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "SchoolYear was not updated successfully: " + err.Error(),

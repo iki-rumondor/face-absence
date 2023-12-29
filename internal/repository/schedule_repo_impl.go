@@ -15,8 +15,12 @@ func NewScheduleRepository(db *gorm.DB) ScheduleRepository {
 	}
 }
 
-func (r *ScheduleRepoImplementation) SaveSchedule(model *domain.Schedule) error {
-	return r.db.Save(&model).Error
+func (r *ScheduleRepoImplementation) CreateSchedule(model *domain.Schedule) error {
+	return r.db.Create(model).Error
+}
+
+func (r *ScheduleRepoImplementation) UpdateSchedule(model *domain.Schedule) error {
+	return r.db.Model(model).Where("id = ?", model.ID).Updates(model).Error
 }
 
 func (r *ScheduleRepoImplementation) FindSchedules() (*[]domain.Schedule, error) {

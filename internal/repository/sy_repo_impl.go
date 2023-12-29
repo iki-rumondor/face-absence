@@ -15,8 +15,12 @@ func NewSchoolYearRepository(db *gorm.DB) SchoolYearRepository {
 	}
 }
 
-func (r *SchoolYearRepoImplementation) SaveSchoolYear(model *domain.SchoolYear) error {
-	return r.db.Save(&model).Error
+func (r *SchoolYearRepoImplementation) CreateSchoolYear(model *domain.SchoolYear) error {
+	return r.db.Create(model).Error
+}
+
+func (r *SchoolYearRepoImplementation) UpdateSchoolYear(model *domain.SchoolYear) error {
+	return r.db.Model(model).Where("id = ?", model.ID).Updates(model).Error
 }
 
 func (r *SchoolYearRepoImplementation) FindSchoolYears() (*[]domain.SchoolYear, error) {

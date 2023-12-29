@@ -22,7 +22,7 @@ func NewScheduleService(repo repository.ScheduleRepository) *ScheduleService {
 
 func (s *ScheduleService) CreateSchedule(model *domain.Schedule) error {
 
-	if err := s.Repo.SaveSchedule(model); err != nil {
+	if err := s.Repo.CreateSchedule(model); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "Schedule was not created successfully: " + err.Error(),
@@ -102,7 +102,7 @@ func (s *ScheduleService) GetSchedule(uuid string) (*response.ScheduleResponse, 
 
 func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
 
-	if err := s.Repo.SaveSchedule(model); err != nil {
+	if err := s.Repo.UpdateSchedule(model); err != nil {
 		return &response.Error{
 			Code:    500,
 			Message: "Schedule was not updated successfully: " + err.Error(),

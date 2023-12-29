@@ -15,8 +15,12 @@ func NewSubjectRepository(db *gorm.DB) SubjectRepository {
 	}
 }
 
-func (r *SubjectRepoImplementation) SaveSubject(model *domain.Subject) error {
-	return r.db.Save(&model).Error
+func (r *SubjectRepoImplementation) CreateSubject(model *domain.Subject) error {
+	return r.db.Create(model).Error
+}
+
+func (r *SubjectRepoImplementation) UpdateSubject(model *domain.Subject) error {
+	return r.db.Model(model).Where("id = ?", model.ID).Updates(model).Error
 }
 
 func (r *SubjectRepoImplementation) FindSubjects() (*[]domain.Subject, error) {
