@@ -119,7 +119,7 @@ func (h *SubjectHandler) UpdateSubject(c *gin.Context) {
 
 	model := domain.Subject{
 		ID:   res.ID,
-		Name: res.Name,
+		Name: body.Name,
 	}
 
 	if err := h.Service.UpdateSubject(&model); err != nil {

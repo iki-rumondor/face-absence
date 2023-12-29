@@ -119,7 +119,7 @@ func (h *SchoolYearHandler) UpdateSchoolYear(c *gin.Context) {
 
 	model := domain.SchoolYear{
 		ID:   res.ID,
-		Name: res.Name,
+		Name: body.Name,
 	}
 
 	if err := h.Service.UpdateSchoolYear(&model); err != nil {
