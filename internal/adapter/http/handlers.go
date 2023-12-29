@@ -5,4 +5,5 @@ type Handlers struct {
 	AuthHandler    *AuthHandlers
 	TeacherHandler *TeacherHandlers
 	ClassHandler   *ClassHandler
+	SubjectHandler   *SubjectHandler
 }

@@ -29,33 +29,30 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())
 	{
+		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
 		admin.GET("master/teachers", handlers.TeacherHandler.GetTeachers)
 		admin.GET("master/teacher/:uuid", handlers.TeacherHandler.GetTeacher)
-		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
 		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.CreateTeacher)
 		admin.DELETE("master/teachers/:uuid", handlers.TeacherHandler.DeleteTeacher)
 
+		admin.POST("master/students", handlers.StudentHandler.ImportStudentsData)
 		admin.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
 		admin.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
-		admin.POST("master/students", handlers.StudentHandler.ImportStudentsData)
 		admin.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
 		admin.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
 
 		admin.POST("master/classes", handlers.ClassHandler.CreateClass)
-		admin.GET("master/classes/:uuid", handlers.StudentHandler.GetStudentData)
-		admin.GET("master/classes", handlers.StudentHandler.ImportStudentsData)
-		admin.PUT("master/classes/:uuid", handlers.StudentHandler.UpdateStudentData)
-		admin.DELETE("master/classes/:uuid", handlers.StudentHandler.DeleteStudent)
-	}
+		admin.GET("master/classes", handlers.ClassHandler.GetAllClasses)
+		admin.GET("master/classes/:uuid", handlers.ClassHandler.GetClass)
+		admin.PUT("master/classes/:uuid", handlers.ClassHandler.UpdateClass)
+		admin.DELETE("master/classes/:uuid", handlers.ClassHandler.DeleteClass)
 
-	// siswa := router.Group("/master/siswa").Use(middleware.IsValidJWT(db), middleware.IsAdmin())
-	// {
-	// 	siswa.GET("/", handlers.StudentHandler.GetAllStudentsData)
-	// 	siswa.GET("/:uuid", handlers.StudentHandler.GetStudentData)
-	// 	siswa.POST("/", middleware.IsExcelFile(), handlers.StudentHandler.ImportStudentsData)
-	// 	siswa.PUT("/:uuid", middleware.ValidateStudentJSON(), handlers.StudentHandler.UpdateStudentData)
-	// 	siswa.DELETE("/:uuid", handlers.StudentHandler.DeleteStudentData)
-	// }
+		admin.POST("master/subjects", handlers.SubjectHandler.CreateSubject)
+		admin.GET("master/subjects", handlers.SubjectHandler.GetAllSubjects)
+		admin.GET("master/subjects/:uuid", handlers.SubjectHandler.GetSubject)
+		admin.PUT("master/subjects/:uuid", handlers.SubjectHandler.UpdateSubject)
+		admin.DELETE("master/subjects/:uuid", handlers.SubjectHandler.DeleteSubject)
+	}
 
 	return router
 }
