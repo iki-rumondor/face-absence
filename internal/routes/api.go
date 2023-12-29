@@ -58,6 +58,12 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.GET("master/school_years/:uuid", handlers.SchoolYearHandler.GetSchoolYear)
 		admin.PUT("master/school_years/:uuid", handlers.SchoolYearHandler.UpdateSchoolYear)
 		admin.DELETE("master/school_years/:uuid", handlers.SchoolYearHandler.DeleteSchoolYear)
+
+		admin.POST("master/schedules", handlers.ScheduleHandler.CreateSchedule)
+		admin.GET("master/schedules", handlers.ScheduleHandler.GetAllSchedules)
+		admin.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
+		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
+		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
 	}
 
 	return router
