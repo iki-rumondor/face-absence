@@ -37,3 +37,8 @@ func HandleError(c *gin.Context, err error) {
 		return
 	}
 }
+
+func IsErrorType(err error) bool {
+	_, ok := err.(*response.Error)
+	return ok
+}

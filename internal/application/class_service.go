@@ -7,6 +7,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
+	"github.com/iki-rumondor/init-golang-service/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +24,10 @@ func NewClassService(repo repository.ClassRepository) *ClassService {
 func (s *ClassService) CreateClass(class *domain.Class) error {
 
 	if err := s.Repo.CreateClass(class); err != nil {
+		if utils.IsErrorType(err) {
+			return err
+		}
+
 		return &response.Error{
 			Code:    500,
 			Message: "Failed to create class: " + err.Error(),
@@ -91,6 +96,10 @@ func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
 func (s *ClassService) UpdateClass(class *domain.Class) error {
 
 	if err := s.Repo.UpdateClass(class); err != nil {
+		if utils.IsErrorType(err) {
+			return err
+		}
+		
 		return &response.Error{
 			Code:    500,
 			Message: "Failed to update class: " + err.Error(),

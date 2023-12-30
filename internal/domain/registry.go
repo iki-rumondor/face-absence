@@ -9,5 +9,9 @@ func RegisterModel() []Model {
 		{Model: User{}},
 		{Model: Student{}},
 		{Model: Teacher{}},
+		{Model: Class{}},
+		{Model: Subject{}},
+		{Model: SchoolYear{}},
+		{Model: Schedule{}},
 	}
 }

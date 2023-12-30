@@ -50,7 +50,7 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		return
 	}
 
-	timeFormat := "15:04:05"
+	timeFormat := "15:04"
 	start, err := time.Parse(timeFormat, body.Start)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
@@ -159,7 +159,7 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		return
 	}
 
-	timeFormat := "15:04:05"
+	timeFormat := "15:04"
 	start, err := time.Parse(timeFormat, body.Start)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
