@@ -2,6 +2,7 @@ package application
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -89,7 +90,7 @@ func (s *TeacherService) GetTeacher(uuid string) (*domain.Teacher, error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, &response.Error{
 			Code:    404,
-			Message: "Teacher with uuid is not found",
+			Message: fmt.Sprintf("Teacher with uuid %s is not found", uuid),
 		}
 	}
 

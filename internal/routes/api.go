@@ -31,8 +31,8 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 	{
 		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
 		admin.GET("master/teachers", handlers.TeacherHandler.GetTeachers)
-		admin.GET("master/teacher/:uuid", handlers.TeacherHandler.GetTeacher)
-		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.CreateTeacher)
+		admin.GET("master/teachers/:uuid", handlers.TeacherHandler.GetTeacher)
+		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.UpdateTeacher)
 		admin.DELETE("master/teachers/:uuid", handlers.TeacherHandler.DeleteTeacher)
 
 		admin.POST("master/students", handlers.StudentHandler.ImportStudentsData)

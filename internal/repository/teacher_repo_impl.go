@@ -41,7 +41,7 @@ func (r *TeacherRepoImplementation) FindTeachers() (*[]domain.Teacher, error) {
 
 func (r *TeacherRepoImplementation) FindTeacherByUuid(uuid string) (*domain.Teacher, error) {
 	var teacher domain.Teacher
-	if err := r.db.First(&teacher, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("User").First(&teacher, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 
@@ -77,11 +77,11 @@ func (r *TeacherRepoImplementation) DeleteTeacherUser(userID uint) error {
 
 	return r.db.Transaction(func(tx *gorm.DB) error {
 
-		if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
+		if err := tx.Delete(&domain.Teacher{}, "user_id = ?", userID).Error; err != nil {
 			return err
 		}
 
-		if err := tx.Delete(&domain.Teacher{}, "user_id = ?", userID).Error; err != nil {
+		if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
 			return err
 		}
 
