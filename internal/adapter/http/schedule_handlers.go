@@ -2,7 +2,6 @@ package customHTTP
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -41,27 +40,26 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		return
 	}
 
-	dayFormat := "02-01-2006"
-	day, err := time.Parse(dayFormat, body.Day)
-	if err != nil {
+	if ok := utils.IsValidDateFormat(body.Day); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Message: "Failed to parse day: " + err.Error(),
+			Success: false,
+			Message: "Failed to parse day, please use format yyyy-mm-dd",
 		})
 		return
 	}
 
-	timeFormat := "15:04"
-	start, err := time.Parse(timeFormat, body.Start)
-	if err != nil {
+	if ok := utils.IsValidTimeFormat(body.Start); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Message: "Failed to parse start: " + err.Error(),
+			Success: false,
+			Message: "Failed to parse start, please use format hh:mm",
 		})
 		return
 	}
-	end, err := time.Parse(timeFormat, body.End)
-	if err != nil {
+
+	if ok := utils.IsValidTimeFormat(body.End); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Message: "Failed to parse end: " + err.Error(),
+			Success: false,
+			Message: "Failed to parse end, please use format hh:mm",
 		})
 		return
 	}
@@ -69,9 +67,9 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 	model := domain.Schedule{
 		Uuid:         uuid.NewString(),
 		Name:         body.Name,
-		Day:          day,
-		Start:        start,
-		End:          end,
+		Day:          body.Day,
+		Start:        body.Start,
+		End:          body.End,
 		ClassID:      body.ClassID,
 		SubjectID:    body.SubjectID,
 		TeacherID:    body.TeacherID,
@@ -150,37 +148,36 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		return
 	}
 
-	dayFormat := "02-01-2006"
-	day, err := time.Parse(dayFormat, body.Day)
-	if err != nil {
+	if ok := utils.IsValidDateFormat(body.Day); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Message: "Failed to parse day: " + err.Error(),
+			Success: false,
+			Message: "Failed to parse day, please use format yyyy-mm-dd",
 		})
 		return
 	}
 
-	timeFormat := "15:04"
-	start, err := time.Parse(timeFormat, body.Start)
-	if err != nil {
+	if ok := utils.IsValidTimeFormat(body.Start); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Message: "Failed to parse start: " + err.Error(),
+			Success: false,
+			Message: "Failed to parse start, please use format hh:mm",
 		})
 		return
 	}
-	end, err := time.Parse(timeFormat, body.End)
-	if err != nil {
+
+	if ok := utils.IsValidTimeFormat(body.End); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Message: "Failed to parse end: " + err.Error(),
+			Success: false,
+			Message: "Failed to parse end, please use format hh:mm",
 		})
 		return
 	}
 
 	model := domain.Schedule{
-		ID:   res.ID,
+		ID:           res.ID,
 		Name:         body.Name,
-		Day:          day,
-		Start:        start,
-		End:          end,
+		Day:          body.Day,
+		Start:        body.Start,
+		End:          body.End,
 		ClassID:      body.ClassID,
 		SubjectID:    body.SubjectID,
 		TeacherID:    body.TeacherID,

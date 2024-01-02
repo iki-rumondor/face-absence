@@ -6,9 +6,9 @@ type ScheduleResponse struct {
 	ID           uint      `json:"id"`
 	Uuid         string    `json:"uuid"`
 	Name         string    `json:"name"`
-	Day          time.Time `json:"day"`
-	Start        time.Time `json:"start"`
-	End          time.Time `json:"end"`
+	Day          string    `json:"day"`
+	Start        string    `json:"start"`
+	End          string    `json:"end"`
 	ClassID      uint      `json:"class_id"`
 	SubjectID    uint      `json:"subject_id"`
 	TeacherID    uint      `json:"teacher_id"`
