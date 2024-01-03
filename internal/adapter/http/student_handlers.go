@@ -34,6 +34,12 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 		})
 		return
 	}
+
+	if err := utils.IsExcelFile(file); err != nil{
+		utils.HandleError(c, err)
+		return
+	}
+	
 	tempFolder := "internal/temp"
 	pathFile := filepath.Join(tempFolder, file.Filename)
 

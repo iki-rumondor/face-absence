@@ -13,9 +13,16 @@ func IsAdmin() gin.HandlerFunc {
 		mc := c.MustGet("map_claims")
 		mapClaims := mc.(jwt.MapClaims)
 
-		role := mapClaims["role"].(string)
+		role, ok := mapClaims["role"].(string)
+		if !ok{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
+				Success: false,
+				Message: "Invalid JWT Token",
+			})
+			return
+		}
 		if role != "ADMIN" {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
 				Success: false,
 				Message: "access denied due to invalid credentials",
 			})
@@ -32,7 +39,7 @@ func IsTeacher() gin.HandlerFunc {
 
 		role := mapClaims["role"].(string)
 		if role != "GURU" {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
 				Success: false,
 				Message: "access denied due to invalid credentials",
 			})
@@ -49,7 +56,7 @@ func IsStudent() gin.HandlerFunc {
 
 		role := mapClaims["role"].(string)
 		if role != "SANTRI" {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
 				Success: false,
 				Message: "access denied due to invalid credentials",
 			})

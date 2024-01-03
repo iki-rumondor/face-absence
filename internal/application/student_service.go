@@ -178,7 +178,7 @@ func (s *StudentService) UpdateStudent(student *domain.Student, user *domain.Use
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
-				Message: "Student with that uuid is not found",
+				Message: fmt.Sprintf("Student with uuid %s is not found", student.Uuid),
 			}
 		}
 		return &response.Error{
@@ -208,7 +208,7 @@ func (s *StudentService) DeleteStudent(uuid string) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
-				Message: "Student with that uuid is not found",
+				Message: fmt.Sprintf("Student with uuid %s is not found", uuid),
 			}
 		}
 		return &response.Error{

@@ -1,7 +1,11 @@
 package domain
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
+	"gorm.io/gorm"
 )
 
 type Student struct {
@@ -18,4 +22,16 @@ type Student struct {
 	User         *User
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+func (m *Student) BeforeSave(tx *gorm.DB) error {
+
+	if err := tx.First(&Class{}, "id = ?", m.ClassID).Error; err != nil {
+		return &response.Error{
+			Code: 404,
+			Message: fmt.Sprintf("Teacher with id %d is not found", m.ClassID),
+		}
+	}
+
+	return nil
 }
