@@ -13,5 +13,6 @@ func RegisterModel() []Model {
 		{Model: Subject{}},
 		{Model: SchoolYear{}},
 		{Model: Schedule{}},
+		{Model: Admin{}},
 	}
 }

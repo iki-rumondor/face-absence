@@ -7,4 +7,5 @@ type AuthRepository interface {
 	FindByUsername(string) (*domain.User, error)
 	FindTeacherByUserID(uint) error
 	FindStudentByUserID(uint) error
+	FindAdminByUserID(uint) error
 }

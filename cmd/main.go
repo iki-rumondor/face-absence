@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/database"
 	customHTTP "github.com/iki-rumondor/init-golang-service/internal/adapter/http"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
@@ -40,7 +41,26 @@ func main() {
 			Username: "admin",
 			Password: "123456",
 		})
+		gormDB.Create(&domain.Admin{
+			Uuid: uuid.NewString(),
+			UserID: 1,
+		})
 	}
+	// gormDB.Create(&domain.User{
+	// 	Nama:     "Ilham",
+	// 	Username: "ilham",
+	// 	Password: "123456",
+	// })
+	// gormDB.Create(&domain.Student{
+	// 	Uuid: uuid.NewString(),
+	// 	NIS: "1232313123",
+	// 	JK: "Laki-laki",
+	// 	TempatLahir: "Gorontalo",
+	// 	TanggalLahir: "2002-10-20",
+	// 	Alamat: "Kota",
+	// 	UserID: 3,
+	// 	ClassID: 1,
+	// })
 
 	fmt.Println("Database migrated succeesfully")
 
@@ -72,6 +92,10 @@ func main() {
 	schedule_service := application.NewScheduleService(schedule_repo)
 	schedule_handler := customHTTP.NewScheduleHandler(schedule_service)
 
+	user_repo := repository.NewUserRepository(gormDB)
+	user_service := application.NewUserService(user_repo)
+	user_handler := customHTTP.NewUserHandler(user_service)
+
 	handlers := &customHTTP.Handlers{
 		StudentHandler:    student_handler,
 		AuthHandler:       auth_handler,
@@ -80,6 +104,7 @@ func main() {
 		SubjectHandler:    subject_handler,
 		SchoolYearHandler: sy_handler,
 		ScheduleHandler:   schedule_handler,
+		UserHandler:       user_handler,
 	}
 
 	var PORT = os.Getenv("PORT")

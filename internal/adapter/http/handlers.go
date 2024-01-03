@@ -8,4 +8,5 @@ type Handlers struct {
 	SubjectHandler    *SubjectHandler
 	SchoolYearHandler *SchoolYearHandler
 	ScheduleHandler   *ScheduleHandler
+	UserHandler       *UserHandler
 }

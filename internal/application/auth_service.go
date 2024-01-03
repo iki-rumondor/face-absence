@@ -48,6 +48,14 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 			}
 		}
 	}
+	if role == "ADMIN" {
+		if err := s.Repo.FindAdminByUserID(result.ID); err != nil {
+			return "", &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("Admin with username %s is not found", user.Username),
+			}
+		}
+	}
 
 	// verify user password
 	if err := utils.ComparePassword(result.Password, user.Password); err != nil {

@@ -18,3 +18,19 @@ func IsExcelFile(file *multipart.FileHeader) error {
 
 	return nil
 }
+
+func IsValidImageExtension(filename string) bool {
+	allowedExtensions := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+	}
+
+	extension := GetFileExtension(filename)
+	return allowedExtensions[extension]
+}
+
+func IsValidImageSize(size int64) bool {
+	const maxFileSize = 5 * 1024 * 1024
+	return size <= maxFileSize
+}

@@ -40,3 +40,7 @@ func (r *AuthRepoImplementation) FindTeacherByUserID(userID uint) error {
 func (r *AuthRepoImplementation) FindStudentByUserID(userID uint) error {
 	return r.db.First(&domain.Student{}, "user_id = ?", userID).Error
 }
+
+func (r *AuthRepoImplementation) FindAdminByUserID(userID uint) error {
+	return r.db.First(&domain.Admin{}, "user_id = ?", userID).Error
+}

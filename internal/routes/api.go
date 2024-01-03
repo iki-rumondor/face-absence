@@ -27,6 +27,11 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		public.GET("/auth/verify-token", middleware.IsValidJWT(), handlers.AuthHandler.VerifyToken)
 	}
 
+	student := router.Group("api").Use(middleware.IsValidJWT(),middleware.IsStudent())
+	{
+		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
+	}
+
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())
 	{
 		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
