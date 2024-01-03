@@ -10,6 +10,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
+	"github.com/iki-rumondor/init-golang-service/internal/utils"
 )
 
 type AuthHandlers struct {
@@ -46,10 +47,7 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 	jwt, err := h.Service.VerifyUser(body.Role, &user)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response.FailedResponse{
-			Success: false,
-			Message: err.Error(),
-		})
+		utils.HandleError(c, err)
 		return
 	}
 

@@ -15,20 +15,28 @@ func NewAuthRepository(db *gorm.DB) AuthRepository {
 	}
 }
 
-func (r *AuthRepoImplementation) FindByEmail(email string) (*domain.User, error){
+func (r *AuthRepoImplementation) FindByEmail(email string) (*domain.User, error) {
 	var user domain.User
-	if err := r.db.First(&user, "email = ?", email).Error; err != nil{
+	if err := r.db.First(&user, "email = ?", email).Error; err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func (r *AuthRepoImplementation) FindByUsername(username string) (*domain.User, error){
+func (r *AuthRepoImplementation) FindByUsername(username string) (*domain.User, error) {
 	var user domain.User
-	if err := r.db.First(&user, "username = ?", username).Error; err != nil{
+	if err := r.db.First(&user, "username = ?", username).Error; err != nil {
 		return nil, err
 	}
 
 	return &user, nil
+}
+
+func (r *AuthRepoImplementation) FindTeacherByUserID(userID uint) error {
+	return r.db.First(&domain.Teacher{}, "user_id = ?", userID).Error
+}
+
+func (r *AuthRepoImplementation) FindStudentByUserID(userID uint) error {
+	return r.db.First(&domain.Student{}, "user_id = ?", userID).Error
 }
