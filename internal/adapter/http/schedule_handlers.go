@@ -63,7 +63,7 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		})
 		return
 	}
-
+	
 	model := domain.Schedule{
 		Uuid:         uuid.NewString(),
 		Name:         body.Name,

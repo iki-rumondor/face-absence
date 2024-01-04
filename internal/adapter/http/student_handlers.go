@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -35,11 +36,11 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 		return
 	}
 
-	if err := utils.IsExcelFile(file); err != nil{
+	if err := utils.IsExcelFile(file); err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	
+
 	tempFolder := "internal/temp"
 	pathFile := filepath.Join(tempFolder, file.Filename)
 
@@ -71,7 +72,19 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 }
 
 func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
-	users, err := h.Service.GetAllStudents()
+
+	urlPath := c.Request.URL.Path
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	pagination := domain.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	result, err := h.Service.StudentsPagination(urlPath, &pagination)
+
 	if err != nil {
 		utils.HandleError(c, err)
 		return
@@ -80,7 +93,7 @@ func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "get all students has been successfully",
-		Data:    users,
+		Data:    result,
 	})
 }
 
@@ -116,21 +129,21 @@ func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	uuid := c.Param("uuid")
 
 	student := domain.Student{
-		Uuid: uuid,
-		NIS: body.NIS,
-		JK: body.JK,
-		TempatLahir: body.TempatLahir,
+		Uuid:         uuid,
+		NIS:          body.NIS,
+		JK:           body.JK,
+		TempatLahir:  body.TempatLahir,
 		TanggalLahir: body.TanggalLahir,
-		Alamat: body.Alamat,
-		ClassID: body.ClassID,
+		Alamat:       body.Alamat,
+		ClassID:      body.ClassID,
 	}
 
 	user := domain.User{
-		Nama: body.Nama,
+		Nama:     body.Nama,
 		Username: body.Username,
 	}
 

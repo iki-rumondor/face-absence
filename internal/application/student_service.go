@@ -118,7 +118,6 @@ func (s *StudentService) GetAllStudents() (*[]response.StudentUser, error) {
 	var res = []response.StudentUser{}
 	for _, student := range *students {
 		res = append(res, response.StudentUser{
-			ID:           student.ID,
 			Uuid:         student.Uuid,
 			Nama:         student.User.Nama,
 			Username:     student.User.Username,
@@ -134,6 +133,36 @@ func (s *StudentService) GetAllStudents() (*[]response.StudentUser, error) {
 	}
 
 	return &res, nil
+}
+
+func (s *StudentService) StudentsPagination(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+
+	page, err := s.Repo.PaginationStudents(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all users: " + err.Error(),
+		}
+	}
+
+	page.FirstPage = fmt.Sprintf("%s?limit=%d&page=%d", urlPath, page.Limit, 0)
+	page.LastPage = fmt.Sprintf("%s?limit=%d&page=%d", urlPath, page.Limit, page.TotalPages)
+
+	if page.Page > 0 {
+		page.PreviousPage = fmt.Sprintf("%s?limit=%d&page=%d", urlPath, page.Limit, page.Page-1)
+	}
+
+	if page.Page < page.TotalPages {
+		page.NextPage = fmt.Sprintf("%s?limit=%d&page=%d", urlPath, page.Limit, page.Page+1)
+	}
+
+	if page.Page > page.TotalPages {
+		page.PreviousPage = ""
+	}
+
+
+
+	return page, nil
 }
 
 func (s *StudentService) GetStudent(uuid string) (*response.StudentUser, error) {
@@ -154,7 +183,6 @@ func (s *StudentService) GetStudent(uuid string) (*response.StudentUser, error) 
 	}
 
 	res := response.StudentUser{
-		ID:           student.ID,
 		Uuid:         student.Uuid,
 		Nama:         student.User.Nama,
 		Username:     student.User.Username,

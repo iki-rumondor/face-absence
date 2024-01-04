@@ -46,6 +46,7 @@ func main() {
 			UserID: 1,
 		})
 	}
+	
 	// gormDB.Create(&domain.User{
 	// 	Nama:     "Ilham",
 	// 	Username: "ilham",
