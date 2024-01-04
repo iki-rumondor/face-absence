@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,48 @@ func NewTeacherRepository(db *gorm.DB) TeacherRepository {
 	return &TeacherRepoImplementation{
 		db: db,
 	}
+}
+
+func (r *TeacherRepoImplementation) FindTeachersPagination(pagination *domain.Pagination) (*domain.Pagination, error) {
+	var teachers []domain.Teacher
+	var totalRows int64 = 0
+
+	offset := pagination.Page * pagination.Limit
+
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("User").Find(&teachers).Error; err != nil {
+		return nil, err
+	}
+
+	var res = []response.Teacher{}
+	for _, teacher := range teachers {
+		res = append(res, response.Teacher{
+			Uuid:          teacher.Uuid,
+			Nama:          teacher.User.Nama,
+			Username:      teacher.User.Username,
+			JK:            teacher.JK,
+			TempatLahir:   teacher.TempatLahir,
+			TanggalLahir:  teacher.TanggalLahir,
+			NoHp:          teacher.NoHp,
+			Alamat:        teacher.Alamat,
+			Nip:           teacher.Nip,
+			Nuptk:         teacher.Nuptk,
+			StatusPegawai: teacher.StatusPegawai,
+			Jabatan:       teacher.Jabatan,
+			TotalJtm:      teacher.TotalJtm,
+			CreatedAt:     teacher.CreatedAt,
+			UpdatedAt:     teacher.UpdatedAt,
+		})
+	}
+
+	pagination.Rows = res
+
+	if err := r.db.Model(&domain.Teacher{}).Count(&totalRows).Error; err != nil {
+		return nil, err
+	}
+
+	pagination.TotalRows = int(totalRows)
+
+	return pagination, nil
 }
 
 func (r *TeacherRepoImplementation) CreateTeacherUser(teacher *domain.Teacher, user *domain.User) error {

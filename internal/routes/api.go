@@ -35,7 +35,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())
 	{
 		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
-		admin.GET("master/teachers", handlers.TeacherHandler.GetTeachers)
+		admin.GET("master/teachers", handlers.TeacherHandler.GetTeachersPagination)
 		admin.GET("master/teachers/:uuid", handlers.TeacherHandler.GetTeacher)
 		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.UpdateTeacher)
 		admin.DELETE("master/teachers/:uuid", handlers.TeacherHandler.DeleteTeacher)

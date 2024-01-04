@@ -68,6 +68,22 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 	return nil
 }
 
+func (s *TeacherService) TeachersPagination(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+
+	result, err := s.Repo.FindTeachersPagination(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all users: " + err.Error(),
+		}
+	}
+
+	page := GeneratePages(urlPath, result)
+
+	return page, nil
+
+}
+
 func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
 
 	teachers, err := s.Repo.FindTeachers()

@@ -2,12 +2,14 @@ package customHTTP
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
+	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/utils"
 )
 
@@ -49,6 +51,33 @@ func (h *TeacherHandlers) CreateTeacher(c *gin.Context) {
 
 }
 
+func (h *TeacherHandlers) GetTeachersPagination(c *gin.Context) {
+
+	urlPath := c.Request.URL.Path
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	pagination := domain.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	result, err := h.Service.TeachersPagination(urlPath, &pagination)
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "your request has been executed successfully",
+		Data:    result,
+	})
+
+}
+
 func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 
 	teachers, err := h.Service.GetTeachers()
@@ -62,7 +91,6 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 
 	for _, teacher := range *teachers {
 		res = append(res, &response.Teacher{
-			ID:            teacher.ID,
 			Uuid:          teacher.Uuid,
 			Nama:          teacher.User.Nama,
 			Username:      teacher.User.Username,
@@ -100,7 +128,6 @@ func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
 	}
 
 	res := &response.Teacher{
-		ID:            teacher.ID,
 		Uuid:          teacher.Uuid,
 		Nama:          teacher.User.Nama,
 		Username:      teacher.User.Username,

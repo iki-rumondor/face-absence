@@ -3,7 +3,6 @@ package response
 import "time"
 
 type Teacher struct {
-	ID            uint      `json:"id"`
 	Uuid          string    `json:"uuid"`
 	Nama          string    `json:"nama"`
 	Username      string    `json:"username"`
