@@ -3,7 +3,6 @@ package response
 import "time"
 
 type ScheduleResponse struct {
-	ID           uint      `json:"id"`
 	Uuid         string    `json:"uuid"`
 	Name         string    `json:"name"`
 	Day          string    `json:"day"`

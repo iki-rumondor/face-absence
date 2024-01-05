@@ -21,6 +21,22 @@ func NewScheduleService(repo repository.ScheduleRepository) *ScheduleService {
 	}
 }
 
+func (s *ScheduleService) SchedulePagination(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+
+	result, err := s.Repo.FindSchedulePagination(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all schedules: " + err.Error(),
+		}
+	}
+
+	page := GeneratePages(urlPath, result)
+
+	return page, nil
+
+}
+
 func (s *ScheduleService) CreateSchedule(model *domain.Schedule) error {
 
 	if err := s.Repo.CreateSchedule(model); err != nil {
@@ -51,7 +67,6 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 
 	for _, res := range *result {
 		resp = append(resp, response.ScheduleResponse{
-			ID:           res.ID,
 			Uuid:         res.Uuid,
 			Name:         res.Name,
 			Day:          res.Day,
@@ -87,7 +102,6 @@ func (s *ScheduleService) GetSchedule(uuid string) (*response.ScheduleResponse, 
 	}
 
 	res := response.ScheduleResponse{
-		ID:           result.ID,
 		Uuid:         result.Uuid,
 		Name:         result.Name,
 		Day:          result.Day,

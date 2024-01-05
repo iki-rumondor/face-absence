@@ -27,7 +27,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		public.GET("/auth/verify-token", middleware.IsValidJWT(), handlers.AuthHandler.VerifyToken)
 	}
 
-	student := router.Group("api").Use(middleware.IsValidJWT(),middleware.IsStudent())
+	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
 	{
 		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 	}
@@ -65,7 +65,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.DELETE("master/school_years/:uuid", handlers.SchoolYearHandler.DeleteSchoolYear)
 
 		admin.POST("master/schedules", handlers.ScheduleHandler.CreateSchedule)
-		admin.GET("master/schedules", handlers.ScheduleHandler.GetAllSchedules)
+		admin.GET("master/schedules", handlers.ScheduleHandler.GetSchedulePagination)
 		admin.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
 		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
