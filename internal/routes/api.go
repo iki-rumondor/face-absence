@@ -59,7 +59,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.DELETE("master/subjects/:uuid", handlers.SubjectHandler.DeleteSubject)
 
 		admin.POST("master/school_years", handlers.SchoolYearHandler.CreateSchoolYear)
-		admin.GET("master/school_years", handlers.SchoolYearHandler.GetAllSchoolYears)
+		admin.GET("master/school_years", handlers.SchoolYearHandler.GetSchoolYearPagination)
 		admin.GET("master/school_years/:uuid", handlers.SchoolYearHandler.GetSchoolYear)
 		admin.PUT("master/school_years/:uuid", handlers.SchoolYearHandler.UpdateSchoolYear)
 		admin.DELETE("master/school_years/:uuid", handlers.SchoolYearHandler.DeleteSchoolYear)

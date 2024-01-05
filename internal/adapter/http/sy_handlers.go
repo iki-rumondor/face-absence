@@ -2,6 +2,7 @@ package customHTTP
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,33 @@ func NewSchoolYearHandler(service *application.SchoolYearService) *SchoolYearHan
 	return &SchoolYearHandler{
 		Service: service,
 	}
+}
+
+func (h *SchoolYearHandler) GetSchoolYearPagination(c *gin.Context) {
+
+	urlPath := c.Request.URL.Path
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	pagination := domain.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	result, err := h.Service.SchoolYearPagination(urlPath, &pagination)
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "your request has been executed successfully",
+		Data:    result,
+	})
+
 }
 
 func (h *SchoolYearHandler) CreateSchoolYear(c *gin.Context) {
@@ -118,7 +146,7 @@ func (h *SchoolYearHandler) UpdateSchoolYear(c *gin.Context) {
 	}
 
 	model := domain.SchoolYear{
-		ID:   res.ID,
+		Uuid: res.Uuid,
 		Name: body.Name,
 	}
 
@@ -144,7 +172,7 @@ func (h *SchoolYearHandler) DeleteSchoolYear(c *gin.Context) {
 	}
 
 	model := domain.SchoolYear{
-		ID: res.ID,
+		Uuid: res.Uuid,
 	}
 
 	if err := h.Service.DeleteSchoolYear(&model); err != nil {

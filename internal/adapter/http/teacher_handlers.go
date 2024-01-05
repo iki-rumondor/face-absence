@@ -70,7 +70,7 @@ func (h *TeacherHandlers) GetTeachersPagination(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "your request has been executed successfully",
 		Data:    result,

@@ -20,6 +20,22 @@ func NewSchoolYearService(repo repository.SchoolYearRepository) *SchoolYearServi
 	}
 }
 
+func (s *SchoolYearService) SchoolYearPagination(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+
+	result, err := s.Repo.FindSchoolYearPagination(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all school years: " + err.Error(),
+		}
+	}
+
+	page := GeneratePages(urlPath, result)
+
+	return page, nil
+
+}
+
 func (s *SchoolYearService) CreateSchoolYear(model *domain.SchoolYear) error {
 
 	if err := s.Repo.CreateSchoolYear(model); err != nil {
@@ -47,7 +63,6 @@ func (s *SchoolYearService) GetAllSchoolYears() (*[]response.SchoolYearResponse,
 
 	for _, res := range *result {
 		resp = append(resp, response.SchoolYearResponse{
-			ID:        res.ID,
 			Uuid:      res.Uuid,
 			Name:      res.Name,
 			CreatedAt: res.CreatedAt,
@@ -76,7 +91,6 @@ func (s *SchoolYearService) GetSchoolYear(uuid string) (*response.SchoolYearResp
 	}
 
 	res := response.SchoolYearResponse{
-		ID:        result.ID,
 		Uuid:      result.Uuid,
 		Name:      result.Name,
 		CreatedAt: result.CreatedAt,
