@@ -53,7 +53,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 		admin.DELETE("master/classes/:uuid", handlers.ClassHandler.DeleteClass)
 
 		admin.POST("master/subjects", handlers.SubjectHandler.CreateSubject)
-		admin.GET("master/subjects", handlers.SubjectHandler.GetAllSubjects)
+		admin.GET("master/subjects", handlers.SubjectHandler.GetSubjectPagination)
 		admin.GET("master/subjects/:uuid", handlers.SubjectHandler.GetSubject)
 		admin.PUT("master/subjects/:uuid", handlers.SubjectHandler.UpdateSubject)
 		admin.DELETE("master/subjects/:uuid", handlers.SubjectHandler.DeleteSubject)

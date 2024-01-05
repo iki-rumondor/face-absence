@@ -2,6 +2,7 @@ package customHTTP
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -53,6 +54,33 @@ func (h *SubjectHandler) CreateSubject(c *gin.Context) {
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
 		Message: "Subject has been created successfully",
+	})
+
+}
+
+func (h *SubjectHandler) GetSubjectPagination(c *gin.Context) {
+
+	urlPath := c.Request.URL.Path
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	pagination := domain.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	result, err := h.Service.SubjectPagination(urlPath, &pagination)
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "your request has been executed successfully",
+		Data:    result,
 	})
 
 }
@@ -118,7 +146,7 @@ func (h *SubjectHandler) UpdateSubject(c *gin.Context) {
 	}
 
 	model := domain.Subject{
-		ID:   res.ID,
+		Uuid: res.Uuid,
 		Name: body.Name,
 	}
 
@@ -144,7 +172,7 @@ func (h *SubjectHandler) DeleteSubject(c *gin.Context) {
 	}
 
 	model := domain.Subject{
-		ID: res.ID,
+		Uuid: res.Uuid,
 	}
 
 	if err := h.Service.DeleteSubject(&model); err != nil {

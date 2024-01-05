@@ -32,6 +32,22 @@ func (s *SubjectService) CreateSubject(model *domain.Subject) error {
 	return nil
 }
 
+func (s *SubjectService) SubjectPagination(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+
+	result, err := s.Repo.FindSubjectPagination(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all subject: " + err.Error(),
+		}
+	}
+
+	page := GeneratePages(urlPath, result)
+
+	return page, nil
+
+}
+
 func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 
 	result, err := s.Repo.FindSubjects()
@@ -47,7 +63,6 @@ func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 
 	for _, res := range *result {
 		resp = append(resp, response.SubjectResponse{
-			ID:        res.ID,
 			Uuid:      res.Uuid,
 			Name:      res.Name,
 			CreatedAt: res.CreatedAt,
@@ -76,7 +91,6 @@ func (s *SubjectService) GetSubject(uuid string) (*response.SubjectResponse, err
 	}
 
 	res := response.SubjectResponse{
-		ID:        result.ID,
 		Uuid:      result.Uuid,
 		Name:      result.Name,
 		CreatedAt: result.CreatedAt,
