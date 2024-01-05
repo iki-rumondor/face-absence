@@ -52,7 +52,6 @@ func (s *ClassService) GetAllClasses() (*[]response.ClassResponse, error) {
 
 	for _, class := range *classes {
 		res = append(res, response.ClassResponse{
-			ID:        class.ID,
 			Uuid:      class.Uuid,
 			Name:      class.Name,
 			TeacherID: class.TeacherID,
@@ -62,6 +61,22 @@ func (s *ClassService) GetAllClasses() (*[]response.ClassResponse, error) {
 	}
 
 	return &res, nil
+}
+
+func (s *ClassService) ClassPagination(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+
+	result, err := s.Repo.FindClassPagination(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to get all users: " + err.Error(),
+		}
+	}
+
+	page := GeneratePages(urlPath, result)
+
+	return page, nil
+
 }
 
 func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
@@ -82,7 +97,6 @@ func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
 	}
 
 	res := response.ClassResponse{
-		ID:        class.ID,
 		Uuid:      class.Uuid,
 		Name:      class.Name,
 		TeacherID: class.TeacherID,

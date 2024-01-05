@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"gorm.io/gorm"
 )
@@ -15,12 +16,44 @@ func NewClassRepository(db *gorm.DB) ClassRepository {
 	}
 }
 
+func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Pagination) (*domain.Pagination, error) {
+	var classes []domain.Class
+	var totalRows int64 = 0
+
+	offset := pagination.Page * pagination.Limit
+
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher").Find(&classes).Error; err != nil {
+		return nil, err
+	}
+
+	var res = []response.ClassResponse{}
+	for _, class := range classes {
+		res = append(res, response.ClassResponse{
+			Uuid:      class.Uuid,
+			Name:      class.Name,
+			TeacherID: class.TeacherID,
+			CreatedAt: class.CreatedAt,
+			UpdatedAt: class.UpdatedAt,
+		})
+	}
+
+	pagination.Rows = res
+
+	if err := r.db.Model(&domain.Class{}).Count(&totalRows).Error; err != nil {
+		return nil, err
+	}
+
+	pagination.TotalRows = int(totalRows)
+
+	return pagination, nil
+}
+
 func (r *ClassRepoImplementation) CreateClass(class *domain.Class) error {
 	return r.db.Create(class).Error
 }
 
 func (r *ClassRepoImplementation) UpdateClass(class *domain.Class) error {
-	return r.db.Model(class).Where("id = ?", class.ID).Updates(class).Error
+	return r.db.Model(class).Where("uuid = ?", class.Uuid).Updates(class).Error
 }
 
 func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
@@ -42,5 +75,5 @@ func (r *ClassRepoImplementation) FindClassByUuid(uuid string) (*domain.Class, e
 }
 
 func (r *ClassRepoImplementation) DeleteClass(class *domain.Class) error {
-	return r.db.Delete(&class).Error
+	return r.db.Delete(&class, "uuid = ?", class.Uuid).Error
 }

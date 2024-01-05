@@ -2,6 +2,7 @@ package customHTTP
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -75,6 +76,33 @@ func (h *ClassHandler) GetAllClasses(c *gin.Context) {
 
 }
 
+func (h *ClassHandler) GetClassPagination(c *gin.Context) {
+
+	urlPath := c.Request.URL.Path
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	pagination := domain.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	result, err := h.Service.ClassPagination(urlPath, &pagination)
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "your request has been executed successfully",
+		Data:    result,
+	})
+
+}
+
 func (h *ClassHandler) GetClass(c *gin.Context) {
 
 	uuid := c.Param("uuid")
@@ -119,7 +147,7 @@ func (h *ClassHandler) UpdateClass(c *gin.Context) {
 	}
 
 	class := domain.Class{
-		ID:        classInDB.ID,
+		Uuid:      classInDB.Uuid,
 		Name:      body.Name,
 		TeacherID: body.TeacherID,
 	}
@@ -146,7 +174,7 @@ func (h *ClassHandler) DeleteClass(c *gin.Context) {
 	}
 
 	class := domain.Class{
-		ID: classInDB.ID,
+		Uuid: classInDB.Uuid,
 	}
 
 	if err := h.Service.DeleteClass(&class); err != nil {
