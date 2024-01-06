@@ -20,6 +20,14 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 	var classes []domain.Class
 	var totalRows int64 = 0
 
+	if err := r.db.Model(&domain.Class{}).Count(&totalRows).Error; err != nil {
+		return nil, err
+	}
+
+	if pagination.Limit == 0 {
+		pagination.Limit = int(totalRows)
+	}
+	
 	offset := pagination.Page * pagination.Limit
 
 	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher").Find(&classes).Error; err != nil {
@@ -38,10 +46,6 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 	}
 
 	pagination.Rows = res
-
-	if err := r.db.Model(&domain.Class{}).Count(&totalRows).Error; err != nil {
-		return nil, err
-	}
 
 	pagination.TotalRows = int(totalRows)
 

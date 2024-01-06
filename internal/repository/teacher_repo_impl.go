@@ -22,6 +22,14 @@ func (r *TeacherRepoImplementation) FindTeachersPagination(pagination *domain.Pa
 	var teachers []domain.Teacher
 	var totalRows int64 = 0
 
+	if err := r.db.Model(&domain.Teacher{}).Count(&totalRows).Error; err != nil {
+		return nil, err
+	}
+	
+	if pagination.Limit == 0 {
+		pagination.Limit = int(totalRows)
+	}
+
 	offset := pagination.Page * pagination.Limit
 
 	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("User").Find(&teachers).Error; err != nil {
@@ -50,10 +58,6 @@ func (r *TeacherRepoImplementation) FindTeachersPagination(pagination *domain.Pa
 	}
 
 	pagination.Rows = res
-
-	if err := r.db.Model(&domain.Teacher{}).Count(&totalRows).Error; err != nil {
-		return nil, err
-	}
 
 	pagination.TotalRows = int(totalRows)
 

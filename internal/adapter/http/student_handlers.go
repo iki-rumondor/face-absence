@@ -103,7 +103,7 @@ func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
 
 	urlPath := c.Request.URL.Path
 
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", ""))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "0"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
 
 	pagination := domain.Pagination{
