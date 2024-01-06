@@ -13,7 +13,6 @@ type CreateTeacher struct {
 	Alamat        string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
 	Nama          string `json:"nama" valid:"required~field nama tidak ditemukan"`
 	Username      string `json:"username" valid:"required~field username tidak ditemukan"`
-	Password      string `json:"password" valid:"required~field password tidak ditemukan"`
 }
 
 

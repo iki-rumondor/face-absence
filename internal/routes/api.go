@@ -41,7 +41,8 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.UpdateTeacher)
 		admin.DELETE("master/teachers/:uuid", handlers.TeacherHandler.DeleteTeacher)
 
-		admin.POST("master/students", handlers.StudentHandler.ImportStudentsData)
+		admin.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
+		admin.POST("master/students", handlers.StudentHandler.CreateStudent)
 		admin.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
 		admin.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
 		admin.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)

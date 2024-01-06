@@ -41,7 +41,7 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 	user := &domain.User{
 		Nama:     request.Nama,
 		Username: request.Username,
-		Password: request.Password,
+		Password: request.Username,
 	}
 
 	teacher := &domain.Teacher{
