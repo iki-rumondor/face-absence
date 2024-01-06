@@ -18,6 +18,19 @@ func NewStudentRepository(db *gorm.DB) StudentRepository {
 	}
 }
 
+func (r *StudentRepoImplementation) CreateStudentUser(student *domain.Student, user *domain.User) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(user).Error; err != nil {
+			return err
+		}
+		student.UserID = user.ID
+		if err := tx.Create(student).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
 func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagination) (*domain.Pagination, error) {
 	var students []domain.Student
 

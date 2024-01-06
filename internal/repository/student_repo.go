@@ -5,6 +5,7 @@ import (
 )
 
 type StudentRepository interface {
+	CreateStudentUser(*domain.Student, *domain.User) error
 	PaginationStudents(pagination *domain.Pagination) (*domain.Pagination, error)
 	FindAllStudents() (*[]domain.Student, error)
 	FindStudent(string) (*domain.Student, error)

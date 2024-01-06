@@ -26,6 +26,34 @@ func NewStudentHandler(service *application.StudentService) *StudentHandlers {
 	}
 }
 
+func (h *StudentHandlers) CreateStudent(c *gin.Context) {
+	var body request.CreateStudent
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if _, err := govalidator.ValidateStruct(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if err := h.Service.CreateStudent(&body); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "Teacher has been saved successfully",
+	})
+
+}
+
 func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 	file, err := c.FormFile("students")
 	if err != nil {

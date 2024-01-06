@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
@@ -67,7 +68,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 		user, err := s.Repo.CreateUser(&domain.User{
 			Nama:     cols[0],
 			Username: cols[1],
-			Password: cols[2],
+			Password: cols[1],
 		})
 
 		if err != nil {
@@ -103,6 +104,34 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 	}
 
 	return &failedStudent, nil
+}
+
+func (s *StudentService) CreateStudent(request *request.CreateStudent) error {
+
+	user := domain.User{
+		Nama:     request.Nama,
+		Username: request.Username,
+		Password: request.Username,
+	}
+
+	student := domain.Student{
+		Uuid:         uuid.NewString(),
+		NIS:          request.NIS,
+		JK:           request.JK,
+		TempatLahir:  request.TempatLahir,
+		TanggalLahir: request.TanggalLahir,
+		Alamat:       request.Alamat,
+		ClassID:      request.ClassID,
+	}
+
+	if err := s.Repo.CreateStudentUser(&student, &user); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Student was not created successfully: " + err.Error(),
+		}
+	}
+
+	return nil
 }
 
 func (s *StudentService) GetAllStudents() (*[]response.StudentUser, error) {
@@ -159,7 +188,6 @@ func (s *StudentService) StudentsPagination(urlPath string, pagination *domain.P
 	if page.Page > page.TotalPages {
 		page.PreviousPage = ""
 	}
-
 
 	return page, nil
 }
