@@ -50,6 +50,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 		admin.POST("master/classes", handlers.ClassHandler.CreateClass)
 		admin.GET("master/classes", handlers.ClassHandler.GetClassPagination)
+		admin.GET("master/classes/option", handlers.ClassHandler.GetClassOption)
 		admin.GET("master/classes/:uuid", handlers.ClassHandler.GetClass)
 		admin.PUT("master/classes/:uuid", handlers.ClassHandler.UpdateClass)
 		admin.DELETE("master/classes/:uuid", handlers.ClassHandler.DeleteClass)

@@ -76,6 +76,23 @@ func (h *ClassHandler) GetAllClasses(c *gin.Context) {
 
 }
 
+func (h *ClassHandler) GetClassOption(c *gin.Context) {
+
+	classes, err := h.Service.GetClassOptions()
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Success to find all classes",
+		Data:    classes,
+	})
+
+}
+
 func (h *ClassHandler) GetClassPagination(c *gin.Context) {
 
 	urlPath := c.Request.URL.Path
