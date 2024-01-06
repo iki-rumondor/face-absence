@@ -17,5 +17,6 @@ func RegisterModels() []Model {
 		{Model: domain.Schedule{}},
 		{Model: domain.Admin{}},
 		{Model: domain.Absence{}},
+		{Model: domain.PdfDownloadHistory{}},
 	}
 }

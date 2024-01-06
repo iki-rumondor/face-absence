@@ -15,4 +15,6 @@ type StudentRepository interface {
 	CreateUser(*domain.User) (*domain.User, error)
 	SaveStudent(*domain.Student) error
 	DeleteUser(*domain.User)
+
+	
 }

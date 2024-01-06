@@ -10,6 +10,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
+	"github.com/jung-kurt/gofpdf"
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
@@ -276,6 +277,41 @@ func (s *StudentService) DeleteStudent(uuid string) error {
 		return &response.Error{
 			Code:    500,
 			Message: "Failed to delete student: " + err.Error(),
+		}
+	}
+
+	return nil
+}
+
+func (s *StudentService) CreateStudentPDF(filePath string) error {
+	data, err := s.Repo.FindAllStudents()
+	if err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to find all students",
+		}
+	}
+
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+
+	// Tambahkan header
+	pdf.SetFont("Arial", "B", 16)
+	pdf.Cell(40, 10, "Your Data")
+
+	// Tambahkan data
+	pdf.SetFont("Arial", "", 12)
+
+	for _, entry := range *data {
+		pdf.Ln(10)
+		pdf.Cell(40, 10, fmt.Sprintf("ID: %d", entry.ID))
+		pdf.Cell(40, 10, fmt.Sprintf("Name: %s", entry.User.Nama))
+	}
+
+	if err := pdf.OutputFileAndClose(filePath); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to save pdf: " + err.Error(),
 		}
 	}
 
