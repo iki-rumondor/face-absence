@@ -167,3 +167,15 @@ func (r *StudentRepoImplementation) DeleteUser(user *domain.User) {
 
 	r.db.Delete(user)
 }
+
+func (r *StudentRepoImplementation) FindLatestHistory() (*domain.PdfDownloadHistory, error) {
+	var history domain.PdfDownloadHistory
+	if err := r.db.Last(&history).Error; err != nil {
+		return nil, err
+	}
+	return &history, nil
+}
+
+func (r *StudentRepoImplementation) CreatePdfHistory(history *domain.PdfDownloadHistory) error {
+	return r.db.Create(history).Error
+}

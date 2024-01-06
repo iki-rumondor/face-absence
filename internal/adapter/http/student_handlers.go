@@ -9,6 +9,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
@@ -199,4 +200,29 @@ func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
 		Success: true,
 		Message: fmt.Sprintf("student with uuid %s has been deleted successfully", uuid),
 	})
+}
+
+func (h *StudentHandlers) CreateReport(c *gin.Context) {
+	randomName := fmt.Sprintf("%s.pdf", uuid.NewString())
+	filePath := fmt.Sprintf("internal/assets/temp/%s", randomName)
+
+	if err := h.Service.CreateStudentPDF(filePath); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	history := domain.PdfDownloadHistory{
+		Name: randomName,
+	}
+
+	if err := h.Service.CreatePdfHistory(&history); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "link download: ",
+	})
+
 }

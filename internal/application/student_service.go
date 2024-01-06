@@ -3,6 +3,7 @@ package application
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -297,15 +298,18 @@ func (s *StudentService) CreateStudentPDF(filePath string) error {
 
 	// Tambahkan header
 	pdf.SetFont("Arial", "B", 16)
-	pdf.Cell(40, 10, "Your Data")
+	pdf.Cell(40, 10, "Data Seluruh Santri")
 
 	// Tambahkan data
 	pdf.SetFont("Arial", "", 12)
 
+	pdf.Ln(10)
+	pdf.Cell(40, 10, "ID")
+	pdf.Cell(40, 10, "Nama")
 	for _, entry := range *data {
 		pdf.Ln(10)
-		pdf.Cell(40, 10, fmt.Sprintf("ID: %d", entry.ID))
-		pdf.Cell(40, 10, fmt.Sprintf("Name: %s", entry.User.Nama))
+		pdf.Cell(40, 10, fmt.Sprintf("%d", entry.ID))
+		pdf.Cell(40, 10, entry.User.Nama)
 	}
 
 	if err := pdf.OutputFileAndClose(filePath); err != nil {
@@ -316,4 +320,23 @@ func (s *StudentService) CreateStudentPDF(filePath string) error {
 	}
 
 	return nil
+}
+
+func (s *StudentService) CreatePdfHistory(history *domain.PdfDownloadHistory) error {
+	result, err := s.Repo.FindLatestHistory()
+	if err == nil {
+		if err := os.Remove("internal/assets/temp/" + result.Name); err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+
+	if err := s.Repo.CreatePdfHistory(history); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Failed to create pdf history: " + err.Error(),
+		}
+	}
+
+	return nil
+
 }
