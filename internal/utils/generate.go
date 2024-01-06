@@ -19,6 +19,6 @@ func GetFileExtension(filename string) string {
 func GenerateRandomFileName(filename string) string {
 	u := uuid.NewString()
 	ext := GetFileExtension(filename)
-	newName := fmt.Sprintf("%s.%s", u, ext)
+	newName := fmt.Sprintf("%s%s", u, ext)
 	return newName
 }

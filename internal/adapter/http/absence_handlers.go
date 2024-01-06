@@ -1,35 +1,31 @@
 package customHTTP
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/utils"
 )
 
-type UserHandler struct {
-	Service *application.UserService
+type AbsenceHandler struct {
+	Service *application.AbsenceService
 }
 
-func NewUserHandler(service *application.UserService) *UserHandler {
-	return &UserHandler{
+func NewAbsenceHandler(service *application.AbsenceService) *AbsenceHandler {
+	return &AbsenceHandler{
 		Service: service,
 	}
 }
 
-func (h *UserHandler) UpdateAvatar(c *gin.Context) {
-	file, err := c.FormFile("avatar")
-	if err != nil {
-		utils.HandleError(c, &response.Error{
-			Code:    400,
-			Message: "File avatar is not found",
-		})
-		return
-	}
+func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 
 	id := c.GetUint("user_id")
 	if id == 0 {
@@ -39,6 +35,38 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 		})
 		return
 	}
+
+	scheduleID, err := strconv.Atoi(c.PostForm("schedule_id"))
+	if err != nil{
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "Schedule id is not a number",
+		})
+		return
+	}
+
+	status, err := h.Service.CheckSchedule(uint(scheduleID))
+	
+	if err != nil{
+		utils.HandleError(c, err)
+		return
+	}
+
+	absence := domain.Absence{
+		Uuid: uuid.NewString(),
+		StudentID: id,
+		ScheduleID: uint(scheduleID),
+		Status: status,
+	}
+
+	file, err := c.FormFile("face_image")
+	if err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "Face image is not found",
+		})
+	}
+
 
 	if ok := utils.IsValidImageExtension(file.Filename); !ok {
 		utils.HandleError(c, &response.Error{
@@ -57,7 +85,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	}
 
 	// Buat Save File Di Folder
-	folder := "internal/assets/avatar"
+	folder := "internal/assets/temp"
 	filename := utils.GenerateRandomFileName(file.Filename)
 	pathFile := filepath.Join(folder, filename)
 
@@ -68,18 +96,19 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 		})
 	}
 
-	model := domain.User{
-		ID:     id,
-		Avatar: &filename,
-	}
+	defer func() {
+		if err := os.Remove(pathFile); err != nil {
+			fmt.Println(err.Error())
+		}
+	}()
 
-	if err := h.Service.UpdateAvatar(&model); err != nil {
+	if err := h.Service.CreateAbsence(&absence, pathFile); err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "user avatar has been updated successfully",
+		Message: "absence has been created successfully",
 	})
 }

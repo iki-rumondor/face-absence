@@ -29,7 +29,7 @@ func (m *Student) BeforeSave(tx *gorm.DB) error {
 	if err := tx.First(&Class{}, "id = ?", m.ClassID).Error; err != nil {
 		return &response.Error{
 			Code:    404,
-			Message: fmt.Sprintf("Teacher with id %d is not found", m.ClassID),
+			Message: fmt.Sprintf("Class with id %d is not found", m.ClassID),
 		}
 	}
 

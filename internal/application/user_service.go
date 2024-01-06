@@ -20,22 +20,30 @@ func NewUserService(repo repository.UserRepository) *UserService {
 }
 
 func (s *UserService) UpdateAvatar(model *domain.User) error {
-	if _, err := s.Repo.FindUserByID(model.ID); err != nil {
+	user, err := s.Repo.FindUserByID(model.ID)
+	if err != nil {
 		return &response.Error{
 			Code:    404,
 			Message: "User is not found",
 		}
 	}
 
+	
 	if err := s.Repo.UpdateAvatar(model); err != nil {
 		// Hapus File Di Folder
-		if err := os.Remove(*model.Avatar); err != nil {
+		if err := os.Remove("internal/assets/avatar/" + *model.Avatar); err != nil {
 			fmt.Println(err.Error())
 		}
-
+		
 		return &response.Error{
 			Code:    500,
 			Message: "Failed to update user: " + err.Error(),
+		}
+	}
+	
+	if user.Avatar != nil{
+		if err := os.Remove("internal/assets/avatar/" + *user.Avatar); err != nil {
+			fmt.Println(err.Error())
 		}
 	}
 

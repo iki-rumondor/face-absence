@@ -3,16 +3,16 @@ package routes
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	customHTTP "github.com/iki-rumondor/init-golang-service/internal/adapter/http"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/middleware"
+	"github.com/iki-rumondor/init-golang-service/internal/registry"
 )
 
-func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
+func StartServer(handlers *registry.Handlers) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "ngrok-skip-browser-warning"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -30,6 +30,7 @@ func StartServer(handlers *customHTTP.Handlers) *gin.Engine {
 	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
 	{
 		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
+		student.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
 	}
 
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())
