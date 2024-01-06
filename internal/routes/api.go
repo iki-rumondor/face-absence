@@ -13,7 +13,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "ngrok-skip-browser-warning"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "ngrok-skip-browser-warning", "Access-Control-Allow-Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12,
@@ -44,12 +44,14 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
 		admin.POST("master/students", handlers.StudentHandler.CreateStudent)
 		admin.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
+		admin.GET("master/students/report", handlers.StudentHandler.CreateReport)
 		admin.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
 		admin.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
 		admin.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
 
 		admin.POST("master/classes", handlers.ClassHandler.CreateClass)
 		admin.GET("master/classes", handlers.ClassHandler.GetClassPagination)
+		admin.GET("master/classes/option", handlers.ClassHandler.GetClassOption)
 		admin.GET("master/classes/:uuid", handlers.ClassHandler.GetClass)
 		admin.PUT("master/classes/:uuid", handlers.ClassHandler.UpdateClass)
 		admin.DELETE("master/classes/:uuid", handlers.ClassHandler.DeleteClass)

@@ -37,6 +37,29 @@ func (s *ClassService) CreateClass(class *domain.Class) error {
 	return nil
 }
 
+func (s *ClassService) GetClassOptions() (*[]response.ClassOption, error) {
+
+	classes, err := s.Repo.FindClasses()
+
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Failed to find classes: " + err.Error(),
+		}
+	}
+
+	var res []response.ClassOption
+
+	for _, class := range *classes {
+		res = append(res, response.ClassOption{
+			Uuid:      class.Uuid,
+			Name:      class.Name,
+		})
+	}
+
+	return &res, nil
+}
+
 func (s *ClassService) GetAllClasses() (*[]response.ClassResponse, error) {
 
 	classes, err := s.Repo.FindClasses()

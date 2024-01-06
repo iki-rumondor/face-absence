@@ -28,7 +28,7 @@ func (h *ScheduleHandler) GetSchedulePagination(c *gin.Context) {
 
 	urlPath := c.Request.URL.Path
 
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "0"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
 
 	pagination := domain.Pagination{

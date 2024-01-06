@@ -15,4 +15,7 @@ type StudentRepository interface {
 	CreateUser(*domain.User) (*domain.User, error)
 	SaveStudent(*domain.Student) error
 	DeleteUser(*domain.User)
+
+	FindLatestHistory() (*domain.PdfDownloadHistory, error)
+	CreatePdfHistory(*domain.PdfDownloadHistory) error
 }

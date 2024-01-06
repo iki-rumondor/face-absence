@@ -76,11 +76,28 @@ func (h *ClassHandler) GetAllClasses(c *gin.Context) {
 
 }
 
+func (h *ClassHandler) GetClassOption(c *gin.Context) {
+
+	classes, err := h.Service.GetClassOptions()
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Success to find all classes",
+		Data:    classes,
+	})
+
+}
+
 func (h *ClassHandler) GetClassPagination(c *gin.Context) {
 
 	urlPath := c.Request.URL.Path
 
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "0"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
 
 	pagination := domain.Pagination{

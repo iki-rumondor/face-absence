@@ -19,6 +19,14 @@ func NewSubjectRepository(db *gorm.DB) SubjectRepository {
 func (r *SubjectRepoImplementation) FindSubjectPagination(pagination *domain.Pagination) (*domain.Pagination, error) {
 	var subjects []domain.Subject
 	var totalRows int64 = 0
+	
+	if err := r.db.Model(&domain.Subject{}).Count(&totalRows).Error; err != nil {
+		return nil, err
+	}
+
+	if pagination.Limit == 0 {
+		pagination.Limit = int(totalRows)
+	}
 
 	offset := pagination.Page * pagination.Limit
 
@@ -37,10 +45,6 @@ func (r *SubjectRepoImplementation) FindSubjectPagination(pagination *domain.Pag
 	}
 
 	pagination.Rows = res
-
-	if err := r.db.Model(&domain.Subject{}).Count(&totalRows).Error; err != nil {
-		return nil, err
-	}
 
 	pagination.TotalRows = int(totalRows)
 
