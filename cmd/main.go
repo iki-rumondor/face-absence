@@ -25,8 +25,9 @@ func main() {
 			return
 		}
 	}
-
-	handlers := registry.RegisterHandlers(gormDB)
+	repo := registry.RegisterRepositories(gormDB)
+	services := registry.RegisterServices(repo)
+	handlers := registry.RegisterHandlers(services)
 
 	// for _, model := range registry.RegisterModels() {
 	// 	if err := gormDB.Migrator().DropTable(model.Model); err != nil {
