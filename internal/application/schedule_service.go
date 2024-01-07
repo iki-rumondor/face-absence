@@ -2,7 +2,6 @@ package application
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
@@ -84,7 +83,7 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 	return &resp, nil
 }
 
-func (s *ScheduleService) GetSchedule(uuid string) (*response.ScheduleResponse, error) {
+func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {
 
 	result, err := s.Repo.FindScheduleByUuid(uuid)
 
@@ -92,30 +91,16 @@ func (s *ScheduleService) GetSchedule(uuid string) (*response.ScheduleResponse, 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Schedule with uuid %s is not found", uuid),
+				Message: "Jadwal tidak ditemukan",
 			}
 		}
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Terjadi kesalahan dalam mengambil jadwal",
 		}
 	}
 
-	res := response.ScheduleResponse{
-		Uuid:         result.Uuid,
-		Name:         result.Name,
-		Day:          result.Day,
-		Start:        result.Start,
-		End:          result.End,
-		ClassID:      result.ClassID,
-		SubjectID:    result.SubjectID,
-		TeacherID:    result.TeacherID,
-		SchoolYearID: result.SchoolYearID,
-		CreatedAt:    result.CreatedAt,
-		UpdatedAt:    result.UpdatedAt,
-	}
-
-	return &res, nil
+	return result, nil
 }
 
 func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {

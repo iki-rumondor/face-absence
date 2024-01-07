@@ -136,11 +136,24 @@ func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 
 	uuid := c.Param("uuid")
-	res, err := h.Service.GetSchedule(uuid)
-
+	schedule, err := h.Service.GetSchedule(uuid)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
+	}
+
+	res := response.ScheduleResponse{
+		Uuid:         schedule.Uuid,
+		Name:         schedule.Name,
+		Day:          schedule.Day,
+		Start:        schedule.Start,
+		End:          schedule.End,
+		ClassID:      schedule.ClassID,
+		SubjectID:    schedule.SubjectID,
+		TeacherID:    schedule.TeacherID,
+		SchoolYearID: schedule.SchoolYearID,
+		CreatedAt:    schedule.CreatedAt,
+		UpdatedAt:    schedule.UpdatedAt,
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
