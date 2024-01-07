@@ -222,7 +222,7 @@ func (h *StudentHandlers) CreateReport(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "link download: ",
+		Message: randomName,
 	})
 
 }

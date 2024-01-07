@@ -301,15 +301,58 @@ func (s *StudentService) CreateStudentPDF(filePath string) error {
 	pdf.Cell(40, 10, "Data Seluruh Santri")
 
 	// Tambahkan data
-	pdf.SetFont("Arial", "", 12)
+	pdf.SetFont("Arial", "", 8)
+
+	pdf.Ln(15)
+	pdf.SetFillColor(200, 220, 255)
+	pdf.SetDrawColor(0, 0, 0)
+
+	type Cell struct {
+		Name  string
+		Width float64
+	}
+
+	headerCells := []Cell{
+		{
+			Name:  "Nama",
+			Width: 50,
+		},
+		{
+			Name:  "NIS",
+			Width: 30,
+		},
+		{
+			Name:  "Jenis Kelamin",
+			Width: 25,
+		},
+		{
+			Name:  "Tempat, Tanggal Lahir",
+			Width: 45,
+		},
+		{
+			Name:  "Alamat",
+			Width: 30,
+		},
+	}
+
+	// Fungsi untuk menambahkan baris data
+	addRow := func(cells ...string) {
+		for i, cell := range cells {
+			pdf.CellFormat(headerCells[i].Width, 10, cell, "1", 0, "", false, 0, "")
+		}
+		pdf.Ln(10)
+	}
+
+	// Tambahkan header
+	for _, headerCell := range headerCells {
+		pdf.CellFormat(headerCell.Width, 10, headerCell.Name, "1", 0, "", true, 0, "")
+	}
 
 	pdf.Ln(10)
-	pdf.Cell(40, 10, "ID")
-	pdf.Cell(40, 10, "Nama")
+
 	for _, entry := range *data {
-		pdf.Ln(10)
-		pdf.Cell(40, 10, fmt.Sprintf("%d", entry.ID))
-		pdf.Cell(40, 10, entry.User.Nama)
+		birthInfo := fmt.Sprintf("%s, %s", entry.TempatLahir, entry.TanggalLahir)
+		addRow(entry.User.Nama, entry.NIS, entry.JK, birthInfo, entry.Alamat)
 	}
 
 	if err := pdf.OutputFileAndClose(filePath); err != nil {

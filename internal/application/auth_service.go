@@ -27,7 +27,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 	if err != nil {
 		return "", &response.Error{
 			Code:    404,
-			Message: "That username is not registered in our system",
+			Message: "Username atau Password salah",
 		}
 	}
 
@@ -61,7 +61,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 	if err := utils.ComparePassword(result.Password, user.Password); err != nil {
 		return "", &response.Error{
 			Code:    404,
-			Message: "Missmatch password",
+			Message: "Username atau Password salah",
 		}
 	}
 

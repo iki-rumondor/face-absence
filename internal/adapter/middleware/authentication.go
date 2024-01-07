@@ -18,7 +18,7 @@ func IsValidJWT() gin.HandlerFunc {
 		if !bearer {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
 				Success: false,
-				Message: "Bearer token is not valid",
+				Message: "Bearer token tidak valid",
 			})
 			return
 		}
