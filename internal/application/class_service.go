@@ -143,7 +143,7 @@ func (s *ClassService) DeleteClass(class *domain.Class) error {
 	if err := s.Repo.DeleteClass(class); err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			return &response.Error{
-				Code:    500,
+				Code:    403,
 				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
 			}
 		}

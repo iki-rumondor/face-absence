@@ -120,7 +120,7 @@ func (s *ScheduleService) DeleteSchedule(Schedule *domain.Schedule) error {
 	if err := s.Repo.DeleteSchedule(Schedule); err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			return &response.Error{
-				Code:    500,
+				Code:    403,
 				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
 			}
 		}

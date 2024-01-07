@@ -53,7 +53,7 @@ func (h *SubjectHandler) CreateSubject(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "Subject has been created successfully",
+		Message: "Berhasil menambah data mata pelajaran",
 	})
 
 }
@@ -79,7 +79,7 @@ func (h *SubjectHandler) GetSubjectPagination(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil mendapatkan data mata pelajaran",
 		Data:    result,
 	})
 
@@ -96,7 +96,7 @@ func (h *SubjectHandler) GetAllSubjects(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Subject was found",
+		Message: "Berhasil mendapatkan data mata pelajaran",
 		Data:    res,
 	})
 
@@ -121,7 +121,7 @@ func (h *SubjectHandler) GetSubject(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Mata pelajaran berhasil ditemukan",
+		Message: "Berhasil mendapatkan data mata pelajaran",
 		Data:    res,
 	})
 
@@ -162,9 +162,9 @@ func (h *SubjectHandler) UpdateSubject(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Subject has been updated successfully",
+		Message: "Berhasil memperbarui data mata pelajaran",
 	})
 
 }
@@ -189,7 +189,7 @@ func (h *SubjectHandler) DeleteSubject(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "Subject has been deleted successfully",
+		Message: "Berhasil mengahapus data mata pelajaran",
 	})
 
 }

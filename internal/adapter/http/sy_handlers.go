@@ -45,7 +45,7 @@ func (h *SchoolYearHandler) GetSchoolYearPagination(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil mendapatkan data tahun pelajaran",
 		Data:    result,
 	})
 
@@ -80,7 +80,7 @@ func (h *SchoolYearHandler) CreateSchoolYear(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "SchoolYear has been created successfully",
+		Message: "Berhasil menambah data tahun pelajaran",
 	})
 
 }
@@ -96,7 +96,7 @@ func (h *SchoolYearHandler) GetAllSchoolYears(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "SchoolYear was found",
+		Message: "Berhasil mendapatkan data tahun pelajaran",
 		Data:    res,
 	})
 
@@ -121,7 +121,7 @@ func (h *SchoolYearHandler) GetSchoolYear(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "SchoolYear was found",
+		Message: "Berhasil mendapatkan data tahun pelajaran",
 		Data:    res,
 	})
 
@@ -162,9 +162,9 @@ func (h *SchoolYearHandler) UpdateSchoolYear(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "SchoolYear has been updated successfully",
+		Message: "Berhasil memperbarui data tahun pelajaran",
 	})
 
 }
@@ -189,7 +189,7 @@ func (h *SchoolYearHandler) DeleteSchoolYear(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "SchoolYear has been deleted successfully",
+		Message: "Berhasil menghapus data tahun pelajaran",
 	})
 
 }

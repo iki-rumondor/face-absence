@@ -260,7 +260,7 @@ func (s *StudentService) DeleteStudent(uuid string) error {
 	if err := s.Repo.DeleteStudent(studentInDB.UserID); err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			return &response.Error{
-				Code:    500,
+				Code:    403,
 				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
 			}
 		}

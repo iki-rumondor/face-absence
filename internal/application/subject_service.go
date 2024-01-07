@@ -25,7 +25,7 @@ func (s *SubjectService) CreateSubject(model *domain.Subject) error {
 	if err := s.Repo.CreateSubject(model); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Subject was not created successfully: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -38,7 +38,7 @@ func (s *SubjectService) SubjectPagination(urlPath string, pagination *domain.Pa
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all subject: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -55,7 +55,7 @@ func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -81,12 +81,12 @@ func (s *SubjectService) GetSubject(uuid string) (*domain.Subject, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Subject with uuid %s is not found", uuid),
+				Message: fmt.Sprintf("Mata pelajaran dengan uuid %s tidak ditemukan", uuid),
 			}
 		}
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -98,7 +98,7 @@ func (s *SubjectService) UpdateSubject(model *domain.Subject) error {
 	if err := s.Repo.UpdateSubject(model); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Subject was not updated successfully: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -108,9 +108,16 @@ func (s *SubjectService) UpdateSubject(model *domain.Subject) error {
 func (s *SubjectService) DeleteSubject(Subject *domain.Subject) error {
 
 	if err := s.Repo.DeleteSubject(Subject); err != nil {
+
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    403,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "Subject was not deleted successfully: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
