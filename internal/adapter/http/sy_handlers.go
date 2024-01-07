@@ -105,11 +105,18 @@ func (h *SchoolYearHandler) GetAllSchoolYears(c *gin.Context) {
 func (h *SchoolYearHandler) GetSchoolYear(c *gin.Context) {
 
 	uuid := c.Param("uuid")
-	res, err := h.Service.GetSchoolYear(uuid)
+	result, err := h.Service.GetSchoolYear(uuid)
 
 	if err != nil {
 		utils.HandleError(c, err)
 		return
+	}
+
+	res := response.SchoolYearResponse{
+		Uuid:      result.Uuid,
+		Name:      result.Name,
+		CreatedAt: result.CreatedAt,
+		UpdatedAt: result.UpdatedAt,
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{

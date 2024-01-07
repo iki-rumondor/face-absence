@@ -102,7 +102,7 @@ func (s *ClassService) ClassPagination(urlPath string, pagination *domain.Pagina
 
 }
 
-func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
+func (s *ClassService) GetClass(uuid string) (*domain.Class, error) {
 
 	class, err := s.Repo.FindClassByUuid(uuid)
 
@@ -119,15 +119,7 @@ func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
 		}
 	}
 
-	res := response.ClassResponse{
-		Uuid:      class.Uuid,
-		Name:      class.Name,
-		TeacherID: class.TeacherID,
-		CreatedAt: class.CreatedAt,
-		UpdatedAt: class.UpdatedAt,
-	}
-
-	return &res, nil
+	return class, nil
 }
 
 func (s *ClassService) UpdateClass(class *domain.Class) error {

@@ -105,16 +105,23 @@ func (h *SubjectHandler) GetAllSubjects(c *gin.Context) {
 func (h *SubjectHandler) GetSubject(c *gin.Context) {
 
 	uuid := c.Param("uuid")
-	res, err := h.Service.GetSubject(uuid)
+	subject, err := h.Service.GetSubject(uuid)
 
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
+	res := response.SubjectResponse{
+		Uuid:      subject.Uuid,
+		Name:      subject.Name,
+		CreatedAt: subject.CreatedAt,
+		UpdatedAt: subject.UpdatedAt,
+	}
+
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Subject was found",
+		Message: "Mata pelajaran berhasil ditemukan",
 		Data:    res,
 	})
 

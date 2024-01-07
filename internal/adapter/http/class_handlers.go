@@ -138,10 +138,18 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 		return
 	}
 
+	res := response.ClassResponse{
+		Uuid:      class.Uuid,
+		Name:      class.Name,
+		TeacherID: class.TeacherID,
+		CreatedAt: class.CreatedAt,
+		UpdatedAt: class.UpdatedAt,
+	}
+
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "Berhasil mendapatkan kelas",
-		Data:    class,
+		Data:    res,
 	})
 
 }

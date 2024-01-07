@@ -73,7 +73,7 @@ func (s *SchoolYearService) GetAllSchoolYears() (*[]response.SchoolYearResponse,
 	return &resp, nil
 }
 
-func (s *SchoolYearService) GetSchoolYear(uuid string) (*response.SchoolYearResponse, error) {
+func (s *SchoolYearService) GetSchoolYear(uuid string) (*domain.SchoolYear, error) {
 
 	result, err := s.Repo.FindSchoolYearByUuid(uuid)
 
@@ -81,23 +81,16 @@ func (s *SchoolYearService) GetSchoolYear(uuid string) (*response.SchoolYearResp
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("SchoolYear with uuid %s is not found", uuid),
+				Message: fmt.Sprintf("Tahun pelajaran dengan uuid %s tidak ditemukan", uuid),
 			}
 		}
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Gagal mendapatkan data, silahkan hubungi developper",
 		}
 	}
 
-	res := response.SchoolYearResponse{
-		Uuid:      result.Uuid,
-		Name:      result.Name,
-		CreatedAt: result.CreatedAt,
-		UpdatedAt: result.UpdatedAt,
-	}
-
-	return &res, nil
+	return result, nil
 }
 
 func (s *SchoolYearService) UpdateSchoolYear(model *domain.SchoolYear) error {

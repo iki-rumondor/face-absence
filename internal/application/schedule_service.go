@@ -26,7 +26,7 @@ func (s *ScheduleService) SchedulePagination(urlPath string, pagination *domain.
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all schedules: " + err.Error(),
+			Message: "Gagal mendapatkan jadwal",
 		}
 	}
 
@@ -39,12 +39,9 @@ func (s *ScheduleService) SchedulePagination(urlPath string, pagination *domain.
 func (s *ScheduleService) CreateSchedule(model *domain.Schedule) error {
 
 	if err := s.Repo.CreateSchedule(model); err != nil {
-		if utils.IsErrorType(err) {
-			return err
-		}
 		return &response.Error{
 			Code:    500,
-			Message: "Schedule was not created successfully: " + err.Error(),
+			Message: "Gagal menambahkan jadwal",
 		}
 	}
 
@@ -58,7 +55,7 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Gagal mendapatkan seluruh jadwal",
 		}
 	}
 
@@ -111,7 +108,7 @@ func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
 		}
 		return &response.Error{
 			Code:    500,
-			Message: "Schedule was not updated successfully: " + err.Error(),
+			Message: "Jadwal gagal diupdate",
 		}
 	}
 
@@ -121,9 +118,15 @@ func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
 func (s *ScheduleService) DeleteSchedule(Schedule *domain.Schedule) error {
 
 	if err := s.Repo.DeleteSchedule(Schedule); err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    500,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "Schedule was not deleted successfully: " + err.Error(),
+			Message: "Jadwal gagal dihapus",
 		}
 	}
 

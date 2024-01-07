@@ -73,7 +73,7 @@ func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 	return &resp, nil
 }
 
-func (s *SubjectService) GetSubject(uuid string) (*response.SubjectResponse, error) {
+func (s *SubjectService) GetSubject(uuid string) (*domain.Subject, error) {
 
 	result, err := s.Repo.FindSubjectByUuid(uuid)
 
@@ -90,14 +90,7 @@ func (s *SubjectService) GetSubject(uuid string) (*response.SubjectResponse, err
 		}
 	}
 
-	res := response.SubjectResponse{
-		Uuid:      result.Uuid,
-		Name:      result.Name,
-		CreatedAt: result.CreatedAt,
-		UpdatedAt: result.UpdatedAt,
-	}
-
-	return &res, nil
+	return result, nil
 }
 
 func (s *SubjectService) UpdateSubject(model *domain.Subject) error {
