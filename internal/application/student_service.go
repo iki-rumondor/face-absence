@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
@@ -32,7 +31,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to open file",
+			Message: "Terjadi kesalahan pada sistem, silahkan hubungi developper",
 		}
 	}
 	defer f.Close()
@@ -42,7 +41,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all rows",
+			Message: "Terjadi kesalahan pada sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -61,7 +60,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 		if err != nil {
 			failedStudent = append(failedStudent, response.FailedStudent{
 				Nama:        cols[7],
-				Description: "class ID in column 7 is not a number",
+				Description: "ID kelas pada kolom 7 bukan sebuah angka",
 				Error:       err.Error(),
 			})
 			continue
@@ -76,7 +75,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 		if err != nil {
 			failedStudent = append(failedStudent, response.FailedStudent{
 				Nama:        cols[0],
-				Description: "failed create user",
+				Description: "Gagal menambah data user",
 				Error:       err.Error(),
 			})
 			continue
@@ -96,7 +95,7 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 		if err := s.Repo.SaveStudent(&student); err != nil {
 			failedStudent = append(failedStudent, response.FailedStudent{
 				Nama:        cols[0],
-				Description: "failed create student",
+				Description: "Gagal menambah data santri",
 				Error:       err.Error(),
 			})
 			s.Repo.DeleteUser(user)
@@ -108,28 +107,12 @@ func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStud
 	return &failedStudent, nil
 }
 
-func (s *StudentService) CreateStudent(request *request.CreateStudent) error {
+func (s *StudentService) CreateStudent(student *domain.Student, user *domain.User) error {
 
-	user := domain.User{
-		Nama:     request.Nama,
-		Username: request.Username,
-		Password: request.Username,
-	}
-
-	student := domain.Student{
-		Uuid:         uuid.NewString(),
-		NIS:          request.NIS,
-		JK:           request.JK,
-		TempatLahir:  request.TempatLahir,
-		TanggalLahir: request.TanggalLahir,
-		Alamat:       request.Alamat,
-		ClassID:      request.ClassID,
-	}
-
-	if err := s.Repo.CreateStudentUser(&student, &user); err != nil {
+	if err := s.Repo.CreateStudentUser(student, user); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Student was not created successfully: " + err.Error(),
+			Message: "Data santri gagal ditambahkan",
 		}
 	}
 
@@ -142,7 +125,7 @@ func (s *StudentService) GetAllStudents() (*[]response.StudentUser, error) {
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all users",
+			Message: "Data santri gagal didapatkan",
 		}
 	}
 
@@ -172,7 +155,7 @@ func (s *StudentService) StudentsPagination(urlPath string, pagination *domain.P
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all users: " + err.Error(),
+			Message: "Data santri gagal didapatkan",
 		}
 	}
 
@@ -200,14 +183,14 @@ func (s *StudentService) GetStudent(uuid string) (*response.StudentUser, error) 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, &response.Error{
 			Code:    404,
-			Message: fmt.Sprintf("Student with uuid %s is not found", uuid),
+			Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", uuid),
 		}
 	}
 
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get student: " + err.Error(),
+			Message: "Data santri gagal didapatkan",
 		}
 	}
 
@@ -235,12 +218,12 @@ func (s *StudentService) UpdateStudent(student *domain.Student, user *domain.Use
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Student with uuid %s is not found", student.Uuid),
+				Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", student.Uuid),
 			}
 		}
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to find student: " + err.Error(),
+			Message: "Gagal mendapatkan data santri",
 		}
 	}
 
@@ -250,7 +233,7 @@ func (s *StudentService) UpdateStudent(student *domain.Student, user *domain.Use
 	if err := s.Repo.UpdateStudent(student, user); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to update student: " + err.Error(),
+			Message: "Gagal memperbarui data santri",
 		}
 	}
 
@@ -265,19 +248,25 @@ func (s *StudentService) DeleteStudent(uuid string) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Student with uuid %s is not found", uuid),
+				Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", uuid),
 			}
 		}
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to find student: " + err.Error(),
+			Message: "Gagal mendapatkan data santri",
 		}
 	}
 
 	if err := s.Repo.DeleteStudent(studentInDB.UserID); err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    403,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to delete student: " + err.Error(),
+			Message: "Gagal menghapus data santri",
 		}
 	}
 
@@ -289,7 +278,7 @@ func (s *StudentService) CreateStudentPDF(filePath string) error {
 	if err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to find all students",
+			Message: "Gagal mendapatkan data santri",
 		}
 	}
 
@@ -301,21 +290,64 @@ func (s *StudentService) CreateStudentPDF(filePath string) error {
 	pdf.Cell(40, 10, "Data Seluruh Santri")
 
 	// Tambahkan data
-	pdf.SetFont("Arial", "", 12)
+	pdf.SetFont("Arial", "", 8)
+
+	pdf.Ln(15)
+	pdf.SetFillColor(200, 220, 255)
+	pdf.SetDrawColor(0, 0, 0)
+
+	type Cell struct {
+		Name  string
+		Width float64
+	}
+
+	headerCells := []Cell{
+		{
+			Name:  "Nama",
+			Width: 50,
+		},
+		{
+			Name:  "NIS",
+			Width: 30,
+		},
+		{
+			Name:  "Jenis Kelamin",
+			Width: 25,
+		},
+		{
+			Name:  "Tempat, Tanggal Lahir",
+			Width: 45,
+		},
+		{
+			Name:  "Alamat",
+			Width: 30,
+		},
+	}
+
+	// Fungsi untuk menambahkan baris data
+	addRow := func(cells ...string) {
+		for i, cell := range cells {
+			pdf.CellFormat(headerCells[i].Width, 10, cell, "1", 0, "", false, 0, "")
+		}
+		pdf.Ln(10)
+	}
+
+	// Tambahkan header
+	for _, headerCell := range headerCells {
+		pdf.CellFormat(headerCell.Width, 10, headerCell.Name, "1", 0, "", true, 0, "")
+	}
 
 	pdf.Ln(10)
-	pdf.Cell(40, 10, "ID")
-	pdf.Cell(40, 10, "Nama")
+
 	for _, entry := range *data {
-		pdf.Ln(10)
-		pdf.Cell(40, 10, fmt.Sprintf("%d", entry.ID))
-		pdf.Cell(40, 10, entry.User.Nama)
+		birthInfo := fmt.Sprintf("%s, %s", entry.TempatLahir, entry.TanggalLahir)
+		addRow(entry.User.Nama, entry.NIS, entry.JK, birthInfo, entry.Alamat)
 	}
 
 	if err := pdf.OutputFileAndClose(filePath); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to save pdf: " + err.Error(),
+			Message: "Terjadi kesalahan, silahkan hubungi developper",
 		}
 	}
 
@@ -333,7 +365,7 @@ func (s *StudentService) CreatePdfHistory(history *domain.PdfDownloadHistory) er
 	if err := s.Repo.CreatePdfHistory(history); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to create pdf history: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 

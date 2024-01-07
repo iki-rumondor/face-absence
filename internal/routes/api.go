@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	customHTTP "github.com/iki-rumondor/init-golang-service/internal/adapter/http"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/middleware"
 	"github.com/iki-rumondor/init-golang-service/internal/registry"
 )
@@ -73,6 +74,8 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
 		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
+
+		admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 
 	return router

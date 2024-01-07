@@ -26,7 +26,7 @@ func (s *SchoolYearService) SchoolYearPagination(urlPath string, pagination *dom
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all school years: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -41,7 +41,7 @@ func (s *SchoolYearService) CreateSchoolYear(model *domain.SchoolYear) error {
 	if err := s.Repo.CreateSchoolYear(model); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "SchoolYear was not created successfully: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -55,7 +55,7 @@ func (s *SchoolYearService) GetAllSchoolYears() (*[]response.SchoolYearResponse,
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -73,7 +73,7 @@ func (s *SchoolYearService) GetAllSchoolYears() (*[]response.SchoolYearResponse,
 	return &resp, nil
 }
 
-func (s *SchoolYearService) GetSchoolYear(uuid string) (*response.SchoolYearResponse, error) {
+func (s *SchoolYearService) GetSchoolYear(uuid string) (*domain.SchoolYear, error) {
 
 	result, err := s.Repo.FindSchoolYearByUuid(uuid)
 
@@ -81,23 +81,16 @@ func (s *SchoolYearService) GetSchoolYear(uuid string) (*response.SchoolYearResp
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("SchoolYear with uuid %s is not found", uuid),
+				Message: fmt.Sprintf("Tahun pelajaran dengan uuid %s tidak ditemukan", uuid),
 			}
 		}
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
-	res := response.SchoolYearResponse{
-		Uuid:      result.Uuid,
-		Name:      result.Name,
-		CreatedAt: result.CreatedAt,
-		UpdatedAt: result.UpdatedAt,
-	}
-
-	return &res, nil
+	return result, nil
 }
 
 func (s *SchoolYearService) UpdateSchoolYear(model *domain.SchoolYear) error {
@@ -105,7 +98,7 @@ func (s *SchoolYearService) UpdateSchoolYear(model *domain.SchoolYear) error {
 	if err := s.Repo.UpdateSchoolYear(model); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "SchoolYear was not updated successfully: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -115,9 +108,15 @@ func (s *SchoolYearService) UpdateSchoolYear(model *domain.SchoolYear) error {
 func (s *SchoolYearService) DeleteSchoolYear(SchoolYear *domain.SchoolYear) error {
 
 	if err := s.Repo.DeleteSchoolYear(SchoolYear); err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    500,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "SchoolYear was not deleted successfully: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 

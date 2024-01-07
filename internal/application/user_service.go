@@ -24,24 +24,23 @@ func (s *UserService) UpdateAvatar(model *domain.User) error {
 	if err != nil {
 		return &response.Error{
 			Code:    404,
-			Message: "User is not found",
+			Message: "User tidak dapat ditemukan",
 		}
 	}
 
-	
 	if err := s.Repo.UpdateAvatar(model); err != nil {
 		// Hapus File Di Folder
 		if err := os.Remove("internal/assets/avatar/" + *model.Avatar); err != nil {
 			fmt.Println(err.Error())
 		}
-		
+
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to update user: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
-	
-	if user.Avatar != nil{
+
+	if user.Avatar != nil {
 		if err := os.Remove("internal/assets/avatar/" + *user.Avatar); err != nil {
 			fmt.Println(err.Error())
 		}

@@ -1,8 +1,6 @@
 package application
 
 import (
-	"fmt"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
@@ -27,7 +25,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 	if err != nil {
 		return "", &response.Error{
 			Code:    404,
-			Message: "That username is not registered in our system",
+			Message: "Username atau Password salah",
 		}
 	}
 
@@ -36,7 +34,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 		if err := s.Repo.FindTeacherByUserID(result.ID); err != nil {
 			return "", &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Teacher with username %s is not found", user.Username),
+				Message: "Guru dengan username tersebut tidak ditemukan",
 			}
 		}
 	}
@@ -44,7 +42,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 		if err := s.Repo.FindStudentByUserID(result.ID); err != nil {
 			return "", &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Student with username %s is not found", user.Username),
+				Message: "Santri dengan username tersebut tidak ditemukan",
 			}
 		}
 	}
@@ -52,7 +50,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 		if err := s.Repo.FindAdminByUserID(result.ID); err != nil {
 			return "", &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Admin with username %s is not found", user.Username),
+				Message: "Admin dengan username tersebut tidak ditemukan",
 			}
 		}
 	}
@@ -61,7 +59,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 	if err := utils.ComparePassword(result.Password, user.Password); err != nil {
 		return "", &response.Error{
 			Code:    404,
-			Message: "Missmatch password",
+			Message: "Username atau Password salah",
 		}
 	}
 

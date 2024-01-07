@@ -26,7 +26,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	if err != nil {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "File avatar is not found",
+			Message: "Field avatar tidak ditemukan",
 		})
 		return
 	}
@@ -35,7 +35,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	if id == 0 {
 		utils.HandleError(c, &response.Error{
 			Code:    500,
-			Message: "Can't get user id",
+			Message: "Gagal mendapatkan id user",
 		})
 		return
 	}
@@ -43,7 +43,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	if ok := utils.IsValidImageExtension(file.Filename); !ok {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "File uploaded is not an image",
+			Message: "File yang diupload bukan gambar",
 		})
 		return
 	}
@@ -51,7 +51,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	if ok := utils.IsValidImageSize(file.Size); !ok {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "File size limit: 5MB",
+			Message: "Ukuran file maksimal 5MB",
 		})
 		return
 	}
@@ -64,7 +64,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
 		utils.HandleError(c, &response.Error{
 			Code:    500,
-			Message: "Something went wrong when uploaded file",
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		})
 	}
 
@@ -78,8 +78,8 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "user avatar has been updated successfully",
+		Message: "Berhasil mengubah avatar user",
 	})
 }

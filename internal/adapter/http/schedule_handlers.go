@@ -15,12 +15,20 @@ import (
 )
 
 type ScheduleHandler struct {
-	Service *application.ScheduleService
+	Service           *application.ScheduleService
+	ClassService      *application.ClassService
+	SubjectService    *application.SubjectService
+	TeacherService    *application.TeacherService
+	SchoolYearService *application.SchoolYearService
 }
 
-func NewScheduleHandler(service *application.ScheduleService) *ScheduleHandler {
+func NewScheduleHandler(service *application.ScheduleService, class *application.ClassService, subject *application.SubjectService, teacher *application.TeacherService, sy *application.SchoolYearService) *ScheduleHandler {
 	return &ScheduleHandler{
-		Service: service,
+		Service:           service,
+		ClassService:      class,
+		SubjectService:    subject,
+		TeacherService:    teacher,
+		SchoolYearService: sy,
 	}
 }
 
@@ -45,7 +53,7 @@ func (h *ScheduleHandler) GetSchedulePagination(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil menemukan jadwal",
 		Data:    result,
 	})
 
@@ -68,10 +76,34 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		return
 	}
 
+	class, err := h.ClassService.GetClass(body.ClassUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	subject, err := h.SubjectService.GetSubject(body.SubjectUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	schoolYear, err := h.SchoolYearService.GetSchoolYear(body.SchoolYearUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	if ok := utils.IsValidDateFormat(body.Day); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
-			Message: "Failed to parse day, please use format yyyy-mm-dd",
+			Message: "Gunakan format yyyy-mm-dd pada field day",
 		})
 		return
 	}
@@ -79,7 +111,7 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 	if ok := utils.IsValidTimeFormat(body.Start); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
-			Message: "Failed to parse start, please use format hh:mm",
+			Message: "Gunakan format hh:mm pada field start",
 		})
 		return
 	}
@@ -87,7 +119,7 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 	if ok := utils.IsValidTimeFormat(body.End); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
-			Message: "Failed to parse end, please use format hh:mm",
+			Message: "Gunakan format hh:mm pada field end",
 		})
 		return
 	}
@@ -98,10 +130,10 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		Day:          body.Day,
 		Start:        body.Start,
 		End:          body.End,
-		ClassID:      body.ClassID,
-		SubjectID:    body.SubjectID,
-		TeacherID:    body.TeacherID,
-		SchoolYearID: body.SchoolYearID,
+		ClassID:      class.ID,
+		SubjectID:    subject.ID,
+		TeacherID:    teacher.ID,
+		SchoolYearID: schoolYear.ID,
 	}
 
 	if err := h.Service.CreateSchedule(&model); err != nil {
@@ -111,7 +143,7 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "Schedule has been created successfully",
+		Message: "Jadwal berhasil ditambahkan",
 	})
 
 }
@@ -127,7 +159,7 @@ func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Schedule was found",
+		Message: "Jadwal berhasil ditemukan",
 		Data:    res,
 	})
 
@@ -136,16 +168,29 @@ func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 
 	uuid := c.Param("uuid")
-	res, err := h.Service.GetSchedule(uuid)
-
+	schedule, err := h.Service.GetSchedule(uuid)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
+	res := response.ScheduleResponse{
+		Uuid:         schedule.Uuid,
+		Name:         schedule.Name,
+		Day:          schedule.Day,
+		Start:        schedule.Start,
+		End:          schedule.End,
+		ClassID:      schedule.ClassID,
+		SubjectID:    schedule.SubjectID,
+		TeacherID:    schedule.TeacherID,
+		SchoolYearID: schedule.SchoolYearID,
+		CreatedAt:    schedule.CreatedAt,
+		UpdatedAt:    schedule.UpdatedAt,
+	}
+
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Schedule was found",
+		Message: "Jadwal berhasil ditemukan",
 		Data:    res,
 	})
 
@@ -176,10 +221,34 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		return
 	}
 
+	class, err := h.ClassService.GetClass(body.ClassUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	subject, err := h.SubjectService.GetSubject(body.SubjectUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	schoolYear, err := h.SchoolYearService.GetSchoolYear(body.SchoolYearUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	if ok := utils.IsValidDateFormat(body.Day); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
-			Message: "Failed to parse day, please use format yyyy-mm-dd",
+			Message: "Gunakan format yyyy-mm-dd pada field day",
 		})
 		return
 	}
@@ -187,7 +256,7 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 	if ok := utils.IsValidTimeFormat(body.Start); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
-			Message: "Failed to parse start, please use format hh:mm",
+			Message: "Gunakan format hh:mm pada field start",
 		})
 		return
 	}
@@ -195,7 +264,7 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 	if ok := utils.IsValidTimeFormat(body.End); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
-			Message: "Failed to parse end, please use format hh:mm",
+			Message: "Gunakan format hh:mm pada field end",
 		})
 		return
 	}
@@ -206,10 +275,10 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		Day:          body.Day,
 		Start:        body.Start,
 		End:          body.End,
-		ClassID:      body.ClassID,
-		SubjectID:    body.SubjectID,
-		TeacherID:    body.TeacherID,
-		SchoolYearID: body.SchoolYearID,
+		ClassID:      class.ID,
+		SubjectID:    subject.ID,
+		TeacherID:    teacher.ID,
+		SchoolYearID: schoolYear.ID,
 	}
 
 	if err := h.Service.UpdateSchedule(&model); err != nil {
@@ -217,9 +286,9 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Schedule has been updated successfully",
+		Message: "Jadwal berhasil diperbarui",
 	})
 
 }
@@ -244,7 +313,7 @@ func (h *ScheduleHandler) DeleteSchedule(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "Schedule has been deleted successfully",
+		Message: "Jadwal berhasil dihapus",
 	})
 
 }

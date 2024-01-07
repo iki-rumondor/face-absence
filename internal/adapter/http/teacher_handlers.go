@@ -46,7 +46,7 @@ func (h *TeacherHandlers) CreateTeacher(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "Teacher has been saved successfully",
+		Message: "Berhasil menambah data guru",
 	})
 
 }
@@ -72,7 +72,7 @@ func (h *TeacherHandlers) GetTeachersPagination(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil mendapatkan data guru",
 		Data:    result,
 	})
 
@@ -109,9 +109,9 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil mendapatkan data guru",
 		Data:    res,
 	})
 
@@ -145,9 +145,9 @@ func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
 		UpdatedAt:     teacher.UpdatedAt,
 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
+	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil mendapatkan data guru",
 		Data:    res,
 	})
 
@@ -180,7 +180,7 @@ func (h *TeacherHandlers) UpdateTeacher(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "teacher has been updated successfully",
+		Message: "Berhasil memperbarui data guru",
 	})
 
 }
@@ -196,6 +196,6 @@ func (h *TeacherHandlers) DeleteTeacher(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "teacher has been deleted successfully",
+		Message: "Berhasil menghapus data guru",
 	})
 }

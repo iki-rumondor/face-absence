@@ -2,7 +2,6 @@ package application
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
@@ -27,7 +26,7 @@ func (s *ScheduleService) SchedulePagination(urlPath string, pagination *domain.
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all schedules: " + err.Error(),
+			Message: "Gagal mendapatkan jadwal",
 		}
 	}
 
@@ -40,12 +39,9 @@ func (s *ScheduleService) SchedulePagination(urlPath string, pagination *domain.
 func (s *ScheduleService) CreateSchedule(model *domain.Schedule) error {
 
 	if err := s.Repo.CreateSchedule(model); err != nil {
-		if utils.IsErrorType(err) {
-			return err
-		}
 		return &response.Error{
 			Code:    500,
-			Message: "Schedule was not created successfully: " + err.Error(),
+			Message: "Gagal menambahkan jadwal",
 		}
 	}
 
@@ -59,7 +55,7 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Gagal mendapatkan seluruh jadwal",
 		}
 	}
 
@@ -84,7 +80,7 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 	return &resp, nil
 }
 
-func (s *ScheduleService) GetSchedule(uuid string) (*response.ScheduleResponse, error) {
+func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {
 
 	result, err := s.Repo.FindScheduleByUuid(uuid)
 
@@ -92,30 +88,16 @@ func (s *ScheduleService) GetSchedule(uuid string) (*response.ScheduleResponse, 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Schedule with uuid %s is not found", uuid),
+				Message: "Jadwal tidak ditemukan",
 			}
 		}
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed: " + err.Error(),
+			Message: "Terjadi kesalahan dalam mengambil jadwal",
 		}
 	}
 
-	res := response.ScheduleResponse{
-		Uuid:         result.Uuid,
-		Name:         result.Name,
-		Day:          result.Day,
-		Start:        result.Start,
-		End:          result.End,
-		ClassID:      result.ClassID,
-		SubjectID:    result.SubjectID,
-		TeacherID:    result.TeacherID,
-		SchoolYearID: result.SchoolYearID,
-		CreatedAt:    result.CreatedAt,
-		UpdatedAt:    result.UpdatedAt,
-	}
-
-	return &res, nil
+	return result, nil
 }
 
 func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
@@ -126,7 +108,7 @@ func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
 		}
 		return &response.Error{
 			Code:    500,
-			Message: "Schedule was not updated successfully: " + err.Error(),
+			Message: "Jadwal gagal diupdate",
 		}
 	}
 
@@ -136,9 +118,15 @@ func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
 func (s *ScheduleService) DeleteSchedule(Schedule *domain.Schedule) error {
 
 	if err := s.Repo.DeleteSchedule(Schedule); err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    403,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "Schedule was not deleted successfully: " + err.Error(),
+			Message: "Jadwal gagal dihapus",
 		}
 	}
 

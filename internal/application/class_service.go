@@ -30,7 +30,7 @@ func (s *ClassService) CreateClass(class *domain.Class) error {
 
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to create class: " + err.Error(),
+			Message: "Gagal menambahkan kelas, silahkan hubungi developper",
 		}
 	}
 
@@ -44,7 +44,7 @@ func (s *ClassService) GetClassOptions() (*[]response.ClassOption, error) {
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to find classes: " + err.Error(),
+			Message: "Gagal menemukan kelas, silahkan hubungi developper",
 		}
 	}
 
@@ -52,8 +52,8 @@ func (s *ClassService) GetClassOptions() (*[]response.ClassOption, error) {
 
 	for _, class := range *classes {
 		res = append(res, response.ClassOption{
-			Uuid:      class.Uuid,
-			Name:      class.Name,
+			Uuid: class.Uuid,
+			Name: class.Name,
 		})
 	}
 
@@ -67,7 +67,7 @@ func (s *ClassService) GetAllClasses() (*[]response.ClassResponse, error) {
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to find classes: " + err.Error(),
+			Message: "Gagal menemukan kelas, silahkan hubungi developper",
 		}
 	}
 
@@ -92,7 +92,7 @@ func (s *ClassService) ClassPagination(urlPath string, pagination *domain.Pagina
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all users: " + err.Error(),
+			Message: "Gagal menemukan kelas, silahkan hubungi developper",
 		}
 	}
 
@@ -102,7 +102,7 @@ func (s *ClassService) ClassPagination(urlPath string, pagination *domain.Pagina
 
 }
 
-func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
+func (s *ClassService) GetClass(uuid string) (*domain.Class, error) {
 
 	class, err := s.Repo.FindClassByUuid(uuid)
 
@@ -110,24 +110,16 @@ func (s *ClassService) GetClass(uuid string) (*response.ClassResponse, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Class with uuid %s is not found", uuid),
+				Message: fmt.Sprintf("Kelas dengan uuid %s tidak ditemukan", uuid),
 			}
 		}
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to create class: " + err.Error(),
+			Message: "Gagal menemukan kelas, silahkan hubungi developper",
 		}
 	}
 
-	res := response.ClassResponse{
-		Uuid:      class.Uuid,
-		Name:      class.Name,
-		TeacherID: class.TeacherID,
-		CreatedAt: class.CreatedAt,
-		UpdatedAt: class.UpdatedAt,
-	}
-
-	return &res, nil
+	return class, nil
 }
 
 func (s *ClassService) UpdateClass(class *domain.Class) error {
@@ -136,10 +128,10 @@ func (s *ClassService) UpdateClass(class *domain.Class) error {
 		if utils.IsErrorType(err) {
 			return err
 		}
-		
+
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to update class: " + err.Error(),
+			Message: "Gagal mengupdate kelas, silahkan hubungi developper",
 		}
 	}
 
@@ -149,9 +141,15 @@ func (s *ClassService) UpdateClass(class *domain.Class) error {
 func (s *ClassService) DeleteClass(class *domain.Class) error {
 
 	if err := s.Repo.DeleteClass(class); err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    403,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to delete class: " + err.Error(),
+			Message: "Gagal menghapus kelas, silahkan hubungi developper",
 		}
 	}
 
