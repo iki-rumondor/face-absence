@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -16,12 +15,14 @@ import (
 )
 
 type AbsenceHandler struct {
-	Service *application.AbsenceService
+	Service         *application.AbsenceService
+	ScheduleService *application.ScheduleService
 }
 
-func NewAbsenceHandler(service *application.AbsenceService) *AbsenceHandler {
+func NewAbsenceHandler(service *application.AbsenceService, schedule *application.ScheduleService) *AbsenceHandler {
 	return &AbsenceHandler{
-		Service: service,
+		Service:         service,
+		ScheduleService: schedule,
 	}
 }
 
@@ -31,47 +32,43 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 	if id == 0 {
 		utils.HandleError(c, &response.Error{
 			Code:    500,
-			Message: "Can't get user id",
+			Message: "Gagal menemukan id user",
 		})
 		return
 	}
 
-	scheduleID, err := strconv.Atoi(c.PostForm("schedule_id"))
-	if err != nil{
-		utils.HandleError(c, &response.Error{
-			Code:    400,
-			Message: "Schedule id is not a number",
-		})
+	schedule, err := h.ScheduleService.GetSchedule(c.PostForm("schedule_uuid"))
+	if err != nil {
+		utils.HandleError(c, err)
 		return
 	}
 
-	status, err := h.Service.CheckSchedule(uint(scheduleID))
-	
-	if err != nil{
+	status, err := h.Service.CheckSchedule(schedule.ID)
+
+	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
 	absence := domain.Absence{
-		Uuid: uuid.NewString(),
-		StudentID: id,
-		ScheduleID: uint(scheduleID),
-		Status: status,
+		Uuid:       uuid.NewString(),
+		StudentID:  id,
+		ScheduleID: schedule.ID,
+		Status:     status,
 	}
 
 	file, err := c.FormFile("face_image")
 	if err != nil {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "Face image is not found",
+			Message: "Field face_image tidak ditemukan",
 		})
 	}
-
 
 	if ok := utils.IsValidImageExtension(file.Filename); !ok {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "File uploaded is not an image",
+			Message: "File yang diupload bukan sebuah gambar",
 		})
 		return
 	}
@@ -79,7 +76,7 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 	if ok := utils.IsValidImageSize(file.Size); !ok {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "File size limit: 5MB",
+			Message: "File maksimal 5MB",
 		})
 		return
 	}
@@ -92,7 +89,7 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
 		utils.HandleError(c, &response.Error{
 			Code:    500,
-			Message: "Something went wrong when uploaded file",
+			Message: "Terjadi kesalahan ketika menyimpan file",
 		})
 	}
 
@@ -109,6 +106,6 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "absence has been created successfully",
+		Message: "Absensi berhasil disimpan",
 	})
 }
