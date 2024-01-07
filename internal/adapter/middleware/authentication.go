@@ -16,7 +16,7 @@ func IsValidJWT() gin.HandlerFunc {
 		var bearer = strings.HasPrefix(headerToken, "Bearer")
 
 		if !bearer {
-			c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
 				Success: false,
 				Message: "Bearer token is not valid",
 			})
