@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/database"
+	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/registry"
 	"github.com/iki-rumondor/init-golang-service/internal/routes"
 )
@@ -16,12 +19,12 @@ func main() {
 		return
 	}
 
-	// for _, model := range registry.RegisterModels() {
-	// 	if err := gormDB.Debug().AutoMigrate(model.Model); err != nil {
-	// 		log.Fatal(err.Error())
-	// 		return
-	// 	}
-	// }
+	for _, model := range registry.RegisterModels() {
+		if err := gormDB.Debug().AutoMigrate(model.Model); err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+	}
 
 	handlers := registry.RegisterHandlers(gormDB)
 
@@ -32,17 +35,17 @@ func main() {
 	// 	}
 	// }
 
-	// if err := gormDB.First(&domain.User{}).Error; err != nil {
-	// 	gormDB.Create(&domain.User{
-	// 		Nama:     "Admin",
-	// 		Username: "admin",
-	// 		Password: "123456",
-	// 	})
-	// 	gormDB.Create(&domain.Admin{
-	// 		Uuid: uuid.NewString(),
-	// 		UserID: 1,
-	// 	})
-	// }
+	if err := gormDB.First(&domain.User{}).Error; err != nil {
+		gormDB.Create(&domain.User{
+			Nama:     "Admin",
+			Username: "admin",
+			Password: "123456",
+		})
+		gormDB.Create(&domain.Admin{
+			Uuid:   uuid.NewString(),
+			UserID: 1,
+		})
+	}
 
 	// gormDB.Create(&domain.User{
 	// 	Nama:     "Ilham",
@@ -60,7 +63,7 @@ func main() {
 	// 	ClassID: 1,
 	// })
 
-	// fmt.Println("Database migrated succeesfully")
+	fmt.Println("Database migrated succeesfully")
 
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
