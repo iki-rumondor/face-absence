@@ -15,12 +15,14 @@ import (
 )
 
 type ClassHandler struct {
-	Service *application.ClassService
+	Service        *application.ClassService
+	TeacherService *application.TeacherService
 }
 
-func NewClassHandler(service *application.ClassService) *ClassHandler {
+func NewClassHandler(service *application.ClassService, teacher *application.TeacherService) *ClassHandler {
 	return &ClassHandler{
-		Service: service,
+		Service:        service,
+		TeacherService: teacher,
 	}
 }
 
@@ -41,10 +43,16 @@ func (h *ClassHandler) CreateClass(c *gin.Context) {
 		return
 	}
 
+	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	class := domain.Class{
 		Uuid:      uuid.NewString(),
 		Name:      body.Name,
-		TeacherID: body.TeacherID,
+		TeacherID: teacher.ID,
 	}
 
 	if err := h.Service.CreateClass(&class); err != nil {
@@ -54,7 +62,7 @@ func (h *ClassHandler) CreateClass(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "New class has been saved successfully",
+		Message: "Kelas baru berhasil ditambahkan",
 	})
 
 }
@@ -70,7 +78,7 @@ func (h *ClassHandler) GetAllClasses(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Success to find all classes",
+		Message: "Berhasil mendapatkan seluruh kelas",
 		Data:    classes,
 	})
 
@@ -87,7 +95,7 @@ func (h *ClassHandler) GetClassOption(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Success to find all classes",
+		Message: "Berhasil mendapatkan seluruh kelas",
 		Data:    classes,
 	})
 
@@ -114,7 +122,7 @@ func (h *ClassHandler) GetClassPagination(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your request has been executed successfully",
+		Message: "Berhasil mendapatkan kelas",
 		Data:    result,
 	})
 
@@ -132,7 +140,7 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Success to find class by uuid",
+		Message: "Berhasil mendapatkan kelas",
 		Data:    class,
 	})
 
@@ -156,6 +164,12 @@ func (h *ClassHandler) UpdateClass(c *gin.Context) {
 		return
 	}
 
+	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	uuid := c.Param("uuid")
 	classInDB, err := h.Service.GetClass(uuid)
 	if err != nil {
@@ -166,7 +180,7 @@ func (h *ClassHandler) UpdateClass(c *gin.Context) {
 	class := domain.Class{
 		Uuid:      classInDB.Uuid,
 		Name:      body.Name,
-		TeacherID: body.TeacherID,
+		TeacherID: teacher.ID,
 	}
 
 	if err := h.Service.UpdateClass(&class); err != nil {
@@ -176,7 +190,7 @@ func (h *ClassHandler) UpdateClass(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Success to update class by uuid",
+		Message: "Berhasil mengupdate data kelas",
 	})
 
 }
@@ -201,7 +215,7 @@ func (h *ClassHandler) DeleteClass(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "Success to delete class by uuid",
+		Message: "Berhasil menghapus data kelas",
 	})
 
 }

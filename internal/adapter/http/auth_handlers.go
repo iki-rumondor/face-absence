@@ -63,7 +63,7 @@ func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 	
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "your JWT token is authenticated and good to go",
+		Message: "Token valid",
 		Data:    mapClaims,
 	})
 }
