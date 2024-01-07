@@ -19,7 +19,7 @@ type Handlers struct {
 func RegisterHandlers(s *Services) *Handlers {
 
 	auth_handler := customHTTP.NewAuthHandler(s.Auth)
-	student_handler := customHTTP.NewStudentHandler(s.Student)
+	student_handler := customHTTP.NewStudentHandler(s.Student, s.Class)
 	teacher_handler := customHTTP.NewTeacherHandler(s.Teacher)
 	class_handler := customHTTP.NewClassHandler(s.Class, s.Teacher)
 	subject_handler := customHTTP.NewSubjectHandler(s.Subject)

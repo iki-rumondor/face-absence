@@ -18,12 +18,14 @@ import (
 )
 
 type StudentHandlers struct {
-	Service *application.StudentService
+	Service      *application.StudentService
+	ClassService *application.ClassService
 }
 
-func NewStudentHandler(service *application.StudentService) *StudentHandlers {
+func NewStudentHandler(service *application.StudentService, class *application.ClassService) *StudentHandlers {
 	return &StudentHandlers{
-		Service: service,
+		Service:      service,
+		ClassService: class,
 	}
 }
 
@@ -43,14 +45,36 @@ func (h *StudentHandlers) CreateStudent(c *gin.Context) {
 		return
 	}
 
-	if err := h.Service.CreateStudent(&body); err != nil {
+	class, err := h.ClassService.GetClass(body.ClassUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	user := domain.User{
+		Nama:     body.Nama,
+		Username: body.Username,
+		Password: body.Username,
+	}
+
+	student := domain.Student{
+		Uuid:         uuid.NewString(),
+		NIS:          body.NIS,
+		JK:           body.JK,
+		TempatLahir:  body.TempatLahir,
+		TanggalLahir: body.TanggalLahir,
+		Alamat:       body.Alamat,
+		ClassID:      class.ID,
+	}
+
+	if err := h.Service.CreateStudent(&student, &user); err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "Teacher has been saved successfully",
+		Message: "Santri berhasil ditambahkan",
 	})
 
 }
@@ -60,7 +84,7 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 	if err != nil {
 		utils.HandleError(c, &response.Error{
 			Code:    400,
-			Message: "Your request file is not valid",
+			Message: "File students tidak ditemukan",
 		})
 		return
 	}
@@ -70,13 +94,13 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 		return
 	}
 
-	tempFolder := "internal/temp"
+	tempFolder := "internal/assets/temp"
 	pathFile := filepath.Join(tempFolder, file.Filename)
 
 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
 		utils.HandleError(c, &response.Error{
 			Code:    500,
-			Message: "Something went wrong when uploaded file",
+			Message: "Terjadi kesalahan saat menyimpan file",
 		})
 	}
 
@@ -95,7 +119,7 @@ func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
-		Message: "students has been saved successfully",
+		Message: "Santri berhasil ditambahkan",
 		Data:    failed,
 	})
 }
@@ -121,7 +145,7 @@ func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: "get all students has been successfully",
+		Message: "Berhasil mendapatkan data santri",
 		Data:    result,
 	})
 }
@@ -137,7 +161,7 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: fmt.Sprintf("student with uuid %s is found", student.Uuid),
+		Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", student.Uuid),
 		Data:    student,
 	})
 }
@@ -159,6 +183,12 @@ func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 		return
 	}
 
+	class, err := h.ClassService.GetClass(body.ClassUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	uuid := c.Param("uuid")
 
 	student := domain.Student{
@@ -168,7 +198,7 @@ func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 		TempatLahir:  body.TempatLahir,
 		TanggalLahir: body.TanggalLahir,
 		Alamat:       body.Alamat,
-		ClassID:      body.ClassID,
+		ClassID:      class.ID,
 	}
 
 	user := domain.User{
@@ -183,7 +213,7 @@ func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: fmt.Sprintf("student with uuid %s has been updated successfully", uuid),
+		Message: "Data santri berhasil diperbarui",
 	})
 }
 
@@ -198,7 +228,7 @@ func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: fmt.Sprintf("student with uuid %s has been deleted successfully", uuid),
+		Message: "Data santri berhasil dihapus",
 	})
 }
 
