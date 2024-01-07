@@ -27,14 +27,14 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 	if user, _ := s.Repo.FindUserByUsername(request.Username); user != nil {
 		return &response.Error{
 			Code:    404,
-			Message: "Username has already been taken",
+			Message: "Username sudah terdaftar",
 		}
 	}
 
 	if user, _ := s.Repo.FindTeacherByColumn("nip", request.Nip); user != nil {
 		return &response.Error{
 			Code:    404,
-			Message: "Nip has already been taken",
+			Message: "Nip sudah terdaftar",
 		}
 	}
 
@@ -61,7 +61,7 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 	if err := s.Repo.CreateTeacherUser(teacher, user); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to create user: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -74,7 +74,7 @@ func (s *TeacherService) TeachersPagination(urlPath string, pagination *domain.P
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all users: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -91,7 +91,7 @@ func (s *TeacherService) GetTeachers() (*[]domain.Teacher, error) {
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get all teachers" + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -106,14 +106,14 @@ func (s *TeacherService) GetTeacher(uuid string) (*domain.Teacher, error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, &response.Error{
 			Code:    404,
-			Message: fmt.Sprintf("Teacher with uuid %s is not found", uuid),
+			Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", uuid),
 		}
 	}
 
 	if err != nil {
 		return nil, &response.Error{
 			Code:    500,
-			Message: "Failed to get teacher: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -127,14 +127,14 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &response.Error{
 			Code:    404,
-			Message: "Teacher with uuid is not found",
+			Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", request.Uuid),
 		}
 	}
 
 	if err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to get teacher: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -161,7 +161,7 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
 	if err := s.Repo.UpdateTeacherUser(teacher, user); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to update teacher: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
@@ -175,21 +175,27 @@ func (s *TeacherService) DeleteTeacher(uuid string) error {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &response.Error{
 			Code:    404,
-			Message: "Teacher with uuid is not found",
+			Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", uuid),
 		}
 	}
 
 	if err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to get teacher: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
 	if err := s.Repo.DeleteTeacherUser(teacherInDB.UserID); err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return &response.Error{
+				Code:    500,
+				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
+			}
+		}
 		return &response.Error{
 			Code:    500,
-			Message: "Failed to delete teacher: " + err.Error(),
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
 		}
 	}
 
