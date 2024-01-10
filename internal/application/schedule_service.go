@@ -63,17 +63,46 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 
 	for _, res := range *result {
 		resp = append(resp, response.ScheduleResponse{
-			Uuid:         res.Uuid,
-			Name:         res.Name,
-			Day:          res.Day,
-			Start:        res.Start,
-			End:          res.End,
-			ClassID:      res.ClassID,
-			SubjectID:    res.SubjectID,
-			TeacherID:    res.TeacherID,
-			SchoolYearID: res.SchoolYearID,
-			CreatedAt:    res.CreatedAt,
-			UpdatedAt:    res.UpdatedAt,
+			Uuid:  res.Uuid,
+			Name:  res.Name,
+			Day:   res.Day,
+			Start: res.Start,
+			End:   res.End,
+			Class: &response.ClassData{
+				Uuid:      res.Class.Uuid,
+				Name:      res.Class.Name,
+				CreatedAt: res.Class.CreatedAt,
+				UpdatedAt: res.Class.UpdatedAt,
+			},
+			Subject: &response.SubjectResponse{
+				Uuid:      res.Subject.Uuid,
+				Name:      res.Subject.Name,
+				CreatedAt: res.Subject.CreatedAt,
+				UpdatedAt: res.Subject.UpdatedAt,
+			},
+			Teacher: &response.TeacherData{
+				Uuid:          res.Teacher.Uuid,
+				JK:            res.Teacher.JK,
+				Nip:           res.Teacher.Nip,
+				Nuptk:         res.Teacher.Nuptk,
+				StatusPegawai: res.Teacher.StatusPegawai,
+				TempatLahir:   res.Teacher.TempatLahir,
+				TanggalLahir:  res.Teacher.TanggalLahir,
+				NoHp:          res.Teacher.NoHp,
+				Jabatan:       res.Teacher.Jabatan,
+				TotalJtm:      res.Teacher.TotalJtm,
+				Alamat:        res.Teacher.Alamat,
+				CreatedAt:     res.Teacher.CreatedAt,
+				UpdatedAt:     res.Teacher.UpdatedAt,
+			},
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid:      res.Subject.Uuid,
+				Name:      res.Subject.Name,
+				CreatedAt: res.Subject.CreatedAt,
+				UpdatedAt: res.Subject.UpdatedAt,
+			},
+			CreatedAt: res.CreatedAt,
+			UpdatedAt: res.UpdatedAt,
 		})
 	}
 

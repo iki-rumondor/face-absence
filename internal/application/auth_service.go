@@ -63,13 +63,8 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 		}
 	}
 
-	data := map[string]interface{}{
-		"id":   result.ID,
-		"role": role,
-	}
-
 	// create jwt token
-	jwt, err := utils.GenerateToken(data)
+	jwt, err := utils.GenerateToken(result.ID, role)
 	if err != nil {
 		return "", err
 	}

@@ -77,7 +77,7 @@ func (s *ClassService) GetAllClasses() (*[]response.ClassResponse, error) {
 		res = append(res, response.ClassResponse{
 			Uuid: class.Uuid,
 			Name: class.Name,
-			Teacher: &response.TeacherClass{
+			Teacher: &response.TeacherData{
 				Uuid:          class.Teacher.Uuid,
 				JK:            class.Teacher.JK,
 				Nip:           class.Teacher.Nip,

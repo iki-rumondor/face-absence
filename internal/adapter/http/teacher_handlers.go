@@ -92,8 +92,6 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 	for _, teacher := range *teachers {
 		res = append(res, &response.Teacher{
 			Uuid:          teacher.Uuid,
-			Nama:          teacher.User.Nama,
-			Username:      teacher.User.Username,
 			JK:            teacher.JK,
 			Nip:           teacher.Nip,
 			Nuptk:         teacher.Nuptk,
@@ -104,8 +102,15 @@ func (h *TeacherHandlers) GetTeachers(c *gin.Context) {
 			Jabatan:       teacher.Jabatan,
 			TotalJtm:      teacher.TotalJtm,
 			Alamat:        teacher.Alamat,
-			CreatedAt:     teacher.CreatedAt,
-			UpdatedAt:     teacher.UpdatedAt,
+			User: &response.UserData{
+				Nama:      teacher.User.Nama,
+				Username:  teacher.User.Username,
+				Avatar:    teacher.User.Avatar,
+				CreatedAt: teacher.User.CreatedAt,
+				UpdatedAt: teacher.User.UpdatedAt,
+			},
+			CreatedAt: teacher.CreatedAt,
+			UpdatedAt: teacher.UpdatedAt,
 		})
 	}
 
@@ -129,8 +134,6 @@ func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
 
 	res := &response.Teacher{
 		Uuid:          teacher.Uuid,
-		Nama:          teacher.User.Nama,
-		Username:      teacher.User.Username,
 		JK:            teacher.JK,
 		Nip:           teacher.Nip,
 		Nuptk:         teacher.Nuptk,
@@ -141,8 +144,15 @@ func (h *TeacherHandlers) GetTeacher(c *gin.Context) {
 		Jabatan:       teacher.Jabatan,
 		TotalJtm:      teacher.TotalJtm,
 		Alamat:        teacher.Alamat,
-		CreatedAt:     teacher.CreatedAt,
-		UpdatedAt:     teacher.UpdatedAt,
+		User: &response.UserData{
+			Nama:      teacher.User.Nama,
+			Username:  teacher.User.Username,
+			Avatar:    teacher.User.Avatar,
+			CreatedAt: teacher.User.CreatedAt,
+			UpdatedAt: teacher.User.UpdatedAt,
+		},
+		CreatedAt: teacher.CreatedAt,
+		UpdatedAt: teacher.UpdatedAt,
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{

@@ -30,24 +30,53 @@ func (r *ScheduleRepoImplementation) FindSchedulePagination(pagination *domain.P
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Find(&schedules).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Preload("Subject").Preload("Teacher").Preload("SchoolYear").Find(&schedules).Error; err != nil {
 		return nil, err
 	}
 
 	var res = []response.ScheduleResponse{}
 	for _, schedule := range schedules {
 		res = append(res, response.ScheduleResponse{
-			Uuid:         schedule.Uuid,
-			Name:         schedule.Name,
-			Day:          schedule.Day,
-			Start:        schedule.Start,
-			End:          schedule.End,
-			ClassID:      schedule.ClassID,
-			SubjectID:    schedule.SubjectID,
-			TeacherID:    schedule.TeacherID,
-			SchoolYearID: schedule.SchoolYearID,
-			CreatedAt:    schedule.CreatedAt,
-			UpdatedAt:    schedule.UpdatedAt,
+			Uuid:  schedule.Uuid,
+			Name:  schedule.Name,
+			Day:   schedule.Day,
+			Start: schedule.Start,
+			End:   schedule.End,
+			Class: &response.ClassData{
+				Uuid:      schedule.Class.Uuid,
+				Name:      schedule.Class.Name,
+				CreatedAt: schedule.Class.CreatedAt,
+				UpdatedAt: schedule.Class.UpdatedAt,
+			},
+			Subject: &response.SubjectResponse{
+				Uuid:      schedule.Subject.Uuid,
+				Name:      schedule.Subject.Name,
+				CreatedAt: schedule.Subject.CreatedAt,
+				UpdatedAt: schedule.Subject.UpdatedAt,
+			},
+			Teacher: &response.TeacherData{
+				Uuid:          schedule.Teacher.Uuid,
+				JK:            schedule.Teacher.JK,
+				Nip:           schedule.Teacher.Nip,
+				Nuptk:         schedule.Teacher.Nuptk,
+				StatusPegawai: schedule.Teacher.StatusPegawai,
+				TempatLahir:   schedule.Teacher.TempatLahir,
+				TanggalLahir:  schedule.Teacher.TanggalLahir,
+				NoHp:          schedule.Teacher.NoHp,
+				Jabatan:       schedule.Teacher.Jabatan,
+				TotalJtm:      schedule.Teacher.TotalJtm,
+				Alamat:        schedule.Teacher.Alamat,
+				CreatedAt:     schedule.Teacher.CreatedAt,
+				UpdatedAt:     schedule.Teacher.UpdatedAt,
+			},
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid:      schedule.Subject.Uuid,
+				Name:      schedule.Subject.Name,
+				CreatedAt: schedule.Subject.CreatedAt,
+				UpdatedAt: schedule.Subject.UpdatedAt,
+			},
+			CreatedAt: schedule.CreatedAt,
+			UpdatedAt: schedule.UpdatedAt,
 		})
 	}
 
@@ -68,7 +97,7 @@ func (r *ScheduleRepoImplementation) UpdateSchedule(model *domain.Schedule) erro
 
 func (r *ScheduleRepoImplementation) FindSchedules() (*[]domain.Schedule, error) {
 	var res []domain.Schedule
-	if err := r.db.Find(&res).Error; err != nil {
+	if err := r.db.Preload("Class").Preload("Subject").Preload("Teacher").Preload("SchoolYear").Find(&res).Error; err != nil {
 		return nil, err
 	}
 

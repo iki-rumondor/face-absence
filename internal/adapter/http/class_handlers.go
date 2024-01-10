@@ -141,7 +141,7 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 	res := response.ClassResponse{
 		Uuid: class.Uuid,
 		Name: class.Name,
-		Teacher: &response.TeacherClass{
+		Teacher: &response.TeacherData{
 			Uuid:          class.Teacher.Uuid,
 			JK:            class.Teacher.JK,
 			Nip:           class.Teacher.Nip,

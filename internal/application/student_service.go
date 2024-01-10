@@ -119,7 +119,7 @@ func (s *StudentService) CreateStudent(student *domain.Student, user *domain.Use
 	return nil
 }
 
-func (s *StudentService) GetAllStudents() (*[]response.StudentUser, error) {
+func (s *StudentService) GetAllStudents() (*[]response.StudentResponse, error) {
 
 	students, err := s.Repo.FindAllStudents()
 	if err != nil {
@@ -129,20 +129,30 @@ func (s *StudentService) GetAllStudents() (*[]response.StudentUser, error) {
 		}
 	}
 
-	var res = []response.StudentUser{}
+	var res = []response.StudentResponse{}
 	for _, student := range *students {
-		res = append(res, response.StudentUser{
+		res = append(res, response.StudentResponse{
 			Uuid:         student.Uuid,
-			Nama:         student.User.Nama,
-			Username:     student.User.Username,
 			JK:           student.JK,
 			NIS:          student.NIS,
 			TempatLahir:  student.TempatLahir,
 			TanggalLahir: student.TanggalLahir,
 			Alamat:       student.Alamat,
-			UserID:       student.UserID,
-			CreatedAt:    student.CreatedAt,
-			UpdatedAt:    student.UpdatedAt,
+			User: &response.UserData{
+				Nama:      student.User.Nama,
+				Username:  student.User.Username,
+				Avatar:    student.User.Avatar,
+				CreatedAt: student.User.CreatedAt,
+				UpdatedAt: student.User.UpdatedAt,
+			},
+			Class: &response.ClassData{
+				Uuid:      student.Class.Uuid,
+				Name:      student.Class.Name,
+				CreatedAt: student.Class.CreatedAt,
+				UpdatedAt: student.Class.UpdatedAt,
+			},
+			CreatedAt: student.CreatedAt,
+			UpdatedAt: student.UpdatedAt,
 		})
 	}
 
@@ -177,7 +187,7 @@ func (s *StudentService) StudentsPagination(urlPath string, pagination *domain.P
 	return page, nil
 }
 
-func (s *StudentService) GetStudent(uuid string) (*response.StudentUser, error) {
+func (s *StudentService) GetStudent(uuid string) (*response.StudentResponse, error) {
 
 	student, err := s.Repo.FindStudent(uuid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -194,18 +204,28 @@ func (s *StudentService) GetStudent(uuid string) (*response.StudentUser, error) 
 		}
 	}
 
-	res := response.StudentUser{
+	res := response.StudentResponse{
 		Uuid:         student.Uuid,
-		Nama:         student.User.Nama,
-		Username:     student.User.Username,
 		JK:           student.JK,
 		NIS:          student.NIS,
 		TempatLahir:  student.TempatLahir,
 		TanggalLahir: student.TanggalLahir,
 		Alamat:       student.Alamat,
-		UserID:       student.UserID,
-		CreatedAt:    student.CreatedAt,
-		UpdatedAt:    student.UpdatedAt,
+		User: &response.UserData{
+			Nama:      student.User.Nama,
+			Username:  student.User.Username,
+			Avatar:    student.User.Avatar,
+			CreatedAt: student.User.CreatedAt,
+			UpdatedAt: student.User.UpdatedAt,
+		},
+		Class: &response.ClassData{
+			Uuid:      student.Class.Uuid,
+			Name:      student.Class.Name,
+			CreatedAt: student.Class.CreatedAt,
+			UpdatedAt: student.Class.UpdatedAt,
+		},
+		CreatedAt: student.CreatedAt,
+		UpdatedAt: student.UpdatedAt,
 	}
 
 	return &res, nil

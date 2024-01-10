@@ -25,7 +25,7 @@ func (r *TeacherRepoImplementation) FindTeachersPagination(pagination *domain.Pa
 	if err := r.db.Model(&domain.Teacher{}).Count(&totalRows).Error; err != nil {
 		return nil, err
 	}
-	
+
 	if pagination.Limit == 0 {
 		pagination.Limit = int(totalRows)
 	}
@@ -40,8 +40,6 @@ func (r *TeacherRepoImplementation) FindTeachersPagination(pagination *domain.Pa
 	for _, teacher := range teachers {
 		res = append(res, response.Teacher{
 			Uuid:          teacher.Uuid,
-			Nama:          teacher.User.Nama,
-			Username:      teacher.User.Username,
 			JK:            teacher.JK,
 			TempatLahir:   teacher.TempatLahir,
 			TanggalLahir:  teacher.TanggalLahir,
@@ -52,8 +50,15 @@ func (r *TeacherRepoImplementation) FindTeachersPagination(pagination *domain.Pa
 			StatusPegawai: teacher.StatusPegawai,
 			Jabatan:       teacher.Jabatan,
 			TotalJtm:      teacher.TotalJtm,
-			CreatedAt:     teacher.CreatedAt,
-			UpdatedAt:     teacher.UpdatedAt,
+			User: &response.UserData{
+				Nama:      teacher.User.Nama,
+				Username:  teacher.User.Username,
+				Avatar:    teacher.User.Avatar,
+				CreatedAt: teacher.User.CreatedAt,
+				UpdatedAt: teacher.User.UpdatedAt,
+			},
+			CreatedAt: teacher.CreatedAt,
+			UpdatedAt: teacher.UpdatedAt,
 		})
 	}
 

@@ -2,14 +2,29 @@ package utils
 
 import (
 	"errors"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
 var secretKey = "fabsence"
 
-func GenerateToken(data map[string]interface{}) (string, error) {
-	claims := jwt.MapClaims(data)
+type JwtClaims struct {
+	UserID uint   `json:"user_id"`
+	Role   string `json:"role"`
+	jwt.StandardClaims
+}
+
+func GenerateToken(userID uint, role string) (string, error) {
+
+	expireTime := time.Now().Add(time.Duration(1) * 24 * time.Hour)
+	claims := &JwtClaims{
+		UserID: userID,
+		Role:   role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expireTime.Unix(),
+		},
+	}
 	parseToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := parseToken.SignedString([]byte(secretKey))
 	if err != nil {
@@ -20,7 +35,7 @@ func GenerateToken(data map[string]interface{}) (string, error) {
 }
 
 func VerifyToken(strToken string) (jwt.MapClaims, error) {
-	errResponse := errors.New("please ensure you have the right credentials to proceed")
+	errResponse := errors.New("pastikan token kamu masih valid")
 
 	token, _ := jwt.Parse(strToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {

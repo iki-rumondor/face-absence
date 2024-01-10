@@ -47,25 +47,34 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("User").Find(&students).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("User").Preload("Class").Find(&students).Error; err != nil {
 		return nil, err
 	}
 
-	var res = []response.StudentUser{}
+	var res = []response.StudentResponse{}
 	for _, student := range students {
-		res = append(res, response.StudentUser{
+		res = append(res, response.StudentResponse{
 			Uuid:         student.Uuid,
-			Nama:         student.User.Nama,
-			Username:     student.User.Username,
 			JK:           student.JK,
 			NIS:          student.NIS,
 			TempatLahir:  student.TempatLahir,
 			TanggalLahir: student.TanggalLahir,
 			Alamat:       student.Alamat,
-			UserID:       student.UserID,
-			ClassID:      student.ClassID,
-			CreatedAt:    student.CreatedAt,
-			UpdatedAt:    student.UpdatedAt,
+			User: &response.UserData{
+				Nama:      student.User.Nama,
+				Username:  student.User.Username,
+				Avatar:    student.User.Avatar,
+				CreatedAt: student.User.CreatedAt,
+				UpdatedAt: student.User.UpdatedAt,
+			},
+			Class: &response.ClassData{
+				Uuid:      student.Class.Uuid,
+				Name:      student.Class.Name,
+				CreatedAt: student.Class.CreatedAt,
+				UpdatedAt: student.Class.UpdatedAt,
+			},
+			CreatedAt: student.CreatedAt,
+			UpdatedAt: student.UpdatedAt,
 		})
 	}
 
@@ -98,7 +107,7 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 
 func (r *StudentRepoImplementation) FindAllStudents() (*[]domain.Student, error) {
 	var students []domain.Student
-	if err := r.db.Preload("User").Find(&students).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Class").Find(&students).Error; err != nil {
 		return nil, err
 	}
 	return &students, nil
@@ -106,7 +115,7 @@ func (r *StudentRepoImplementation) FindAllStudents() (*[]domain.Student, error)
 
 func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, error) {
 	var student domain.Student
-	if err := r.db.Preload("User").First(&student, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("User").Preload("Class").First(&student, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 	return &student, nil
