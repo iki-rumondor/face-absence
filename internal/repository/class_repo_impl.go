@@ -27,7 +27,7 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 	if pagination.Limit == 0 {
 		pagination.Limit = int(totalRows)
 	}
-	
+
 	offset := pagination.Page * pagination.Limit
 
 	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher").Find(&classes).Error; err != nil {
@@ -37,9 +37,23 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 	var res = []response.ClassResponse{}
 	for _, class := range classes {
 		res = append(res, response.ClassResponse{
-			Uuid:      class.Uuid,
-			Name:      class.Name,
-			TeacherID: class.TeacherID,
+			Uuid: class.Uuid,
+			Name: class.Name,
+			Teacher: &response.TeacherClass{
+				Uuid:          class.Teacher.Uuid,
+				JK:            class.Teacher.JK,
+				Nip:           class.Teacher.Nip,
+				Nuptk:         class.Teacher.Nuptk,
+				StatusPegawai: class.Teacher.StatusPegawai,
+				TempatLahir:   class.Teacher.TempatLahir,
+				TanggalLahir:  class.Teacher.TanggalLahir,
+				NoHp:          class.Teacher.NoHp,
+				Jabatan:       class.Teacher.Jabatan,
+				TotalJtm:      class.Teacher.TotalJtm,
+				Alamat:        class.Teacher.Alamat,
+				CreatedAt:     class.Teacher.CreatedAt,
+				UpdatedAt:     class.Teacher.UpdatedAt,
+			},
 			CreatedAt: class.CreatedAt,
 			UpdatedAt: class.UpdatedAt,
 		})
@@ -62,7 +76,7 @@ func (r *ClassRepoImplementation) UpdateClass(class *domain.Class) error {
 
 func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
 	var classes []domain.Class
-	if err := r.db.Find(&classes).Error; err != nil {
+	if err := r.db.Preload("Teacher").Find(&classes).Error; err != nil {
 		return nil, err
 	}
 
@@ -71,7 +85,7 @@ func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
 
 func (r *ClassRepoImplementation) FindClassByUuid(uuid string) (*domain.Class, error) {
 	var class domain.Class
-	if err := r.db.First(&class, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Teacher").First(&class, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 
