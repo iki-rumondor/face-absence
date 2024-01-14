@@ -25,5 +25,11 @@ func (u *User) BeforeSave(tx *gorm.DB) error {
 		return err
 	}
 	u.Password = hashPass
+
+	if(u.Avatar == nil){
+		defaultName := "default-avatar.jpg"
+		u.Avatar = &defaultName
+	}
+	
 	return nil
 }

@@ -252,7 +252,7 @@ func (h *StudentHandlers) CreateReport(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
-		Message: randomName,
+		Message: fmt.Sprintf("/public/file/%s", randomName),
 	})
 
 }

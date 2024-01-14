@@ -1,9 +1,10 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	customHTTP "github.com/iki-rumondor/init-golang-service/internal/adapter/http"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/middleware"
 	"github.com/iki-rumondor/init-golang-service/internal/registry"
 )
@@ -22,10 +23,14 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 	router.MaxMultipartMemory = 10 << 20
 
+	router.StaticFS("/public/avatar", http.Dir("internal/assets/avatar"))
+	router.StaticFS("/public/file", http.Dir("internal/assets/temp"))
+
 	public := router.Group("api")
 	{
 		public.POST("/auth/login", handlers.AuthHandler.Login)
 		public.GET("/auth/verify-token", middleware.IsValidJWT(), handlers.AuthHandler.VerifyToken)
+
 	}
 
 	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
@@ -75,7 +80,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
 
-		admin.GET("download/:filename", customHTTP.DownloadFile)
+		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 
 	return router
