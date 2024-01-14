@@ -18,6 +18,13 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
+	
+	for _, model := range registry.RegisterModels() {
+		if err := gormDB.Migrator().DropTable(model.Model); err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+	}
 
 	for _, model := range registry.RegisterModels() {
 		if err := gormDB.Debug().AutoMigrate(model.Model); err != nil {
@@ -29,12 +36,7 @@ func main() {
 	services := registry.RegisterServices(repo)
 	handlers := registry.RegisterHandlers(services)
 
-	// for _, model := range registry.RegisterModels() {
-	// 	if err := gormDB.Migrator().DropTable(model.Model); err != nil {
-	// 		log.Fatal(err.Error())
-	// 		return
-	// 	}
-	// }
+	
 
 	if err := gormDB.First(&domain.User{}).Error; err != nil {
 		gormDB.Create(&domain.User{

@@ -22,7 +22,7 @@ func RegisterHandlers(s *Services) *Handlers {
 	student_handler := customHTTP.NewStudentHandler(s.Student, s.Class)
 	teacher_handler := customHTTP.NewTeacherHandler(s.Teacher)
 	class_handler := customHTTP.NewClassHandler(s.Class, s.Teacher)
-	subject_handler := customHTTP.NewSubjectHandler(s.Subject)
+	subject_handler := customHTTP.NewSubjectHandler(s.Subject, s.Teacher)
 	sy_handler := customHTTP.NewSchoolYearHandler(s.SchoolYear)
 	schedule_handler := customHTTP.NewScheduleHandler(s.Schedule, s.Class, s.Subject, s.Teacher, s.SchoolYear)
 	user_handler := customHTTP.NewUserHandler(s.User)

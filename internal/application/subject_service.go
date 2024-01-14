@@ -63,8 +63,30 @@ func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 
 	for _, res := range *result {
 		resp = append(resp, response.SubjectResponse{
-			Uuid:      res.Uuid,
-			Name:      res.Name,
+			Uuid: res.Uuid,
+			Name: res.Name,
+			Teacher: &response.Teacher{
+				Uuid:          res.Teacher.Uuid,
+				JK:            res.Teacher.JK,
+				Nip:           res.Teacher.Nip,
+				Nuptk:         res.Teacher.Nuptk,
+				StatusPegawai: res.Teacher.StatusPegawai,
+				TempatLahir:   res.Teacher.TempatLahir,
+				TanggalLahir:  res.Teacher.TanggalLahir,
+				NoHp:          res.Teacher.NoHp,
+				Jabatan:       res.Teacher.Jabatan,
+				TotalJtm:      res.Teacher.TotalJtm,
+				Alamat:        res.Teacher.Alamat,
+				User: &response.UserData{
+					Nama:      res.Teacher.User.Nama,
+					Username:  res.Teacher.User.Username,
+					Avatar:    res.Teacher.User.Avatar,
+					CreatedAt: res.Teacher.User.CreatedAt,
+					UpdatedAt: res.Teacher.User.UpdatedAt,
+				},
+				CreatedAt: res.Teacher.CreatedAt,
+				UpdatedAt: res.Teacher.UpdatedAt,
+			},
 			CreatedAt: res.CreatedAt,
 			UpdatedAt: res.UpdatedAt,
 		})

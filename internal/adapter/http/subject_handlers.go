@@ -15,12 +15,14 @@ import (
 )
 
 type SubjectHandler struct {
-	Service *application.SubjectService
+	Service        *application.SubjectService
+	TeacherService *application.TeacherService
 }
 
-func NewSubjectHandler(service *application.SubjectService) *SubjectHandler {
+func NewSubjectHandler(service *application.SubjectService, teacher *application.TeacherService) *SubjectHandler {
 	return &SubjectHandler{
-		Service: service,
+		Service:        service,
+		TeacherService: teacher,
 	}
 }
 
@@ -41,9 +43,16 @@ func (h *SubjectHandler) CreateSubject(c *gin.Context) {
 		return
 	}
 
+	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	model := domain.Subject{
-		Uuid: uuid.NewString(),
-		Name: body.Name,
+		Uuid:      uuid.NewString(),
+		Name:      body.Name,
+		TeacherID: teacher.ID,
 	}
 
 	if err := h.Service.CreateSubject(&model); err != nil {
@@ -113,8 +122,30 @@ func (h *SubjectHandler) GetSubject(c *gin.Context) {
 	}
 
 	res := response.SubjectResponse{
-		Uuid:      subject.Uuid,
-		Name:      subject.Name,
+		Uuid: subject.Uuid,
+		Name: subject.Name,
+		Teacher: &response.Teacher{
+			Uuid:          subject.Teacher.Uuid,
+			JK:            subject.Teacher.JK,
+			Nip:           subject.Teacher.Nip,
+			Nuptk:         subject.Teacher.Nuptk,
+			StatusPegawai: subject.Teacher.StatusPegawai,
+			TempatLahir:   subject.Teacher.TempatLahir,
+			TanggalLahir:  subject.Teacher.TanggalLahir,
+			NoHp:          subject.Teacher.NoHp,
+			Jabatan:       subject.Teacher.Jabatan,
+			TotalJtm:      subject.Teacher.TotalJtm,
+			Alamat:        subject.Teacher.Alamat,
+			User: &response.UserData{
+				Nama:      subject.Teacher.User.Nama,
+				Username:  subject.Teacher.User.Username,
+				Avatar:    subject.Teacher.User.Avatar,
+				CreatedAt: subject.Teacher.User.CreatedAt,
+				UpdatedAt: subject.Teacher.User.UpdatedAt,
+			},
+			CreatedAt: subject.Teacher.CreatedAt,
+			UpdatedAt: subject.Teacher.UpdatedAt,
+		},
 		CreatedAt: subject.CreatedAt,
 		UpdatedAt: subject.UpdatedAt,
 	}
@@ -145,6 +176,12 @@ func (h *SubjectHandler) UpdateSubject(c *gin.Context) {
 		return
 	}
 
+	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	uuid := c.Param("uuid")
 	res, err := h.Service.GetSubject(uuid)
 	if err != nil {
@@ -153,8 +190,9 @@ func (h *SubjectHandler) UpdateSubject(c *gin.Context) {
 	}
 
 	model := domain.Subject{
-		Uuid: res.Uuid,
-		Name: body.Name,
+		Uuid:      res.Uuid,
+		Name:      body.Name,
+		TeacherID: teacher.ID,
 	}
 
 	if err := h.Service.UpdateSubject(&model); err != nil {
