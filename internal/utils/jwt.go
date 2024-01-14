@@ -7,7 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var secretKey = "fabsence"
+var secretKey = "sipantri-key"
 
 type JwtClaims struct {
 	UserID uint   `json:"user_id"`
@@ -37,12 +37,16 @@ func GenerateToken(userID uint, role string) (string, error) {
 func VerifyToken(strToken string) (jwt.MapClaims, error) {
 	errResponse := errors.New("pastikan token kamu masih valid")
 
-	token, _ := jwt.Parse(strToken, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(strToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errResponse
 		}
 		return []byte(secretKey), nil
 	})
+
+	if err != nil{
+		return nil, errResponse
+	}
 
 	mapClaims, ok := token.Claims.(jwt.MapClaims)
 

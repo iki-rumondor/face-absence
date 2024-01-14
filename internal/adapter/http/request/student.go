@@ -8,7 +8,7 @@ type CreateStudent struct {
 	TempatLahir  string `json:"tempat_lahir" valid:"required~field tempat_lahir tidak ditemukan"`
 	TanggalLahir string `json:"tanggal_lahir" valid:"required~field tanggal_lahir tidak ditemukan"`
 	Alamat       string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
-	ClassUuid    string `json:"class_uuid" valid:"required~field class_id tidak ditemukan"`
+	ClassUuid    string `json:"class_uuid" valid:"required~field class_uuid tidak ditemukan"`
 }
 
 type UpdateStudent struct {

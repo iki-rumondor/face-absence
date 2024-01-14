@@ -58,7 +58,7 @@ func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
 }
 
 func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string) error {
-	user, err := s.Repo.FindUserByID(absence.StudentID)
+	user, err := s.Repo.FindUserByID(absence.Student.UserID)
 	if err != nil {
 		return &response.Error{
 			Code:    404,
@@ -66,7 +66,7 @@ func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string
 		}
 	}
 
-	if user.Avatar == nil {
+	if user.Avatar == nil || *user.Avatar == "default-avatar.jpg" {
 		return &response.Error{
 			Code:    404,
 			Message: "User tidak memiliki avatar, silahkan upload avatar terlebih dahulu",
@@ -84,7 +84,7 @@ func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string
 		}
 	}
 
-	url := "http://127.0.0.1:8082/compare"
+	url := "http://127.0.0.1:5000/compare"
 
 	res, err := s.CreatePostRequest(url, formAbsence)
 	if err != nil {

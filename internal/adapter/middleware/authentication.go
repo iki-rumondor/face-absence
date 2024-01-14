@@ -45,7 +45,7 @@ func SetUserID() gin.HandlerFunc {
 		mc := c.MustGet("map_claims")
 		mapClaims := mc.(jwt.MapClaims)
 
-		id, ok := mapClaims["id"].(float64)
+		id, ok := mapClaims["user_id"].(float64)
 		if !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
 				Success: false,

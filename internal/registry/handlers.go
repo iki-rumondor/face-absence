@@ -26,7 +26,7 @@ func RegisterHandlers(s *Services) *Handlers {
 	sy_handler := customHTTP.NewSchoolYearHandler(s.SchoolYear)
 	schedule_handler := customHTTP.NewScheduleHandler(s.Schedule, s.Class, s.Subject, s.Teacher, s.SchoolYear)
 	user_handler := customHTTP.NewUserHandler(s.User)
-	absence_handler := customHTTP.NewAbsenceHandler(s.Absence, s.Schedule)
+	absence_handler := customHTTP.NewAbsenceHandler(s.Absence, s.Schedule, s.Student)
 
 	return &Handlers{
 		StudentHandler:    student_handler,

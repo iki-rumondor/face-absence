@@ -9,6 +9,7 @@ type StudentRepository interface {
 	PaginationStudents(pagination *domain.Pagination) (*domain.Pagination, error)
 	FindAllStudents() (*[]domain.Student, error)
 	FindStudent(string) (*domain.Student, error)
+	FindStudentByUserID(uint) (*domain.Student, error)
 	UpdateStudent(*domain.Student, *domain.User) error
 	DeleteStudent(userID uint) error
 

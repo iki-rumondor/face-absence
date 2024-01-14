@@ -121,6 +121,14 @@ func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, e
 	return &student, nil
 }
 
+func (r *StudentRepoImplementation) FindStudentByUserID(userID uint) (*domain.Student, error) {
+	var student domain.Student
+	if err := r.db.Preload("User").Preload("Class").First(&student, "user_id = ?", userID).Error; err != nil {
+		return nil, err
+	}
+	return &student, nil
+}
+
 func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student, user *domain.User) error {
 
 	return r.db.Transaction(func(tx *gorm.DB) error {

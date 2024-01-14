@@ -17,12 +17,14 @@ import (
 type AbsenceHandler struct {
 	Service         *application.AbsenceService
 	ScheduleService *application.ScheduleService
+	StudentService  *application.StudentService
 }
 
-func NewAbsenceHandler(service *application.AbsenceService, schedule *application.ScheduleService) *AbsenceHandler {
+func NewAbsenceHandler(service *application.AbsenceService, schedule *application.ScheduleService, student *application.StudentService) *AbsenceHandler {
 	return &AbsenceHandler{
 		Service:         service,
 		ScheduleService: schedule,
+		StudentService:  student,
 	}
 }
 
@@ -33,6 +35,16 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 		utils.HandleError(c, &response.Error{
 			Code:    500,
 			Message: "Gagal menemukan id user",
+		})
+		return
+	}
+
+	student, err := h.StudentService.Repo.FindStudentByUserID(id)
+
+	if err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    404,
+			Message: fmt.Sprintf("Santri dengan user id %d tidak ditemukan", id),
 		})
 		return
 	}
@@ -52,8 +64,9 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 
 	absence := domain.Absence{
 		Uuid:       uuid.NewString(),
-		StudentID:  id,
+		StudentID:  student.ID,
 		ScheduleID: schedule.ID,
+		Student:    student,
 		Status:     status,
 	}
 
