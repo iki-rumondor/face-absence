@@ -141,7 +141,7 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 	res := response.ClassResponse{
 		Uuid: class.Uuid,
 		Name: class.Name,
-		Teacher: &response.TeacherData{
+		Teacher: &response.Teacher{
 			Uuid:          class.Teacher.Uuid,
 			JK:            class.Teacher.JK,
 			Nip:           class.Teacher.Nip,
@@ -153,8 +153,15 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 			Jabatan:       class.Teacher.Jabatan,
 			TotalJtm:      class.Teacher.TotalJtm,
 			Alamat:        class.Teacher.Alamat,
-			CreatedAt:     class.Teacher.CreatedAt,
-			UpdatedAt:     class.Teacher.UpdatedAt,
+			User: &response.UserData{
+				Nama:      class.Teacher.User.Nama,
+				Username:  class.Teacher.User.Username,
+				Avatar:    class.Teacher.User.Avatar,
+				CreatedAt: class.Teacher.User.CreatedAt,
+				UpdatedAt: class.Teacher.User.UpdatedAt,
+			},
+			CreatedAt: class.Teacher.CreatedAt,
+			UpdatedAt: class.Teacher.UpdatedAt,
 		},
 		CreatedAt: class.CreatedAt,
 		UpdatedAt: class.UpdatedAt,

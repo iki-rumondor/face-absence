@@ -30,7 +30,7 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher").Find(&classes).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher.User").Find(&classes).Error; err != nil {
 		return nil, err
 	}
 
@@ -39,7 +39,7 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 		res = append(res, response.ClassResponse{
 			Uuid: class.Uuid,
 			Name: class.Name,
-			Teacher: &response.TeacherData{
+			Teacher: &response.Teacher{
 				Uuid:          class.Teacher.Uuid,
 				JK:            class.Teacher.JK,
 				Nip:           class.Teacher.Nip,
@@ -51,8 +51,15 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 				Jabatan:       class.Teacher.Jabatan,
 				TotalJtm:      class.Teacher.TotalJtm,
 				Alamat:        class.Teacher.Alamat,
-				CreatedAt:     class.Teacher.CreatedAt,
-				UpdatedAt:     class.Teacher.UpdatedAt,
+				User: &response.UserData{
+					Nama:      class.Teacher.User.Nama,
+					Username:  class.Teacher.User.Username,
+					Avatar:    class.Teacher.User.Avatar,
+					CreatedAt: class.Teacher.User.CreatedAt,
+					UpdatedAt: class.Teacher.User.UpdatedAt,
+				},
+				CreatedAt: class.Teacher.CreatedAt,
+				UpdatedAt: class.Teacher.UpdatedAt,
 			},
 			CreatedAt: class.CreatedAt,
 			UpdatedAt: class.UpdatedAt,
@@ -76,7 +83,7 @@ func (r *ClassRepoImplementation) UpdateClass(class *domain.Class) error {
 
 func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
 	var classes []domain.Class
-	if err := r.db.Preload("Teacher").Find(&classes).Error; err != nil {
+	if err := r.db.Preload("Teacher.User").Find(&classes).Error; err != nil {
 		return nil, err
 	}
 
@@ -85,7 +92,7 @@ func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
 
 func (r *ClassRepoImplementation) FindClassByUuid(uuid string) (*domain.Class, error) {
 	var class domain.Class
-	if err := r.db.Preload("Teacher").First(&class, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Teacher.User").First(&class, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 
