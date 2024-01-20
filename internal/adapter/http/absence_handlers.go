@@ -28,6 +28,7 @@ func NewAbsenceHandler(service *application.AbsenceService, schedule *applicatio
 	}
 }
 
+
 func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 
 	id := c.GetUint("user_id")
@@ -51,6 +52,11 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 
 	schedule, err := h.ScheduleService.GetSchedule(c.PostForm("schedule_uuid"))
 	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	if err := h.Service.CheckStudentIsAbsence(student.ID, schedule.ID); err != nil {
 		utils.HandleError(c, err)
 		return
 	}

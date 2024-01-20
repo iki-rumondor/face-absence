@@ -34,3 +34,7 @@ func (r *AbsenceRepoImplementation) FindScheduleByID(id uint) (*domain.Schedule,
 func (r *AbsenceRepoImplementation) CreateAbsence(model *domain.Absence) error {
 	return r.db.Create(&model).Error
 }
+
+func (r *AbsenceRepoImplementation) CheckStudentIsAbsence(studentID, scheduleID uint) int {
+	return int(r.db.First(&domain.Absence{}, "student_id = ? AND schedule_id = ?", studentID, scheduleID).RowsAffected)
+}

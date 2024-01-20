@@ -25,6 +25,16 @@ func NewAbsenceService(repo repository.AbsenceRepository) *AbsenceService {
 	}
 }
 
+func (s *AbsenceService) CheckStudentIsAbsence(studentID, scheduleID uint) error {
+	if result := s.Repo.CheckStudentIsAbsence(studentID, scheduleID); result != 0 {
+		return &response.Error{
+			Code:    403,
+			Message: "Anda Sudah Melakukan Absensi Untuk Jadwal Tersebut",
+		}
+	}
+	return nil
+}
+
 func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
 	schedule, err := s.Repo.FindScheduleByID(scheduleID)
 	if err != nil {
@@ -185,8 +195,6 @@ func (s *AbsenceService) CreatePostRequest(url string, formAbsence *response.For
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(responseBody)
 
 	var data map[string]bool
 
