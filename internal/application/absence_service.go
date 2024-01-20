@@ -84,7 +84,12 @@ func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string
 		}
 	}
 
-	url := "http://127.0.0.1:5000/compare"
+	var FLASK = os.Getenv("FLASK_API")
+	if FLASK == "" {
+		FLASK = "http://127.0.0.1:5000"
+	}
+
+	url := fmt.Sprintf("%s/compare", FLASK)
 
 	res, err := s.CreatePostRequest(url, formAbsence)
 	if err != nil {

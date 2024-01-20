@@ -19,12 +19,12 @@ func main() {
 		return
 	}
 	
-	for _, model := range registry.RegisterModels() {
-		if err := gormDB.Migrator().DropTable(model.Model); err != nil {
-			log.Fatal(err.Error())
-			return
-		}
-	}
+	// for _, model := range registry.RegisterModels() {
+	// 	if err := gormDB.Migrator().DropTable(model.Model); err != nil {
+	// 		log.Fatal(err.Error())
+	// 		return
+	// 	}
+	// }
 
 	for _, model := range registry.RegisterModels() {
 		if err := gormDB.Debug().AutoMigrate(model.Model); err != nil {
