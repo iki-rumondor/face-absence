@@ -1,10 +1,10 @@
 package customHTTP
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -58,12 +58,31 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 
 func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 
-	mc := c.MustGet("map_claims")
-	mapClaims := mc.(jwt.MapClaims)
-	
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "HandleError: ID User tidak dapat ditemukan",
+		})
+	}
+
+	user, err := h.Service.GetUserByID(userID)
+	if err != nil {
+		utils.HandleError(c, err)
+	}
+
+	avatar := fmt.Sprintf("/public/avatar/%s", *user.Avatar)
+	res := response.UserData{
+		Nama:      user.Nama,
+		Username:  user.Username,
+		Avatar:    &avatar,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: "Token valid",
-		Data:    mapClaims,
+		Data:    &res,
 	})
 }

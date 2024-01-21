@@ -29,7 +29,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	public := router.Group("api")
 	{
 		public.POST("/auth/login", handlers.AuthHandler.Login)
-		public.GET("/auth/verify-token", middleware.IsValidJWT(), handlers.AuthHandler.VerifyToken)
+		public.GET("/auth/verify-token", middleware.IsValidJWT(), middleware.SetUserID(), handlers.AuthHandler.VerifyToken)
 
 	}
 

@@ -44,3 +44,11 @@ func (r *AuthRepoImplementation) FindStudentByUserID(userID uint) error {
 func (r *AuthRepoImplementation) FindAdminByUserID(userID uint) error {
 	return r.db.First(&domain.Admin{}, "user_id = ?", userID).Error
 }
+
+func (r *AuthRepoImplementation) FindUserByID(id uint) (*domain.User, error) {
+	var user domain.User
+	if err := r.db.First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

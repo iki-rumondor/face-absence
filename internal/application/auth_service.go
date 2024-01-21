@@ -1,11 +1,15 @@
 package application
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
 	"github.com/iki-rumondor/init-golang-service/internal/utils"
+	"gorm.io/gorm"
 )
 
 type AuthService struct {
@@ -73,7 +77,6 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 }
 
 func (s *AuthService) VerifyToken(jwt string) (*jwt.MapClaims, error) {
-	// find user by email from database
 	mapClaims, err := utils.VerifyToken(jwt)
 
 	if err != nil {
@@ -81,4 +84,22 @@ func (s *AuthService) VerifyToken(jwt string) (*jwt.MapClaims, error) {
 	}
 
 	return &mapClaims, nil
+}
+
+func (s *AuthService) GetUserByID(id uint) (*domain.User, error) {
+	user, err := s.Repo.FindUserByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("User dengan id %d tidak ditemukan", id),
+			}
+		}
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
+		}
+	}
+
+	return user, nil
 }
