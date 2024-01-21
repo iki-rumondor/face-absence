@@ -59,3 +59,23 @@ func SetUserID() gin.HandlerFunc {
 
 	}
 }
+
+func SetUserRole() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		mc := c.MustGet("map_claims")
+		mapClaims := mc.(jwt.MapClaims)
+
+		role, ok := mapClaims["role"].(string)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.FailedResponse{
+				Success: false,
+				Message: "Invalid JWT Token",
+			})
+			return
+		}
+
+		c.Set("user_role", role)
+		c.Next()
+
+	}
+}

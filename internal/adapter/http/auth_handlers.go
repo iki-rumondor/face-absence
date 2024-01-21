@@ -59,23 +59,18 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 func (h *AuthHandlers) VerifyToken(c *gin.Context) {
 
 	userID := c.GetUint("user_id")
-	if userID == 0 {
-		utils.HandleError(c, &response.Error{
-			Code:    400,
-			Message: "HandleError: ID User tidak dapat ditemukan",
-		})
-	}
+	userRole := c.GetString("user_role")
 
 	user, err := h.Service.GetUserByID(userID)
 	if err != nil {
 		utils.HandleError(c, err)
 	}
 
-	avatar := fmt.Sprintf("/public/avatar/%s", *user.Avatar)
-	res := response.UserData{
+	res := response.VerifyTokenResponse{
 		Nama:      user.Nama,
 		Username:  user.Username,
-		Avatar:    &avatar,
+		Avatar:    fmt.Sprintf("/public/avatar/%s", *user.Avatar),
+		Role:      userRole,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}
