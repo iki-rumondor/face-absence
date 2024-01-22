@@ -40,7 +40,7 @@ func (s *UserService) UpdateAvatar(model *domain.User) error {
 		}
 	}
 
-	if user.Avatar != nil {
+	if *user.Avatar != "default-avatar.jpg" {
 		if err := os.Remove("internal/assets/avatar/" + *user.Avatar); err != nil {
 			fmt.Println(err.Error())
 		}
