@@ -14,9 +14,7 @@ func NewMysqlDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	fmt.Println(env)
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", env["user"], env["password"], env["host"], env["port"], env["name"])
-	fmt.Println(dsn)
 	gormDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
