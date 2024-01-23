@@ -205,3 +205,17 @@ func (s *AbsenceService) CreatePostRequest(url string, formAbsence *response.For
 
 	return data, nil
 }
+
+func (s *AbsenceService) GetAllAbsences(urlPath string, pagination *domain.Pagination) (*domain.Pagination, error) {
+	result, err := s.Repo.FindAbsencePagination(pagination)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
+		}
+	}
+
+	page := GeneratePages(urlPath, result)
+
+	return page, nil
+}

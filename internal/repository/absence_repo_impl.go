@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"gorm.io/gorm"
 )
@@ -13,6 +14,56 @@ func NewAbsenceRepository(db *gorm.DB) AbsenceRepository {
 	return &AbsenceRepoImplementation{
 		db: db,
 	}
+}
+
+func (r *AbsenceRepoImplementation) FindAbsencePagination(pagination *domain.Pagination) (*domain.Pagination, error) {
+	var absence []domain.Absence
+	var totalRows int64 = 0
+
+	if err := r.db.Model(&domain.Absence{}).Count(&totalRows).Error; err != nil {
+		return nil, err
+	}
+
+	if pagination.Limit == 0 {
+		pagination.Limit = int(totalRows)
+	}
+
+	offset := pagination.Page * pagination.Limit
+
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Find(&absence).Error; err != nil {
+		return nil, err
+	}
+
+	var res = []response.AbsenceResponse{}
+	for _, item := range absence {
+		res = append(res, response.AbsenceResponse{
+			Uuid:   item.Uuid,
+			Status: item.Status,
+			Student: &response.StudentResponse{
+				Uuid:         item.Student.Uuid,
+				JK:           item.Student.JK,
+				NIS:          item.Student.NIS,
+				TempatLahir:  item.Student.TempatLahir,
+				TanggalLahir: item.Student.TanggalLahir,
+				Alamat:       item.Student.Alamat,
+			},
+			Schedule: &response.ScheduleResponse{
+				Uuid:  item.Schedule.Uuid,
+				Name:  item.Schedule.Name,
+				Day:   item.Schedule.Day,
+				Start: item.Schedule.Start,
+				End:   item.Schedule.End,
+			},
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		})
+	}
+
+	pagination.Rows = res
+
+	pagination.TotalRows = int(totalRows)
+
+	return pagination, nil
 }
 
 func (r *AbsenceRepoImplementation) FindUserByID(id uint) (*domain.User, error) {

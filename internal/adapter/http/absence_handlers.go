@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -27,7 +28,6 @@ func NewAbsenceHandler(service *application.AbsenceService, schedule *applicatio
 		StudentService:  student,
 	}
 }
-
 
 func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 
@@ -126,5 +126,30 @@ func (h *AbsenceHandler) CreateAbsence(c *gin.Context) {
 	c.JSON(http.StatusCreated, response.SuccessResponse{
 		Success: true,
 		Message: "Absensi berhasil disimpan",
+	})
+}
+
+func (h *AbsenceHandler) GetAllAbsences(c *gin.Context) {
+	urlPath := c.Request.URL.Path
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "0"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+
+	pagination := domain.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	result, err := h.Service.GetAllAbsences(urlPath, &pagination)
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil mendapatkan data tahun pelajaran",
+		Data:    result,
 	})
 }

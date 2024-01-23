@@ -126,7 +126,7 @@ func seederData(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.Create(&domain.SchoolYear{Name: "2023"}).Error; err != nil {
+	if err := db.Create(&domain.SchoolYear{Uuid: uuid.NewString(), Name: "2023"}).Error; err != nil {
 		return err
 	}
 
