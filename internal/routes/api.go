@@ -80,6 +80,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
 
+		admin.GET("absences", handlers.AbsenceHandler.GetAllAbsences)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 
