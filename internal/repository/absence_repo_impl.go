@@ -30,7 +30,7 @@ func (r *AbsenceRepoImplementation) FindAbsencePagination(pagination *domain.Pag
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Find(&absence).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Student").Preload("Schedule").Find(&absence).Error; err != nil {
 		return nil, err
 	}
 
