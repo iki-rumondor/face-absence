@@ -138,7 +138,7 @@ func (s *AbsenceService) CreateFormAbsence(imageOne, imageTwo string) (*response
 		},
 		{
 			"key":   "image2",
-			"value": imageOne,
+			"value": imageTwo,
 		},
 	}
 

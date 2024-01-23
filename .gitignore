@@ -2,3 +2,6 @@
 .vscode
 docker-compose.yml
 Dockerfile
+internal/assets/avatar/*
+
+!internal/assets/avatar/default-avatar.jpg
