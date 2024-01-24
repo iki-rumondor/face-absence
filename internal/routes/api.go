@@ -30,17 +30,15 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	{
 		public.POST("/auth/login", handlers.AuthHandler.Login)
 		public.GET("/auth/verify-token", middleware.IsValidJWT(), middleware.SetUserID(), middleware.SetUserRole(), handlers.AuthHandler.VerifyToken)
-
 	}
 
-
-	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
+	teacher := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsTeacher())
 	{
-		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
-		student.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
-		student.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetStudentSchedules)
-		student.GET("schedules/:uuid", middleware.SetUserID(), handlers.ScheduleHandler.GetScheduleForStudent)
-		student.GET("absences/history", middleware.SetUserID(), handlers.AbsenceHandler.GetStudentAbsences)
+		teacher.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
+		teacher.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
+		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetStudentSchedules)
+		teacher.GET("schedules/:uuid", middleware.SetUserID(), handlers.ScheduleHandler.GetScheduleForStudent)
+		teacher.GET("absences/history", middleware.SetUserID(), handlers.AbsenceHandler.GetStudentAbsences)
 	}
 
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())
