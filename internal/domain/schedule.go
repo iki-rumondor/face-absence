@@ -13,11 +13,9 @@ type Schedule struct {
 	End          string `gorm:"not_null;varchar(5)"`
 	ClassID      uint
 	SubjectID    uint
-	TeacherID    uint
 	SchoolYearID uint
 	Class        *Class
 	Subject      *Subject
-	Teacher      *Teacher
 	SchoolYear   *SchoolYear
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
