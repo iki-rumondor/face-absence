@@ -7,8 +7,7 @@ import (
 type Schedule struct {
 	ID           uint   `gorm:"primaryKey"`
 	Uuid         string `gorm:"not_null;unique"`
-	Name         string `gorm:"not_null;varchar(32)"`
-	Day          string `gorm:"not_null;varchar(10)"`
+	Day          string `gorm:"not_null;varchar(16)"`
 	Start        string `gorm:"not_null;varchar(5)"`
 	End          string `gorm:"not_null;varchar(5)"`
 	ClassID      uint

@@ -49,7 +49,6 @@ func (r *AbsenceRepoImplementation) FindAbsencePagination(pagination *domain.Pag
 			},
 			Schedule: &response.ScheduleResponse{
 				Uuid:  item.Schedule.Uuid,
-				Name:  item.Schedule.Name,
 				Day:   item.Schedule.Day,
 				Start: item.Schedule.Start,
 				End:   item.Schedule.End,

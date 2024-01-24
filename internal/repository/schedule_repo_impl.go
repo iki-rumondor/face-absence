@@ -38,7 +38,6 @@ func (r *ScheduleRepoImplementation) FindSchedulePagination(pagination *domain.P
 	for _, schedule := range schedules {
 		res = append(res, response.ScheduleResponse{
 			Uuid:  schedule.Uuid,
-			Name:  schedule.Name,
 			Day:   schedule.Day,
 			Start: schedule.Start,
 			End:   schedule.End,

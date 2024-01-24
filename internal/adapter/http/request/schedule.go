@@ -1,7 +1,6 @@
 package request
 
 type CreateSchedule struct {
-	Name           string `json:"name" valid:"required~field name tidak ditemukan"`
 	Day            string `json:"day" valid:"required~field day tidak ditemukan"`
 	Start          string `json:"start" valid:"required~field start tidak ditemukan"`
 	End            string `json:"end" valid:"required~field end tidak ditemukan"`
@@ -11,7 +10,6 @@ type CreateSchedule struct {
 }
 
 type UpdateSchedule struct {
-	Name           string `json:"name" valid:"required~field name tidak ditemukan"`
 	Day            string `json:"day" valid:"required~field day tidak ditemukan"`
 	Start          string `json:"start" valid:"required~field start tidak ditemukan"`
 	End            string `json:"end" valid:"required~field end tidak ditemukan"`

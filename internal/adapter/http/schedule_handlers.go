@@ -120,7 +120,6 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 
 	model := domain.Schedule{
 		Uuid:         uuid.NewString(),
-		Name:         body.Name,
 		Day:          body.Day,
 		Start:        body.Start,
 		End:          body.End,
@@ -169,7 +168,6 @@ func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 
 	res := response.ScheduleResponse{
 		Uuid:  schedule.Uuid,
-		Name:  schedule.Name,
 		Day:   schedule.Day,
 		Start: schedule.Start,
 		End:   schedule.End,
@@ -272,7 +270,6 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 
 	model := domain.Schedule{
 		Uuid:         res.Uuid,
-		Name:         body.Name,
 		Day:          body.Day,
 		Start:        body.Start,
 		End:          body.End,

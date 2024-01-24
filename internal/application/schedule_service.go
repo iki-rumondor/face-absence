@@ -64,7 +64,6 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 	for _, res := range *result {
 		resp = append(resp, response.ScheduleResponse{
 			Uuid:  res.Uuid,
-			Name:  res.Name,
 			Day:   res.Day,
 			Start: res.Start,
 			End:   res.End,
