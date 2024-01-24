@@ -182,10 +182,10 @@ func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 			UpdatedAt: schedule.Subject.UpdatedAt,
 		},
 		SchoolYear: &response.SchoolYearResponse{
-			Uuid:      schedule.Subject.Uuid,
-			Name:      schedule.Subject.Name,
-			CreatedAt: schedule.Subject.CreatedAt,
-			UpdatedAt: schedule.Subject.UpdatedAt,
+			Uuid:      schedule.SchoolYear.Uuid,
+			Name:      schedule.SchoolYear.Name,
+			CreatedAt: schedule.SchoolYear.CreatedAt,
+			UpdatedAt: schedule.SchoolYear.UpdatedAt,
 		},
 		Absence: &response.AbsenceResponse{
 			Uuid:   absence.Uuid,
