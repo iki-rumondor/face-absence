@@ -30,7 +30,7 @@ func (r *ScheduleRepoImplementation) FindSchedulePagination(pagination *domain.P
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Preload("Subject").Preload("Teacher").Preload("SchoolYear").Find(&schedules).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Preload("Subject").Preload("SchoolYear").Find(&schedules).Error; err != nil {
 		return nil, err
 	}
 
@@ -81,7 +81,7 @@ func (r *ScheduleRepoImplementation) UpdateSchedule(model *domain.Schedule) erro
 
 func (r *ScheduleRepoImplementation) FindSchedules() (*[]domain.Schedule, error) {
 	var res []domain.Schedule
-	if err := r.db.Preload("Class").Preload("Subject").Preload("Teacher").Preload("SchoolYear").Find(&res).Error; err != nil {
+	if err := r.db.Preload("Class").Preload("Subject").Preload("SchoolYear").Find(&res).Error; err != nil {
 		return nil, err
 	}
 
