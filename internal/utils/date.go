@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"time"
 )
 
@@ -19,6 +20,27 @@ func IsValidTimeFormat(input string) bool {
 func IsTodayEqualTo(targetDate string) bool {
 	today := time.Now().Format("2006-01-02")
 	return today == targetDate
+}
+
+func GetHariIndonesia(englishDay string) string {
+	hariMapping := map[string]string{
+		"Monday":    "Senin",
+		"Tuesday":   "Selasa",
+		"Wednesday": "Rabu",
+		"Thursday":  "Kamis",
+		"Friday":    "Jumat",
+		"Saturday":  "Sabtu",
+		"Sunday":    "Minggu",
+	}
+
+	return hariMapping[englishDay]
+}
+
+func IsDayEqualTo(dayString string) bool {
+	hariInggris := time.Now().Weekday().String()
+	hariIndonesia := GetHariIndonesia(hariInggris)
+
+	return strings.EqualFold(hariIndonesia, dayString)
 }
 
 func IsBeforeTime(targetTime string) bool {

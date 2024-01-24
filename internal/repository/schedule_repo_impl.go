@@ -90,7 +90,7 @@ func (r *ScheduleRepoImplementation) FindSchedules() (*[]domain.Schedule, error)
 
 func (r *ScheduleRepoImplementation) FindScheduleByUuid(uuid string) (*domain.Schedule, error) {
 	var res domain.Schedule
-	if err := r.db.First(&res, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Class").Preload("Subject").Preload("SchoolYear").First(&res, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 

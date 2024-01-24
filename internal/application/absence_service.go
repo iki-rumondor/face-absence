@@ -44,7 +44,7 @@ func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
 		}
 	}
 
-	if ok := utils.IsTodayEqualTo(schedule.Day); !ok {
+	if ok := utils.IsDayEqualTo(schedule.Day); !ok {
 		return "", &response.Error{
 			Code:    400,
 			Message: "Jadwal pelajaran tidak berada di hari ini",
