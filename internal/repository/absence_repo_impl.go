@@ -91,7 +91,7 @@ func (r *AbsenceRepoImplementation) CheckStudentIsAbsence(studentID, scheduleID 
 
 func (r *AbsenceRepoImplementation) FindAbsencesStudent(studentID uint) (*[]domain.Absence, error) {
 	var res []domain.Absence
-	if err := r.db.Preload("Student").Preload("Schedule").Find(&res, "student_id", studentID).Error; err != nil {
+	if err := r.db.Preload("Student").Preload("Schedule.Subject").Find(&res, "student_id", studentID).Error; err != nil {
 		return nil, err
 	}
 

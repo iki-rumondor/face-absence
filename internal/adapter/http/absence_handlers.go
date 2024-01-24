@@ -187,6 +187,12 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 				Day:   item.Schedule.Day,
 				Start: item.Schedule.Start,
 				End:   item.Schedule.End,
+				Subject: &response.SubjectResponse{
+					Uuid:      item.Schedule.Subject.Uuid,
+					Name:      item.Schedule.Subject.Name,
+					CreatedAt: item.Schedule.Subject.CreatedAt,
+					UpdatedAt: item.Schedule.Subject.UpdatedAt,
+				},
 			},
 			CreatedAt: item.CreatedAt,
 			UpdatedAt: item.UpdatedAt,
