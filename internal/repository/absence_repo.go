@@ -8,4 +8,7 @@ type AbsenceRepository interface {
 	CheckStudentIsAbsence(studentID, scheduleID uint) int
 	FindScheduleByID(uint) (*domain.Schedule, error)
 	CreateAbsence(*domain.Absence) error
+	FindAbsencesStudent(studentID uint) (*[]domain.Absence, error)
+
+	FindStudentByUserID(userID uint) (*domain.Student, error)
 }
