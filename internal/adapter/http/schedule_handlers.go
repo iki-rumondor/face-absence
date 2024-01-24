@@ -149,81 +149,81 @@ func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 
 }
 
-func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
+// func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 
-	id := c.GetUint("user_id")
-	if id == 0 {
-		utils.HandleError(c, INTERNAL_ERROR)
-		return
-	}
+// 	id := c.GetUint("user_id")
+// 	if id == 0 {
+// 		utils.HandleError(c, INTERNAL_ERROR)
+// 		return
+// 	}
 
-	uuid := c.Param("uuid")
-	schedule, absence, err := h.Service.GetScheduleStudentNow(id, uuid)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
+// 	uuid := c.Param("uuid")
+// 	schedule, absence, err := h.Service.GetScheduleStudentNow(id, uuid)
+// 	if err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
 
-	var absenceRes *response.AbsenceResponse
+// 	var absenceRes *response.AbsenceResponse
 
-	if absence != nil {
-		absenceRes = &response.AbsenceResponse{
-			Uuid:   absence.Uuid,
-			Status: absence.Status,
-			Student: &response.StudentResponse{
-				Uuid:         absence.Student.Uuid,
-				JK:           absence.Student.JK,
-				NIS:          absence.Student.NIS,
-				TempatLahir:  absence.Student.TempatLahir,
-				TanggalLahir: absence.Student.TanggalLahir,
-				Alamat:       absence.Student.Alamat,
-			},
-			Schedule: &response.ScheduleResponse{
-				Uuid:  absence.Schedule.Uuid,
-				Day:   absence.Schedule.Day,
-				Start: absence.Schedule.Start,
-				End:   absence.Schedule.End,
-			},
-			CreatedAt: absence.CreatedAt,
-			UpdatedAt: absence.UpdatedAt,
-		}
-	}
+// 	if absence != nil {
+// 		absenceRes = &response.AbsenceResponse{
+// 			Uuid:   absence.Uuid,
+// 			Status: absence.Status,
+// 			Student: &response.StudentResponse{
+// 				Uuid:         absence.Student.Uuid,
+// 				JK:           absence.Student.JK,
+// 				NIS:          absence.Student.NIS,
+// 				TempatLahir:  absence.Student.TempatLahir,
+// 				TanggalLahir: absence.Student.TanggalLahir,
+// 				Alamat:       absence.Student.Alamat,
+// 			},
+// 			Schedule: &response.ScheduleResponse{
+// 				Uuid:  absence.Schedule.Uuid,
+// 				Day:   absence.Schedule.Day,
+// 				Start: absence.Schedule.Start,
+// 				End:   absence.Schedule.End,
+// 			},
+// 			CreatedAt: absence.CreatedAt,
+// 			UpdatedAt: absence.UpdatedAt,
+// 		}
+// 	}
 
-	res := response.ScheduleResponseForStudent{
-		Uuid:  schedule.Uuid,
-		Day:   schedule.Day,
-		Start: schedule.Start,
-		End:   schedule.End,
-		Class: &response.ClassData{
-			Uuid:      schedule.Class.Uuid,
-			Name:      schedule.Class.Name,
-			CreatedAt: schedule.Class.CreatedAt,
-			UpdatedAt: schedule.Class.UpdatedAt,
-		},
-		Subject: &response.SubjectResponse{
-			Uuid:      schedule.Subject.Uuid,
-			Name:      schedule.Subject.Name,
-			CreatedAt: schedule.Subject.CreatedAt,
-			UpdatedAt: schedule.Subject.UpdatedAt,
-		},
-		SchoolYear: &response.SchoolYearResponse{
-			Uuid:      schedule.SchoolYear.Uuid,
-			Name:      schedule.SchoolYear.Name,
-			CreatedAt: schedule.SchoolYear.CreatedAt,
-			UpdatedAt: schedule.SchoolYear.UpdatedAt,
-		},
-		Absence:   absenceRes,
-		CreatedAt: schedule.CreatedAt,
-		UpdatedAt: schedule.UpdatedAt,
-	}
+// 	res := response.ScheduleResponseForStudent{
+// 		Uuid:  schedule.Uuid,
+// 		Day:   schedule.Day,
+// 		Start: schedule.Start,
+// 		End:   schedule.End,
+// 		Class: &response.ClassData{
+// 			Uuid:      schedule.Class.Uuid,
+// 			Name:      schedule.Class.Name,
+// 			CreatedAt: schedule.Class.CreatedAt,
+// 			UpdatedAt: schedule.Class.UpdatedAt,
+// 		},
+// 		Subject: &response.SubjectResponse{
+// 			Uuid:      schedule.Subject.Uuid,
+// 			Name:      schedule.Subject.Name,
+// 			CreatedAt: schedule.Subject.CreatedAt,
+// 			UpdatedAt: schedule.Subject.UpdatedAt,
+// 		},
+// 		SchoolYear: &response.SchoolYearResponse{
+// 			Uuid:      schedule.SchoolYear.Uuid,
+// 			Name:      schedule.SchoolYear.Name,
+// 			CreatedAt: schedule.SchoolYear.CreatedAt,
+// 			UpdatedAt: schedule.SchoolYear.UpdatedAt,
+// 		},
+// 		Absence:   absenceRes,
+// 		CreatedAt: schedule.CreatedAt,
+// 		UpdatedAt: schedule.UpdatedAt,
+// 	}
 
-	c.JSON(http.StatusOK, response.SuccessResponse{
-		Success: true,
-		Message: "Jadwal berhasil ditemukan",
-		Data:    res,
-	})
+// 	c.JSON(http.StatusOK, response.SuccessResponse{
+// 		Success: true,
+// 		Message: "Jadwal berhasil ditemukan",
+// 		Data:    res,
+// 	})
 
-}
+// }
 
 func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 
@@ -269,7 +269,7 @@ func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 
 }
 
-func (h *ScheduleHandler) GetStudentSchedules(c *gin.Context) {
+func (h *ScheduleHandler) GetTeacherSchedules(c *gin.Context) {
 
 	id := c.GetUint("user_id")
 	if id == 0 {
@@ -277,7 +277,7 @@ func (h *ScheduleHandler) GetStudentSchedules(c *gin.Context) {
 		return
 	}
 
-	schedules, err := h.Service.GetStudentSchedules(id)
+	schedules, err := h.Service.GetTeacherSchedules(id)
 	if err != nil {
 		utils.HandleError(c, err)
 		return

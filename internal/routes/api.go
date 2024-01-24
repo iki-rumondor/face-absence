@@ -36,8 +36,8 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	{
 		teacher.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 		teacher.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
-		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetStudentSchedules)
-		teacher.GET("schedules/:uuid", middleware.SetUserID(), handlers.ScheduleHandler.GetScheduleForStudent)
+		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetTeacherSchedules)
+		// teacher.GET("schedules/:uuid", middleware.SetUserID(), handlers.ScheduleHandler.GetScheduleForStudent)
 		teacher.GET("absences/history", middleware.SetUserID(), handlers.AbsenceHandler.GetStudentAbsences)
 	}
 

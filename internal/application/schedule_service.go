@@ -58,49 +58,53 @@ func (s *ScheduleService) GetAllSchedules() (*[]domain.Schedule, error) {
 	return result, nil
 }
 
-func (s *ScheduleService) GetScheduleStudentNow(userID uint, scheduleUuid string) (*domain.Schedule, *domain.Absence, error) {
+// func (s *ScheduleService) GetScheduleStudentNow(userID uint, scheduleUuid string) (*domain.Schedule, *domain.Absence, error) {
 
-	student, err := s.Repo.FindStudentByUserID(userID)
-	if err != nil {
-		return nil, nil, err
-	}
+// 	student, err := s.Repo.FindStudentByUserID(userID)
+// 	if err != nil {
+// 		return nil, nil, err
+// 	}
 
-	schedule, err := s.GetSchedule(scheduleUuid)
-	if err != nil {
-		return nil, nil, err
-	}
+// 	schedule, err := s.GetSchedule(scheduleUuid)
+// 	if err != nil {
+// 		return nil, nil, err
+// 	}
 
-	absence, err := s.Repo.FindStudentAbsenceByScheduleID(student.ID, schedule.ID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return schedule, nil, nil
-		}
-		return nil, nil, INTERNAL_ERROR
-	}
+// 	absence, err := s.Repo.FindStudentAbsenceByScheduleID(student.ID, schedule.ID)
+// 	if err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return schedule, nil, nil
+// 		}
+// 		return nil, nil, INTERNAL_ERROR
+// 	}
 
-	return schedule, absence, nil
-}
+// 	return schedule, absence, nil
+// }
 
-func (s *ScheduleService) GetStudentSchedules(userID uint) (*[]domain.Schedule, error) {
+func (s *ScheduleService) GetTeacherSchedules(userID uint) (*[]domain.Schedule, error) {
 
-	student, err := s.Repo.FindStudentByUserID(userID)
+	teacher, err := s.Repo.FindTeacherByUserID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: "Jadwal tidak ditemukan",
+				Message: "Guru tidak ditemukan",
 			}
 		}
 		return nil, INTERNAL_ERROR
 	}
 
-	result, err := s.Repo.FindSchedulesByClass(student.ClassID)
+	var schedules []domain.Schedule
+
+	for _, item := range *teacher.Subjects{
+		schedules = append(schedules, *item.Schedules...)
+	}
 
 	if err != nil {
 		return nil, INTERNAL_ERROR
 	}
 
-	return result, nil
+	return &schedules, nil
 }
 
 func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {

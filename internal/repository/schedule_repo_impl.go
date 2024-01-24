@@ -110,9 +110,9 @@ func (r *ScheduleRepoImplementation) DeleteSchedule(model *domain.Schedule) erro
 	return r.db.Delete(&model, "uuid = ?", model.Uuid).Error
 }
 
-func (r *ScheduleRepoImplementation) FindStudentByUserID(userID uint) (*domain.Student, error) {
-	var res domain.Student
-	if err := r.db.Preload("Class").First(&res, "user_id = ?", userID).Error; err != nil {
+func (r *ScheduleRepoImplementation) FindTeacherByUserID(userID uint) (*domain.Teacher, error) {
+	var res domain.Teacher
+	if err := r.db.Preload("Subjects.Schedules.Class").Preload("Subjects.Schedules.SchoolYear").Preload("Subjects.Schedules.Subject.Teacher").Preload("User").First(&res, "user_id = ?", userID).Error; err != nil {
 		return nil, err
 	}
 
@@ -121,7 +121,7 @@ func (r *ScheduleRepoImplementation) FindStudentByUserID(userID uint) (*domain.S
 
 func (r *ScheduleRepoImplementation) FindUserByID(ID uint) (*domain.User, error) {
 	var user domain.User
-	if err := r.db.First(&user, "id = ?", ID).Error; err != nil{
+	if err := r.db.First(&user, "id = ?", ID).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -129,7 +129,7 @@ func (r *ScheduleRepoImplementation) FindUserByID(ID uint) (*domain.User, error)
 
 func (r *ScheduleRepoImplementation) FindStudentAbsenceByScheduleID(studentID, scheduleID uint) (*domain.Absence, error) {
 	var absence domain.Absence
-	if err := r.db.Preload("Student").Preload("Schedule").First(&absence, "student_id = ? AND schedule_id = ?", studentID, scheduleID).Error; err != nil{
+	if err := r.db.Preload("Student").Preload("Schedule").First(&absence, "student_id = ? AND schedule_id = ?", studentID, scheduleID).Error; err != nil {
 		return nil, err
 	}
 	return &absence, nil
