@@ -94,14 +94,6 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		return
 	}
 
-	if ok := utils.IsValidDateFormat(body.Day); !ok {
-		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
-			Success: false,
-			Message: "Gunakan format yyyy-mm-dd pada field day",
-		})
-		return
-	}
-
 	if ok := utils.IsValidTimeFormat(body.Start); !ok {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Success: false,
