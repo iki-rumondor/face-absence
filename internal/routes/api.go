@@ -81,6 +81,8 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
 
 		admin.GET("absences", handlers.AbsenceHandler.GetAllAbsences)
+		
+		admin.GET("pdf/classes", handlers.ClassHandler.GetClassPDF)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 

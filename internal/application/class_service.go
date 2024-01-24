@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
@@ -175,4 +176,36 @@ func (s *ClassService) DeleteClass(class *domain.Class) error {
 	}
 
 	return nil
+}
+
+func (s *ClassService) CreateClassPDF() ([]byte, error) {
+
+	classes, err := s.GetAllClasses()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(*classes) == 0 {
+		return nil, &response.Error{
+			Code:    404,
+			Message: "ServiceError: Data Kelas Masih Kosong",
+		}
+	}
+
+	var data []*request.ClassPDFData
+
+	for _, item := range *classes {
+		data = append(data, &request.ClassPDFData{
+			Name:        item.Name,
+			TeacherName: item.Teacher.User.Nama,
+			CreatedAt:   item.CreatedAt.Format("02 Januari 2006"),
+		})
+	}
+
+	pdfData, err := s.Repo.GetClassPDF(data)
+	if err != nil {
+		return nil, INTERNAL_ERROR
+	}
+
+	return pdfData, nil
 }

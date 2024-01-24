@@ -248,3 +248,16 @@ func (h *ClassHandler) DeleteClass(c *gin.Context) {
 	})
 
 }
+
+func (h *ClassHandler) GetClassPDF(c *gin.Context) {
+
+	dataPDF, err := h.Service.CreateClassPDF()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", "attachment; filename=classes.pdf")
+	c.Data(http.StatusOK, "application/pdf", dataPDF)
+}

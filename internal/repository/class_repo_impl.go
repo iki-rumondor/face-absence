@@ -1,6 +1,14 @@
 package repository
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"gorm.io/gorm"
@@ -101,4 +109,31 @@ func (r *ClassRepoImplementation) FindClassByUuid(uuid string) (*domain.Class, e
 
 func (r *ClassRepoImplementation) DeleteClass(class *domain.Class) error {
 	return r.db.Delete(&class, "uuid = ?", class.Uuid).Error
+}
+
+func (r *ClassRepoImplementation) GetClassPDF(data []*request.ClassPDFData) ([]byte, error) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	var API_URL = os.Getenv("LARAVEL_API")
+	if API_URL == "" {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/generate-pdf/Daftar_Seluruh_Kelas", API_URL)
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	pdfData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return pdfData, nil
 }
