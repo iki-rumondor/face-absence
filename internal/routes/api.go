@@ -33,10 +33,6 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 	}
 
-	user := router.Group("api").Use(middleware.IsValidJWT())
-	{
-		user.GET("schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
-	}
 
 	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
 	{
