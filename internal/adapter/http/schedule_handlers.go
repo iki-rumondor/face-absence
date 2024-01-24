@@ -164,6 +164,31 @@ func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 		return
 	}
 
+	var absenceRes *response.AbsenceResponse
+
+	if absence != nil {
+		absenceRes = &response.AbsenceResponse{
+			Uuid:   absence.Uuid,
+			Status: absence.Status,
+			Student: &response.StudentResponse{
+				Uuid:         absence.Student.Uuid,
+				JK:           absence.Student.JK,
+				NIS:          absence.Student.NIS,
+				TempatLahir:  absence.Student.TempatLahir,
+				TanggalLahir: absence.Student.TanggalLahir,
+				Alamat:       absence.Student.Alamat,
+			},
+			Schedule: &response.ScheduleResponse{
+				Uuid:  absence.Schedule.Uuid,
+				Day:   absence.Schedule.Day,
+				Start: absence.Schedule.Start,
+				End:   absence.Schedule.End,
+			},
+			CreatedAt: absence.CreatedAt,
+			UpdatedAt: absence.UpdatedAt,
+		}
+	}
+
 	res := response.ScheduleResponseForStudent{
 		Uuid:  schedule.Uuid,
 		Day:   schedule.Day,
@@ -187,26 +212,7 @@ func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 			CreatedAt: schedule.SchoolYear.CreatedAt,
 			UpdatedAt: schedule.SchoolYear.UpdatedAt,
 		},
-		Absence: &response.AbsenceResponse{
-			Uuid:   absence.Uuid,
-			Status: absence.Status,
-			Student: &response.StudentResponse{
-				Uuid:         absence.Student.Uuid,
-				JK:           absence.Student.JK,
-				NIS:          absence.Student.NIS,
-				TempatLahir:  absence.Student.TempatLahir,
-				TanggalLahir: absence.Student.TanggalLahir,
-				Alamat:       absence.Student.Alamat,
-			},
-			Schedule: &response.ScheduleResponse{
-				Uuid:  absence.Schedule.Uuid,
-				Day:   absence.Schedule.Day,
-				Start: absence.Schedule.Start,
-				End:   absence.Schedule.End,
-			},
-			CreatedAt: absence.CreatedAt,
-			UpdatedAt: absence.UpdatedAt,
-		},
+		Absence:   absenceRes,
 		CreatedAt: schedule.CreatedAt,
 		UpdatedAt: schedule.UpdatedAt,
 	}

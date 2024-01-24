@@ -73,10 +73,7 @@ func (s *ScheduleService) GetScheduleStudentNow(userID uint, scheduleUuid string
 	absence, err := s.Repo.FindStudentAbsenceByScheduleID(student.ID, schedule.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, &response.Error{
-				Code:    404,
-				Message: "Jadwal tidak ditemukan",
-			}
+			return schedule, nil, nil
 		}
 		return nil, nil, INTERNAL_ERROR
 	}
