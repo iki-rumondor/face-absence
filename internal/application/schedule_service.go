@@ -48,49 +48,40 @@ func (s *ScheduleService) CreateSchedule(model *domain.Schedule) error {
 	return nil
 }
 
-func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error) {
+func (s *ScheduleService) GetAllSchedules() (*[]domain.Schedule, error) {
 
 	result, err := s.Repo.FindSchedules()
-
 	if err != nil {
-		return nil, &response.Error{
-			Code:    500,
-			Message: "Gagal mendapatkan seluruh jadwal",
+		return nil, INTERNAL_ERROR
+	}
+
+	return result, nil
+}
+
+func (s *ScheduleService) GetScheduleStudentNow(userID uint, scheduleUuid string) (*domain.Schedule, *domain.Absence, error) {
+
+	student, err := s.Repo.FindStudentByUserID(userID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	schedule, err := s.GetSchedule(scheduleUuid)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	absence, err := s.Repo.FindStudentAbsenceByScheduleID(student.ID, schedule.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil, &response.Error{
+				Code:    404,
+				Message: "Jadwal tidak ditemukan",
+			}
 		}
+		return nil, nil, INTERNAL_ERROR
 	}
 
-	var resp []response.ScheduleResponse
-
-	for _, res := range *result {
-		resp = append(resp, response.ScheduleResponse{
-			Uuid:  res.Uuid,
-			Day:   res.Day,
-			Start: res.Start,
-			End:   res.End,
-			Class: &response.ClassData{
-				Uuid:      res.Class.Uuid,
-				Name:      res.Class.Name,
-				CreatedAt: res.Class.CreatedAt,
-				UpdatedAt: res.Class.UpdatedAt,
-			},
-			Subject: &response.SubjectResponse{
-				Uuid:      res.Subject.Uuid,
-				Name:      res.Subject.Name,
-				CreatedAt: res.Subject.CreatedAt,
-				UpdatedAt: res.Subject.UpdatedAt,
-			},
-			SchoolYear: &response.SchoolYearResponse{
-				Uuid:      res.Subject.Uuid,
-				Name:      res.Subject.Name,
-				CreatedAt: res.Subject.CreatedAt,
-				UpdatedAt: res.Subject.UpdatedAt,
-			},
-			CreatedAt: res.CreatedAt,
-			UpdatedAt: res.UpdatedAt,
-		})
-	}
-
-	return &resp, nil
+	return schedule, absence, nil
 }
 
 func (s *ScheduleService) GetStudentSchedules(userID uint) (*[]domain.Schedule, error) {
@@ -110,7 +101,7 @@ func (s *ScheduleService) GetStudentSchedules(userID uint) (*[]domain.Schedule, 
 
 	if err != nil {
 		return nil, INTERNAL_ERROR
-	}	
+	}
 
 	return result, nil
 }

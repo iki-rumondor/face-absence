@@ -118,3 +118,19 @@ func (r *ScheduleRepoImplementation) FindStudentByUserID(userID uint) (*domain.S
 
 	return &res, nil
 }
+
+func (r *ScheduleRepoImplementation) FindUserByID(ID uint) (*domain.User, error) {
+	var user domain.User
+	if err := r.db.First(&user, "id = ?", ID).Error; err != nil{
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *ScheduleRepoImplementation) FindStudentAbsenceByScheduleID(studentID, scheduleID uint) (*domain.Absence, error) {
+	var absence domain.Absence
+	if err := r.db.First(&absence, "student_id = ? AND schedule_id = ?", studentID, scheduleID).Error; err != nil{
+		return nil, err
+	}
+	return &absence, nil
+}

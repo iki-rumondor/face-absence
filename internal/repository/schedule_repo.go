@@ -12,4 +12,6 @@ type ScheduleRepository interface {
 	DeleteSchedule(*domain.Schedule) error
 
 	FindStudentByUserID(userID uint) (*domain.Student, error)
+	FindUserByID(ID uint) (*domain.User, error)
+	FindStudentAbsenceByScheduleID(studentID, scheduleID uint) (*domain.Absence, error)
 }

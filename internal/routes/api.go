@@ -35,7 +35,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 	user := router.Group("api").Use(middleware.IsValidJWT())
 	{
-		user.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
+		user.GET("schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
 	}
 
 	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
@@ -43,6 +43,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 		student.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
 		student.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetStudentSchedules)
+		student.GET("schedules/:uuid", middleware.SetUserID(), handlers.ScheduleHandler.GetScheduleForStudent)
 		student.GET("absences/history", middleware.SetUserID(), handlers.AbsenceHandler.GetStudentAbsences)
 	}
 
@@ -83,11 +84,12 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 		admin.POST("master/schedules", handlers.ScheduleHandler.CreateSchedule)
 		admin.GET("master/schedules", handlers.ScheduleHandler.GetSchedulePagination)
+		admin.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
 		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
 
 		admin.GET("absences", handlers.AbsenceHandler.GetAllAbsences)
-		
+
 		admin.GET("pdf/classes", handlers.ClassHandler.GetClassPDF)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
