@@ -153,3 +153,50 @@ func (h *AbsenceHandler) GetAllAbsences(c *gin.Context) {
 		Data:    result,
 	})
 }
+
+func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
+
+	id := c.GetUint("user_id")
+	if id == 0 {
+		utils.HandleError(c, INTERNAL_ERROR)
+		return
+	}
+
+	absences, err := h.Service.GetAbsencesUser(id)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	var res []*response.AbsenceResponse
+
+	for _, item := range *absences {
+		res = append(res, &response.AbsenceResponse{
+			Uuid:   item.Uuid,
+			Status: item.Status,
+			Student: &response.StudentResponse{
+				Uuid:         item.Student.Uuid,
+				JK:           item.Student.JK,
+				NIS:          item.Student.NIS,
+				TempatLahir:  item.Student.TempatLahir,
+				TanggalLahir: item.Student.TanggalLahir,
+				Alamat:       item.Student.Alamat,
+			},
+			Schedule: &response.ScheduleResponse{
+				Uuid:  item.Schedule.Uuid,
+				Day:   item.Schedule.Day,
+				Start: item.Schedule.Start,
+				End:   item.Schedule.End,
+			},
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Absensi berhasil ditemukan",
+		Data:    res,
+	})
+
+}

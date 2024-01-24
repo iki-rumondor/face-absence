@@ -3,6 +3,7 @@ package application
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -13,6 +14,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
 	"github.com/iki-rumondor/init-golang-service/internal/utils"
+	"gorm.io/gorm"
 )
 
 type AbsenceService struct {
@@ -218,4 +220,29 @@ func (s *AbsenceService) GetAllAbsences(urlPath string, pagination *domain.Pagin
 	page := GeneratePages(urlPath, result)
 
 	return page, nil
+}
+
+func (s *AbsenceService) GetAbsencesUser(userID uint) (*[]domain.Absence, error) {
+
+	student, err := s.Repo.FindStudentByUserID(userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: "User tidak ditemukan",
+			}
+		}
+		return nil, INTERNAL_ERROR
+	}
+
+	result, err := s.Repo.FindAbsencesStudent(student.ID)
+	if err != nil {
+		return nil, &response.Error{
+			Code:    500,
+			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
+		}
+	}
+
+	return result, nil
+
 }
