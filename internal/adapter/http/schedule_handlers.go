@@ -88,12 +88,6 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		return
 	}
 
-	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
-
 	schoolYear, err := h.SchoolYearService.GetSchoolYear(body.SchoolYearUuid)
 	if err != nil {
 		utils.HandleError(c, err)
@@ -132,7 +126,6 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 		End:          body.End,
 		ClassID:      class.ID,
 		SubjectID:    subject.ID,
-		TeacherID:    teacher.ID,
 		SchoolYearID: schoolYear.ID,
 	}
 
@@ -262,12 +255,6 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		return
 	}
 
-	teacher, err := h.TeacherService.GetTeacher(body.TeacherUuid)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
-
 	schoolYear, err := h.SchoolYearService.GetSchoolYear(body.SchoolYearUuid)
 	if err != nil {
 		utils.HandleError(c, err)
@@ -306,7 +293,6 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 		End:          body.End,
 		ClassID:      class.ID,
 		SubjectID:    subject.ID,
-		TeacherID:    teacher.ID,
 		SchoolYearID: schoolYear.ID,
 	}
 

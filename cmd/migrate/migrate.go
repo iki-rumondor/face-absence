@@ -20,6 +20,10 @@ func ReadTerminal(db *gorm.DB, args []string) {
 		if err := seederData(db); err != nil {
 			log.Fatal(err.Error())
 		}
+	case args[1] == "migrate":
+		if err := migrateDatabase(db); err != nil {
+			log.Fatal(err.Error())
+		}
 	default:
 		fmt.Println("Hello")
 	}
@@ -46,6 +50,15 @@ func freshDatabase(db *gorm.DB) error {
 		Uuid:   uuid.NewString(),
 		UserID: 1,
 	})
+
+	return nil
+}
+func migrateDatabase(db *gorm.DB) error {
+	for _, model := range registry.RegisterModels() {
+		if err := db.Debug().AutoMigrate(model.Model); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
