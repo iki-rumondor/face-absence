@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -52,7 +53,7 @@ func IsBeforeTime(targetTime string) bool {
 	now := time.Now()
 
 	timeFormat := time.Date(now.Year(), now.Month(), now.Day(), parsedTime.Hour(), parsedTime.Minute(), 0, 0, now.Location())
-
+	fmt.Println(now, timeFormat)
 	return now.Before(timeFormat)
 }
 
