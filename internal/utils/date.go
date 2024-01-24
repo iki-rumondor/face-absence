@@ -51,10 +51,16 @@ func IsBeforeTime(targetTime string) bool {
 	}
 
 	now := time.Now()
+	witaLocation, err := time.LoadLocation("Asia/Makassar")
+	if err != nil {
+		return false
+	}
 
-	timeFormat := time.Date(now.Year(), now.Month(), now.Day(), parsedTime.Hour(), parsedTime.Minute(), 0, 0, now.Location())
-	fmt.Println(now, timeFormat)
-	return now.Before(timeFormat)
+	witaTime := now.In(witaLocation)
+
+	timeFormat := time.Date(witaTime.Year(), witaTime.Month(), witaTime.Day(), parsedTime.Hour(), parsedTime.Minute(), 0, 0, witaTime.Location())
+	fmt.Println(witaTime, timeFormat)
+	return witaTime.Before(timeFormat)
 }
 
 func IsAfterTime(targetTime string) bool {
@@ -64,8 +70,13 @@ func IsAfterTime(targetTime string) bool {
 	}
 
 	now := time.Now()
+	witaLocation, err := time.LoadLocation("Asia/Makassar")
+	if err != nil {
+		return false
+	}
+	witaTime := now.In(witaLocation)
 
-	timeFormat := time.Date(now.Year(), now.Month(), now.Day(), parsedTime.Hour(), parsedTime.Minute(), 0, 0, now.Location())
+	timeFormat := time.Date(witaTime.Year(), witaTime.Month(), witaTime.Day(), parsedTime.Hour(), parsedTime.Minute(), 0, 0, witaTime.Location())
 
-	return now.After(timeFormat)
+	return witaTime.After(timeFormat)
 }
