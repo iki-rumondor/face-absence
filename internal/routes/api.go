@@ -33,6 +33,11 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 	}
 
+	user := router.Group("api").Use(middleware.IsValidJWT())
+	{
+		user.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
+	}
+
 	student := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsStudent())
 	{
 		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
@@ -77,7 +82,6 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 		admin.POST("master/schedules", handlers.ScheduleHandler.CreateSchedule)
 		admin.GET("master/schedules", handlers.ScheduleHandler.GetSchedulePagination)
-		admin.GET("master/schedules/:uuid", handlers.ScheduleHandler.GetSchedule)
 		admin.PUT("master/schedules/:uuid", handlers.ScheduleHandler.UpdateSchedule)
 		admin.DELETE("master/schedules/:uuid", handlers.ScheduleHandler.DeleteSchedule)
 
