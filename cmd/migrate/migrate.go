@@ -44,7 +44,7 @@ func freshDatabase(db *gorm.DB) error {
 	db.Create(&domain.User{
 		Nama:     "Admin",
 		Username: "admin",
-		Password: "123456",
+		Password: "secretADMIN01.",
 	})
 	db.Create(&domain.Admin{
 		Uuid:   uuid.NewString(),
