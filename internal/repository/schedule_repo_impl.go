@@ -88,6 +88,15 @@ func (r *ScheduleRepoImplementation) FindSchedules() (*[]domain.Schedule, error)
 	return &res, nil
 }
 
+func (r *ScheduleRepoImplementation) FindSchedulesByClass(classID uint) (*[]domain.Schedule, error) {
+	var res []domain.Schedule
+	if err := r.db.Preload("Class").Preload("Subject").Preload("SchoolYear").Find(&res, "class_id", classID).Error; err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (r *ScheduleRepoImplementation) FindScheduleByUuid(uuid string) (*domain.Schedule, error) {
 	var res domain.Schedule
 	if err := r.db.Preload("Class").Preload("Subject").Preload("SchoolYear").First(&res, "uuid = ?", uuid).Error; err != nil {
@@ -99,4 +108,13 @@ func (r *ScheduleRepoImplementation) FindScheduleByUuid(uuid string) (*domain.Sc
 
 func (r *ScheduleRepoImplementation) DeleteSchedule(model *domain.Schedule) error {
 	return r.db.Delete(&model, "uuid = ?", model.Uuid).Error
+}
+
+func (r *ScheduleRepoImplementation) FindStudentByUserID(userID uint) (*domain.Student, error) {
+	var res domain.Student
+	if err := r.db.Preload("Class").First(&res, "user_id = ?", userID).Error; err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }

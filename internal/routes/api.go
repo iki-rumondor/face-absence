@@ -37,6 +37,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	{
 		student.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 		student.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
+		student.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetStudentSchedules)
 	}
 
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())

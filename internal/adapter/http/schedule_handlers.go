@@ -193,6 +193,61 @@ func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 
 }
 
+func (h *ScheduleHandler) GetStudentSchedules(c *gin.Context) {
+
+	id := c.GetUint("user_id")
+	if id == 0 {
+		utils.HandleError(c, INTERNAL_ERROR)
+		return
+	}
+
+	schedules, err := h.Service.GetStudentSchedules(id)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	type scheduleRes []*response.ScheduleResponse
+
+	var res = map[string]scheduleRes{}
+
+	for _, item := range *schedules {
+		res[item.Day] = append(res[item.Day], &response.ScheduleResponse{
+			Uuid:  item.Uuid,
+			Day:   item.Day,
+			Start: item.Start,
+			End:   item.End,
+			Class: &response.ClassData{
+				Uuid:      item.Class.Uuid,
+				Name:      item.Class.Name,
+				CreatedAt: item.Class.CreatedAt,
+				UpdatedAt: item.Class.UpdatedAt,
+			},
+			Subject: &response.SubjectResponse{
+				Uuid:      item.Subject.Uuid,
+				Name:      item.Subject.Name,
+				CreatedAt: item.Subject.CreatedAt,
+				UpdatedAt: item.Subject.UpdatedAt,
+			},
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid:      item.SchoolYear.Uuid,
+				Name:      item.SchoolYear.Name,
+				CreatedAt: item.SchoolYear.CreatedAt,
+				UpdatedAt: item.SchoolYear.UpdatedAt,
+			},
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Jadwal berhasil ditemukan",
+		Data:    res,
+	})
+
+}
+
 func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 
 	var body request.UpdateSchedule

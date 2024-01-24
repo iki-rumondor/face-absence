@@ -93,6 +93,28 @@ func (s *ScheduleService) GetAllSchedules() (*[]response.ScheduleResponse, error
 	return &resp, nil
 }
 
+func (s *ScheduleService) GetStudentSchedules(userID uint) (*[]domain.Schedule, error) {
+
+	student, err := s.Repo.FindStudentByUserID(userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: "Jadwal tidak ditemukan",
+			}
+		}
+		return nil, INTERNAL_ERROR
+	}
+
+	result, err := s.Repo.FindSchedulesByClass(student.ClassID)
+
+	if err != nil {
+		return nil, INTERNAL_ERROR
+	}	
+
+	return result, nil
+}
+
 func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {
 
 	result, err := s.Repo.FindScheduleByUuid(uuid)
