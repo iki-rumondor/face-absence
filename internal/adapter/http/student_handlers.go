@@ -3,8 +3,6 @@ package customHTTP
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -51,13 +49,8 @@ func (h *StudentHandlers) CreateStudent(c *gin.Context) {
 		return
 	}
 
-	user := domain.User{
-		Nama:     body.Nama,
-		Username: body.Username,
-		Password: body.Username,
-	}
-
 	student := domain.Student{
+		Nama:         body.Nama,
 		Uuid:         uuid.NewString(),
 		NIS:          body.NIS,
 		JK:           body.JK,
@@ -67,7 +60,7 @@ func (h *StudentHandlers) CreateStudent(c *gin.Context) {
 		ClassID:      class.ID,
 	}
 
-	if err := h.Service.CreateStudent(&student, &user); err != nil {
+	if err := h.Service.CreateStudent(&student); err != nil {
 		utils.HandleError(c, err)
 		return
 	}
@@ -79,50 +72,50 @@ func (h *StudentHandlers) CreateStudent(c *gin.Context) {
 
 }
 
-func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
-	file, err := c.FormFile("students")
-	if err != nil {
-		utils.HandleError(c, &response.Error{
-			Code:    400,
-			Message: "File students tidak ditemukan",
-		})
-		return
-	}
+// func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
+// 	file, err := c.FormFile("students")
+// 	if err != nil {
+// 		utils.HandleError(c, &response.Error{
+// 			Code:    400,
+// 			Message: "File students tidak ditemukan",
+// 		})
+// 		return
+// 	}
 
-	if err := utils.IsExcelFile(file); err != nil {
-		utils.HandleError(c, err)
-		return
-	}
+// 	if err := utils.IsExcelFile(file); err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
 
-	tempFolder := "internal/assets/temp"
-	pathFile := filepath.Join(tempFolder, file.Filename)
+// 	tempFolder := "internal/assets/temp"
+// 	pathFile := filepath.Join(tempFolder, file.Filename)
 
-	if err := c.SaveUploadedFile(file, pathFile); err != nil {
-		utils.HandleError(c, &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan saat menyimpan file",
-		})
-	}
+// 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
+// 		utils.HandleError(c, &response.Error{
+// 			Code:    500,
+// 			Message: "Terjadi kesalahan saat menyimpan file",
+// 		})
+// 	}
 
-	defer func() {
-		if err := os.Remove(pathFile); err != nil {
-			fmt.Println(err.Error())
-		}
-	}()
+// 	defer func() {
+// 		if err := os.Remove(pathFile); err != nil {
+// 			fmt.Println(err.Error())
+// 		}
+// 	}()
 
-	failed, err := h.Service.ImportStudents(pathFile)
+// 	failed, err := h.Service.ImportStudents(pathFile)
 
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
+// 	if err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
 
-	c.JSON(http.StatusCreated, response.SuccessResponse{
-		Success: true,
-		Message: "Santri berhasil ditambahkan",
-		Data:    failed,
-	})
-}
+// 	c.JSON(http.StatusCreated, response.SuccessResponse{
+// 		Success: true,
+// 		Message: "Santri berhasil ditambahkan",
+// 		Data:    failed,
+// 	})
+// }
 
 func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
 
@@ -159,10 +152,27 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 		return
 	}
 
+	res := response.StudentResponse{
+		Uuid:         student.Uuid,
+		JK:           student.JK,
+		NIS:          student.NIS,
+		TempatLahir:  student.TempatLahir,
+		TanggalLahir: student.TanggalLahir,
+		Alamat:       student.Alamat,
+		Class: &response.ClassData{
+			Uuid:      student.Class.Uuid,
+			Name:      student.Class.Name,
+			CreatedAt: student.Class.CreatedAt,
+			UpdatedAt: student.Class.UpdatedAt,
+		},
+		CreatedAt: student.CreatedAt,
+		UpdatedAt: student.UpdatedAt,
+	}
+
 	c.JSON(http.StatusOK, response.SuccessResponse{
 		Success: true,
 		Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", student.Uuid),
-		Data:    student,
+		Data:    res,
 	})
 }
 
@@ -183,30 +193,9 @@ func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
 		return
 	}
 
-	class, err := h.ClassService.GetClass(body.ClassUuid)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
-
 	uuid := c.Param("uuid")
 
-	student := domain.Student{
-		Uuid:         uuid,
-		NIS:          body.NIS,
-		JK:           body.JK,
-		TempatLahir:  body.TempatLahir,
-		TanggalLahir: body.TanggalLahir,
-		Alamat:       body.Alamat,
-		ClassID:      class.ID,
-	}
-
-	user := domain.User{
-		Nama:     body.Nama,
-		Username: body.Username,
-	}
-
-	if err := h.Service.UpdateStudent(&student, &user); err != nil {
+	if err := h.Service.UpdateStudent(uuid, &body); err != nil {
 		utils.HandleError(c, err)
 		return
 	}
@@ -232,27 +221,27 @@ func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
 	})
 }
 
-func (h *StudentHandlers) CreateReport(c *gin.Context) {
-	randomName := fmt.Sprintf("%s.pdf", uuid.NewString())
-	filePath := fmt.Sprintf("internal/assets/temp/%s", randomName)
+// func (h *StudentHandlers) CreateReport(c *gin.Context) {
+// 	randomName := fmt.Sprintf("%s.pdf", uuid.NewString())
+// 	filePath := fmt.Sprintf("internal/assets/temp/%s", randomName)
 
-	if err := h.Service.CreateStudentPDF(filePath); err != nil {
-		utils.HandleError(c, err)
-		return
-	}
+// 	if err := h.Service.CreateStudentPDF(filePath); err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
 
-	history := domain.PdfDownloadHistory{
-		Name: randomName,
-	}
+// 	history := domain.PdfDownloadHistory{
+// 		Name: randomName,
+// 	}
 
-	if err := h.Service.CreatePdfHistory(&history); err != nil {
-		utils.HandleError(c, err)
-		return
-	}
+// 	if err := h.Service.CreatePdfHistory(&history); err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, response.SuccessResponse{
-		Success: true,
-		Message: fmt.Sprintf("/public/file/%s", randomName),
-	})
+// 	c.JSON(http.StatusOK, response.SuccessResponse{
+// 		Success: true,
+// 		Message: fmt.Sprintf("/public/file/%s", randomName),
+// 	})
 
-}
+// }

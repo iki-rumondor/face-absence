@@ -65,17 +65,42 @@ func migrateDatabase(db *gorm.DB) error {
 
 func seederData(db *gorm.DB) error {
 
-	userData := domain.User{
+	user1 := domain.User{
 		Nama:     "John Doe",
 		Username: "johndoess",
 		Password: "123",
 	}
 
-	if err := db.Create(&userData).Error; err != nil {
+	user2 := domain.User{
+		Nama:     "John Doe",
+		Username: "doejhon",
+		Password: "123",
+	}
+
+	if err := db.Create(&user1).Error; err != nil {
 		return err
 	}
 
-	teacher := domain.Teacher{
+	if err := db.Create(&user2).Error; err != nil {
+		return err
+	}
+
+	teacher1 := domain.Teacher{
+		Uuid:          uuid.NewString(),
+		Nuptk:         "1234567890",
+		StatusPegawai: "AKTIF",
+		Nip:           "987654321223",
+		JK:            "Laki-laki",
+		TempatLahir:   "Jakarta",
+		TanggalLahir:  "1990-01-01",
+		NoHp:          "081234567890",
+		Jabatan:       "Guru",
+		TotalJtm:      "40",
+		Alamat:        "Jl. Contoh No. 123",
+		UserID:        user1.ID,
+	}
+
+	teacher2 := domain.Teacher{
 		Uuid:          uuid.NewString(),
 		Nuptk:         "1234567890",
 		StatusPegawai: "AKTIF",
@@ -87,17 +112,17 @@ func seederData(db *gorm.DB) error {
 		Jabatan:       "Guru",
 		TotalJtm:      "40",
 		Alamat:        "Jl. Contoh No. 123",
-		UserID:        userData.ID,
+		UserID:        user2.ID,
 	}
 
-	if err := db.Create(&teacher).Error; err != nil {
+	if err := db.Create(&teacher1).Error; err != nil {
 		return err
 	}
 
 	class := domain.Class{
 		Uuid:      uuid.NewString(),
 		Name:      "VII-A",
-		TeacherID: teacher.ID,
+		TeacherID: teacher1.ID,
 	}
 
 	if err := db.Create(&class).Error; err != nil {
@@ -105,22 +130,15 @@ func seederData(db *gorm.DB) error {
 	}
 
 	subject := domain.Subject{
-		Uuid:      uuid.NewString(),
-		Name:      "Fisika",
-		TeacherID: teacher.ID,
+		Uuid: uuid.NewString(),
+		Name: "Fisika",
+		Teachers: []domain.Teacher{
+			teacher1,
+			teacher2,
+		},
 	}
 
 	if err := db.Create(&subject).Error; err != nil {
-		return err
-	}
-
-	userStudent := domain.User{
-		Nama:     "John Doe",
-		Username: "student",
-		Password: "123",
-	}
-
-	if err := db.Create(&userStudent).Error; err != nil {
 		return err
 	}
 
@@ -131,7 +149,6 @@ func seederData(db *gorm.DB) error {
 		TempatLahir:  "Gorontalo",
 		TanggalLahir: "2000-01-01",
 		Alamat:       "Alamat Siswa",
-		UserID:       userStudent.ID,
 		ClassID:      class.ID,
 	}
 

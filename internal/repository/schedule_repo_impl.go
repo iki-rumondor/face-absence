@@ -99,7 +99,7 @@ func (r *ScheduleRepoImplementation) FindSchedulesByClass(classID uint) (*[]doma
 
 func (r *ScheduleRepoImplementation) FindScheduleByUuid(uuid string) (*domain.Schedule, error) {
 	var res domain.Schedule
-	if err := r.db.Preload("Class").Preload("Subject").Preload("SchoolYear").First(&res, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Class.Students.Absences").Preload("Subject").Preload("SchoolYear").First(&res, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 
@@ -127,10 +127,3 @@ func (r *ScheduleRepoImplementation) FindUserByID(ID uint) (*domain.User, error)
 	return &user, nil
 }
 
-func (r *ScheduleRepoImplementation) FindStudentAbsenceByScheduleID(studentID, scheduleID uint) (*domain.Absence, error) {
-	var absence domain.Absence
-	if err := r.db.Preload("Student").Preload("Schedule").First(&absence, "student_id = ? AND schedule_id = ?", studentID, scheduleID).Error; err != nil {
-		return nil, err
-	}
-	return &absence, nil
-}

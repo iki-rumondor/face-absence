@@ -13,5 +13,4 @@ type ScheduleRepository interface {
 
 	FindTeacherByUserID(userID uint) (*domain.Teacher, error)
 	FindUserByID(ID uint) (*domain.User, error)
-	FindStudentAbsenceByScheduleID(studentID, scheduleID uint) (*domain.Absence, error)
 }

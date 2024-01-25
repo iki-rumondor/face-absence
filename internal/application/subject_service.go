@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
@@ -20,13 +22,32 @@ func NewSubjectService(repo repository.SubjectRepository) *SubjectService {
 	}
 }
 
-func (s *SubjectService) CreateSubject(model *domain.Subject) error {
+func (s *SubjectService) CreateSubject(body *request.CreateSubject) error {
+	var teachers []domain.Teacher
 
-	if err := s.Repo.CreateSubject(model); err != nil {
-		return &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
+	for i, item := range body.TeachersUuid {
+		teacher, err := s.Repo.FindTeacherByUuid(string(item[i]))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return &response.Error{
+					Code:    404,
+					Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", string(item[i])),
+				}
+			}
+			return INTERNAL_ERROR
 		}
+
+		teachers = append(teachers, *teacher)
+	}
+
+	subject := domain.Subject{
+		Uuid: uuid.NewString(),
+		Name: body.Name,
+		Teachers: teachers,
+	}
+
+	if err := s.Repo.CreateSubject(&subject); err != nil {
+		return INTERNAL_ERROR
 	}
 
 	return nil
@@ -63,30 +84,8 @@ func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 
 	for _, res := range *result {
 		resp = append(resp, response.SubjectResponse{
-			Uuid: res.Uuid,
-			Name: res.Name,
-			Teacher: &response.Teacher{
-				Uuid:          res.Teacher.Uuid,
-				JK:            res.Teacher.JK,
-				Nip:           res.Teacher.Nip,
-				Nuptk:         res.Teacher.Nuptk,
-				StatusPegawai: res.Teacher.StatusPegawai,
-				TempatLahir:   res.Teacher.TempatLahir,
-				TanggalLahir:  res.Teacher.TanggalLahir,
-				NoHp:          res.Teacher.NoHp,
-				Jabatan:       res.Teacher.Jabatan,
-				TotalJtm:      res.Teacher.TotalJtm,
-				Alamat:        res.Teacher.Alamat,
-				User: &response.UserData{
-					Nama:      res.Teacher.User.Nama,
-					Username:  res.Teacher.User.Username,
-					Avatar:    res.Teacher.User.Avatar,
-					CreatedAt: res.Teacher.User.CreatedAt,
-					UpdatedAt: res.Teacher.User.UpdatedAt,
-				},
-				CreatedAt: res.Teacher.CreatedAt,
-				UpdatedAt: res.Teacher.UpdatedAt,
-			},
+			Uuid:      res.Uuid,
+			Name:      res.Name,
 			CreatedAt: res.CreatedAt,
 			UpdatedAt: res.UpdatedAt,
 		})
@@ -115,13 +114,38 @@ func (s *SubjectService) GetSubject(uuid string) (*domain.Subject, error) {
 	return result, nil
 }
 
-func (s *SubjectService) UpdateSubject(model *domain.Subject) error {
+func (s *SubjectService) UpdateSubject(subjectUuid string, body *request.UpdateSubject) error {
 
-	if err := s.Repo.UpdateSubject(model); err != nil {
-		return &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
+	res, err := s.GetSubject(subjectUuid)
+	if err != nil {
+		return err
+	}
+
+	var teachers []domain.Teacher
+
+	for i, item := range body.TeachersUuid {
+		teacher, err := s.Repo.FindTeacherByUuid(string(item[i]))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return &response.Error{
+					Code:    404,
+					Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", string(item[i])),
+				}
+			}
+			return INTERNAL_ERROR
 		}
+
+		teachers = append(teachers, *teacher)
+	}
+
+	model := domain.Subject{
+		ID:   res.ID,
+		Name: body.Name,
+		Teachers: teachers,
+	}
+
+	if err := s.Repo.UpdateSubject(&model); err != nil {
+		return INTERNAL_ERROR
 	}
 
 	return nil

@@ -58,32 +58,9 @@ func (s *ScheduleService) GetAllSchedules() (*[]domain.Schedule, error) {
 	return result, nil
 }
 
-// func (s *ScheduleService) GetScheduleStudentNow(userID uint, scheduleUuid string) (*domain.Schedule, *domain.Absence, error) {
-
-// 	student, err := s.Repo.FindStudentByUserID(userID)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-
-// 	schedule, err := s.GetSchedule(scheduleUuid)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-
-// 	absence, err := s.Repo.FindStudentAbsenceByScheduleID(student.ID, schedule.ID)
-// 	if err != nil {
-// 		if errors.Is(err, gorm.ErrRecordNotFound) {
-// 			return schedule, nil, nil
-// 		}
-// 		return nil, nil, INTERNAL_ERROR
-// 	}
-
-// 	return schedule, absence, nil
-// }
-
 func (s *ScheduleService) GetTeacherSchedules(userID uint) (*[]domain.Schedule, error) {
 
-	teacher, err := s.Repo.FindTeacherByUserID(userID)
+	_, err := s.Repo.FindTeacherByUserID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
@@ -96,9 +73,9 @@ func (s *ScheduleService) GetTeacherSchedules(userID uint) (*[]domain.Schedule, 
 
 	var schedules []domain.Schedule
 
-	for _, item := range *teacher.Subjects{
-		schedules = append(schedules, *item.Schedules...)
-	}
+	// for _, item := range *teacher.Subjects{
+	// 	schedules = append(schedules, *item.Schedules...)
+	// }
 
 	if err != nil {
 		return nil, INTERNAL_ERROR
@@ -118,10 +95,7 @@ func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {
 				Message: "Jadwal tidak ditemukan",
 			}
 		}
-		return nil, &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan dalam mengambil jadwal",
-		}
+		return nil, INTERNAL_ERROR
 	}
 
 	return result, nil

@@ -5,17 +5,15 @@ import (
 )
 
 type StudentRepository interface {
-	CreateStudentUser(*domain.Student, *domain.User) error
+	CreateStudent(student *domain.Student) error
 	PaginationStudents(pagination *domain.Pagination) (*domain.Pagination, error)
 	FindAllStudents() (*[]domain.Student, error)
 	FindStudent(string) (*domain.Student, error)
 	FindStudentByUserID(uint) (*domain.Student, error)
-	UpdateStudent(*domain.Student, *domain.User) error
-	DeleteStudent(userID uint) error
+	UpdateStudent(student *domain.Student) error
+	DeleteStudent(student *domain.Student) error
 
-	CreateUser(*domain.User) (*domain.User, error)
-	SaveStudent(*domain.Student) error
-	DeleteUser(*domain.User)
+	FindClassBy(column string, value interface{}) (*domain.Class, error)
 
 	FindLatestHistory() (*domain.PdfDownloadHistory, error)
 	CreatePdfHistory(*domain.PdfDownloadHistory) error

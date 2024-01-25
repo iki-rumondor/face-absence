@@ -69,64 +69,64 @@ func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
 	return status, nil
 }
 
-func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string) error {
-	user, err := s.Repo.FindUserByID(absence.Student.UserID)
-	if err != nil {
-		return &response.Error{
-			Code:    404,
-			Message: "User tidak ditemukan",
-		}
-	}
+// func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string) error {
+// 	user, err := s.Repo.FindUserByID(absence.Student.UserID)
+// 	if err != nil {
+// 		return &response.Error{
+// 			Code:    404,
+// 			Message: "User tidak ditemukan",
+// 		}
+// 	}
 
-	if user.Avatar == nil || *user.Avatar == "default-avatar.jpg" {
-		return &response.Error{
-			Code:    404,
-			Message: "User tidak memiliki avatar, silahkan upload avatar terlebih dahulu",
-		}
-	}
+// 	if user.Avatar == nil || *user.Avatar == "default-avatar.jpg" {
+// 		return &response.Error{
+// 			Code:    404,
+// 			Message: "User tidak memiliki avatar, silahkan upload avatar terlebih dahulu",
+// 		}
+// 	}
 
-	avatarPath := fmt.Sprintf("internal/assets/avatar/%s", *user.Avatar)
+// 	avatarPath := fmt.Sprintf("internal/assets/avatar/%s", *user.Avatar)
 
-	formAbsence, err := s.CreateFormAbsence(avatarPath, faceImage)
+// 	formAbsence, err := s.CreateFormAbsence(avatarPath, faceImage)
 
-	if err != nil {
-		return &response.Error{
-			Code:    500,
-			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
-		}
-	}
+// 	if err != nil {
+// 		return &response.Error{
+// 			Code:    500,
+// 			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+// 		}
+// 	}
 
-	var FLASK = os.Getenv("FLASK_API")
-	if FLASK == "" {
-		FLASK = "http://127.0.0.1:5000"
-	}
+// 	var FLASK = os.Getenv("FLASK_API")
+// 	if FLASK == "" {
+// 		FLASK = "http://127.0.0.1:5000"
+// 	}
 
-	url := fmt.Sprintf("%s/compare", FLASK)
+// 	url := fmt.Sprintf("%s/compare", FLASK)
 
-	res, err := s.CreatePostRequest(url, formAbsence)
-	if err != nil {
-		return &response.Error{
-			Code:    500,
-			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
-		}
-	}
+// 	res, err := s.CreatePostRequest(url, formAbsence)
+// 	if err != nil {
+// 		return &response.Error{
+// 			Code:    500,
+// 			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+// 		}
+// 	}
 
-	if !res["matching"] {
-		return &response.Error{
-			Code:    400,
-			Message: "Wajah anda tidak sama dengan yang tersimpan di database",
-		}
-	}
+// 	if !res["matching"] {
+// 		return &response.Error{
+// 			Code:    400,
+// 			Message: "Wajah anda tidak sama dengan yang tersimpan di database",
+// 		}
+// 	}
 
-	if err := s.Repo.CreateAbsence(absence); err != nil {
-		return &response.Error{
-			Code:    500,
-			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
-		}
-	}
+// 	if err := s.Repo.CreateAbsence(absence); err != nil {
+// 		return &response.Error{
+// 			Code:    500,
+// 			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (s *AbsenceService) CreateFormAbsence(imageOne, imageTwo string) (*response.FormAbsence, error) {
 	// Buat buffer untuk menampung data form

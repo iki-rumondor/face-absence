@@ -135,7 +135,6 @@ func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 
 	res, err := h.Service.GetAllSchedules()
-
 	if err != nil {
 		utils.HandleError(c, err)
 		return
@@ -149,81 +148,76 @@ func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 
 }
 
-// func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
+func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 
-// 	id := c.GetUint("user_id")
-// 	if id == 0 {
-// 		utils.HandleError(c, INTERNAL_ERROR)
-// 		return
-// 	}
+	uuid := c.Param("uuid")
+	schedule, err := h.Service.GetSchedule(uuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
 
-// 	uuid := c.Param("uuid")
-// 	schedule, absence, err := h.Service.GetScheduleStudentNow(id, uuid)
-// 	if err != nil {
-// 		utils.HandleError(c, err)
-// 		return
-// 	}
+	var students []response.StudentResponse
 
-// 	var absenceRes *response.AbsenceResponse
+	for _, item := range *schedule.Class.Students {
+		var absences []response.AbsenceResponse
+		for _, item := range *item.Absences {
+			absences = append(absences, response.AbsenceResponse{
+				Uuid:      item.Uuid,
+				Status:    item.Status,
+				CreatedAt: item.CreatedAt,
+				UpdatedAt: item.UpdatedAt,
+			})
+		}
 
-// 	if absence != nil {
-// 		absenceRes = &response.AbsenceResponse{
-// 			Uuid:   absence.Uuid,
-// 			Status: absence.Status,
-// 			Student: &response.StudentResponse{
-// 				Uuid:         absence.Student.Uuid,
-// 				JK:           absence.Student.JK,
-// 				NIS:          absence.Student.NIS,
-// 				TempatLahir:  absence.Student.TempatLahir,
-// 				TanggalLahir: absence.Student.TanggalLahir,
-// 				Alamat:       absence.Student.Alamat,
-// 			},
-// 			Schedule: &response.ScheduleResponse{
-// 				Uuid:  absence.Schedule.Uuid,
-// 				Day:   absence.Schedule.Day,
-// 				Start: absence.Schedule.Start,
-// 				End:   absence.Schedule.End,
-// 			},
-// 			CreatedAt: absence.CreatedAt,
-// 			UpdatedAt: absence.UpdatedAt,
-// 		}
-// 	}
+		students = append(students, response.StudentResponse{
+			Uuid:         item.Uuid,
+			JK:           item.JK,
+			NIS:          item.NIS,
+			TempatLahir:  item.TempatLahir,
+			TanggalLahir: item.TanggalLahir,
+			Alamat:       item.Alamat,
+			Absence:      &absences,
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		})
+	}
 
-// 	res := response.ScheduleResponseForStudent{
-// 		Uuid:  schedule.Uuid,
-// 		Day:   schedule.Day,
-// 		Start: schedule.Start,
-// 		End:   schedule.End,
-// 		Class: &response.ClassData{
-// 			Uuid:      schedule.Class.Uuid,
-// 			Name:      schedule.Class.Name,
-// 			CreatedAt: schedule.Class.CreatedAt,
-// 			UpdatedAt: schedule.Class.UpdatedAt,
-// 		},
-// 		Subject: &response.SubjectResponse{
-// 			Uuid:      schedule.Subject.Uuid,
-// 			Name:      schedule.Subject.Name,
-// 			CreatedAt: schedule.Subject.CreatedAt,
-// 			UpdatedAt: schedule.Subject.UpdatedAt,
-// 		},
-// 		SchoolYear: &response.SchoolYearResponse{
-// 			Uuid:      schedule.SchoolYear.Uuid,
-// 			Name:      schedule.SchoolYear.Name,
-// 			CreatedAt: schedule.SchoolYear.CreatedAt,
-// 			UpdatedAt: schedule.SchoolYear.UpdatedAt,
-// 		},
-// 		Absence:   absenceRes,
-// 		CreatedAt: schedule.CreatedAt,
-// 		UpdatedAt: schedule.UpdatedAt,
-// 	}
+	res := &response.StudentsSchedule{
+		Uuid:  schedule.Uuid,
+		Day:   schedule.Day,
+		Start: schedule.Start,
+		End:   schedule.End,
+		Class: &response.ClassData{
+			Uuid:      schedule.Class.Uuid,
+			Name:      schedule.Class.Name,
+			CreatedAt: schedule.Class.CreatedAt,
+			UpdatedAt: schedule.Class.UpdatedAt,
+		},
+		Subject: &response.SubjectResponse{
+			Uuid:      schedule.Subject.Uuid,
+			Name:      schedule.Subject.Name,
+			CreatedAt: schedule.Subject.CreatedAt,
+			UpdatedAt: schedule.Subject.UpdatedAt,
+		},
+		SchoolYear: &response.SchoolYearResponse{
+			Uuid:      schedule.SchoolYear.Uuid,
+			Name:      schedule.SchoolYear.Name,
+			CreatedAt: schedule.SchoolYear.CreatedAt,
+			UpdatedAt: schedule.SchoolYear.UpdatedAt,
+		},
+		Students:  &students,
+		CreatedAt: schedule.CreatedAt,
+		UpdatedAt: schedule.UpdatedAt,
+	}
 
-// 	c.JSON(http.StatusOK, response.SuccessResponse{
-// 		Success: true,
-// 		Message: "Jadwal berhasil ditemukan",
-// 		Data:    res,
-// 	})
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Jadwal berhasil ditemukan",
+		Data:    res,
+	})
 
-// }
+}
 
 func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 

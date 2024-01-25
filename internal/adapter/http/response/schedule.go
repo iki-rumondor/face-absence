@@ -14,6 +14,19 @@ type ScheduleResponse struct {
 	UpdatedAt  time.Time           `json:"updated_at"`
 }
 
+type StudentsSchedule struct {
+	Uuid       string              `json:"uuid"`
+	Day        string              `json:"day"`
+	Start      string              `json:"start"`
+	End        string              `json:"end"`
+	Class      *ClassData          `json:"class"`
+	Subject    *SubjectResponse    `json:"subject"`
+	SchoolYear *SchoolYearResponse `json:"school_year"`
+	Students   *[]StudentResponse  `json:"students"`
+	CreatedAt  time.Time           `json:"created_at"`
+	UpdatedAt  time.Time           `json:"updated_at"`
+}
+
 type ScheduleResponseForStudent struct {
 	Uuid       string              `json:"uuid"`
 	Day        string              `json:"day"`

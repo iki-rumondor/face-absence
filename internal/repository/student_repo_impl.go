@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -18,17 +19,8 @@ func NewStudentRepository(db *gorm.DB) StudentRepository {
 	}
 }
 
-func (r *StudentRepoImplementation) CreateStudentUser(student *domain.Student, user *domain.User) error {
-	return r.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(user).Error; err != nil {
-			return err
-		}
-		student.UserID = user.ID
-		if err := tx.Create(student).Error; err != nil {
-			return err
-		}
-		return nil
-	})
+func (r *StudentRepoImplementation) CreateStudent(student *domain.Student) error {
+	return r.db.Create(student).Error
 }
 
 func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagination) (*domain.Pagination, error) {
@@ -60,13 +52,6 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 			TempatLahir:  student.TempatLahir,
 			TanggalLahir: student.TanggalLahir,
 			Alamat:       student.Alamat,
-			User: &response.UserData{
-				Nama:      student.User.Nama,
-				Username:  student.User.Username,
-				Avatar:    student.User.Avatar,
-				CreatedAt: student.User.CreatedAt,
-				UpdatedAt: student.User.UpdatedAt,
-			},
 			Class: &response.ClassData{
 				Uuid:      student.Class.Uuid,
 				Name:      student.Class.Name,
@@ -129,60 +114,12 @@ func (r *StudentRepoImplementation) FindStudentByUserID(userID uint) (*domain.St
 	return &student, nil
 }
 
-func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student, user *domain.User) error {
-
-	return r.db.Transaction(func(tx *gorm.DB) error {
-
-		if err := tx.Model(student).Updates(student).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Model(user).Updates(user).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student) error {
+	return r.db.Model(student).Updates(student).Error
 }
 
-func (r *StudentRepoImplementation) DeleteStudent(userID uint) error {
-
-	return r.db.Transaction(func(tx *gorm.DB) error {
-
-		if err := tx.Delete(&domain.Student{}, "user_id = ?", userID).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
-}
-
-func (r *StudentRepoImplementation) CreateUser(user *domain.User) (*domain.User, error) {
-
-	if err := r.db.Create(user).Error; err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func (r *StudentRepoImplementation) SaveStudent(student *domain.Student) error {
-
-	if err := r.db.Save(student).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *StudentRepoImplementation) DeleteUser(user *domain.User) {
-
-	r.db.Delete(user)
+func (r *StudentRepoImplementation) DeleteStudent(student *domain.Student) error {
+	return r.db.Delete(student).Error
 }
 
 func (r *StudentRepoImplementation) FindLatestHistory() (*domain.PdfDownloadHistory, error) {
@@ -191,6 +128,14 @@ func (r *StudentRepoImplementation) FindLatestHistory() (*domain.PdfDownloadHist
 		return nil, err
 	}
 	return &history, nil
+}
+
+func (r *StudentRepoImplementation) FindClassBy(column string, value interface{}) (*domain.Class, error) {
+	var class domain.Class
+	if err := r.db.First(&class, fmt.Sprintf("%s = ?", column), value).Error; err != nil {
+		return nil, err
+	}
+	return &class, nil
 }
 
 func (r *StudentRepoImplementation) CreatePdfHistory(history *domain.PdfDownloadHistory) error {

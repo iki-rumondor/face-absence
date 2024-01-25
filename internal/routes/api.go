@@ -32,30 +32,33 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		public.GET("/auth/verify-token", middleware.IsValidJWT(), middleware.SetUserID(), middleware.SetUserRole(), handlers.AuthHandler.VerifyToken)
 	}
 
-	teacher := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsTeacher())
+	teacher := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsRole("GURU"))
 	{
 		teacher.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
-		teacher.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
+		// teacher.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
 		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetTeacherSchedules)
-		// teacher.GET("schedules/:uuid", middleware.SetUserID(), handlers.ScheduleHandler.GetScheduleForStudent)
+		teacher.GET("schedules/:uuid", handlers.ScheduleHandler.GetScheduleForStudent)
 		teacher.GET("absences/history", middleware.SetUserID(), handlers.AbsenceHandler.GetStudentAbsences)
 	}
 
-	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsAdmin())
+	user := router.Group("api").Use(middleware.IsValidJWT())
+	{
+		// user.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
+		user.POST("master/students", handlers.StudentHandler.CreateStudent)
+		user.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
+		// user.GET("master/students/report", handlers.StudentHandler.CreateReport)
+		user.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
+		user.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
+		user.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
+	}
+
+	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsRole("ADMIN"))
 	{
 		admin.POST("master/teachers", handlers.TeacherHandler.CreateTeacher)
 		admin.GET("master/teachers", handlers.TeacherHandler.GetTeachersPagination)
 		admin.GET("master/teachers/:uuid", handlers.TeacherHandler.GetTeacher)
 		admin.PUT("master/teachers/:uuid", handlers.TeacherHandler.UpdateTeacher)
 		admin.DELETE("master/teachers/:uuid", handlers.TeacherHandler.DeleteTeacher)
-
-		admin.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
-		admin.POST("master/students", handlers.StudentHandler.CreateStudent)
-		admin.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
-		admin.GET("master/students/report", handlers.StudentHandler.CreateReport)
-		admin.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
-		admin.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
-		admin.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
 
 		admin.POST("master/classes", handlers.ClassHandler.CreateClass)
 		admin.GET("master/classes", handlers.ClassHandler.GetClassPagination)
