@@ -46,6 +46,7 @@ func (s *StudentService) GetAllStudents() (*[]response.StudentResponse, error) {
 	var res = []response.StudentResponse{}
 	for _, student := range *students {
 		res = append(res, response.StudentResponse{
+			Nama:         student.Nama,
 			Uuid:         student.Uuid,
 			JK:           student.JK,
 			NIS:          student.NIS,

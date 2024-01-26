@@ -319,6 +319,7 @@ func (h *ClassHandler) GetClassWithStudents(c *gin.Context) {
 	for _, item := range *class.Students {
 		students = append(students, response.TeacherStudents{
 			Uuid:         item.Uuid,
+			Nama:         item.Nama,
 			JK:           item.JK,
 			NIS:          item.NIS,
 			TempatLahir:  item.TempatLahir,
