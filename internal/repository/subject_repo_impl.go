@@ -86,7 +86,17 @@ func (r *SubjectRepoImplementation) CreateSubject(subject *domain.Subject) error
 }
 
 func (r *SubjectRepoImplementation) UpdateSubject(model *domain.Subject) error {
-	return r.db.Model(model).Updates(model).Error
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := r.db.Model(model).Updates(model).Error; err != nil {
+			return err
+		}
+
+		if err := r.db.Model(model).Association("Teachers").Replace(model.Teachers); err != nil{
+			return err
+		}
+		
+		return nil
+	})
 }
 
 func (r *SubjectRepoImplementation) FindSubjects() (*[]domain.Subject, error) {

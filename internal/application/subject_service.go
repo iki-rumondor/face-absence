@@ -25,13 +25,13 @@ func NewSubjectService(repo repository.SubjectRepository) *SubjectService {
 func (s *SubjectService) CreateSubject(body *request.CreateSubject) error {
 	var teachers []domain.Teacher
 
-	for i, item := range body.TeachersUuid {
-		teacher, err := s.Repo.FindTeacherByUuid(string(item[i]))
+	for _, item := range body.TeachersUuid {
+		teacher, err := s.Repo.FindTeacherByUuid(item)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return &response.Error{
 					Code:    404,
-					Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", string(item[i])),
+					Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", item),
 				}
 			}
 			return INTERNAL_ERROR
@@ -112,13 +112,13 @@ func (s *SubjectService) UpdateSubject(subjectUuid string, body *request.UpdateS
 
 	var teachers []domain.Teacher
 
-	for i, item := range body.TeachersUuid {
-		teacher, err := s.Repo.FindTeacherByUuid(string(item[i]))
+	for _, item := range body.TeachersUuid {
+		teacher, err := s.Repo.FindTeacherByUuid(item)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return &response.Error{
 					Code:    404,
-					Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", string(item[i])),
+					Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", item),
 				}
 			}
 			return INTERNAL_ERROR

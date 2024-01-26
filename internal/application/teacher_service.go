@@ -171,32 +171,21 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
 
 func (s *TeacherService) DeleteTeacher(uuid string) error {
 
-	teacherInDB, err := s.Repo.FindTeacherByUuid(uuid)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return &response.Error{
-			Code:    404,
-			Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", uuid),
+	if err := s.Repo.DeleteTeacher(uuid); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("Guru dengan uuid %s tidak ditemukan", uuid),
+			}
 		}
-	}
 
-	if err != nil {
-		return &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
-		}
-	}
-
-	if err := s.Repo.DeleteTeacherUser(teacherInDB.UserID); err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			return &response.Error{
 				Code:    500,
 				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
 			}
 		}
-		return &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
-		}
+		return INTERNAL_ERROR
 	}
 
 	return nil

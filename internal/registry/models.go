@@ -18,5 +18,6 @@ func RegisterModels() []Model {
 		{Model: domain.Admin{}},
 		{Model: domain.Absence{}},
 		{Model: domain.PdfDownloadHistory{}},
+		{Model: domain.TeacherSubjects{}},
 	}
 }
