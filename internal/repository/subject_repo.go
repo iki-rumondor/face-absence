@@ -9,7 +9,7 @@ type SubjectRepository interface {
 	
 	CreateSubject(*domain.Subject) error
 	UpdateSubject(*domain.Subject) error
-	DeleteSubject(*domain.Subject) error
+	DeleteSubject(string) error
 
 	FindTeacherByUuid(uuid string) (*domain.Teacher, error)
 	FindTeacherBy(string, interface{}) (*domain.Teacher, error)

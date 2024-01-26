@@ -117,13 +117,18 @@ func (r *SubjectRepoImplementation) FindSubjectByUuid(uuid string) (*domain.Subj
 	return &res, nil
 }
 
-func (r *SubjectRepoImplementation) DeleteSubject(model *domain.Subject) error {
+func (r *SubjectRepoImplementation) DeleteSubject(uuid string) error {
+	var subject domain.Subject
+	if err := r.db.First(&subject, "uuid = ?", uuid).Error; err != nil{
+		return err
+	}
+	
 	return r.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(model).Association("Teachers").Clear(); err != nil {
+		if err := tx.Model(&subject).Association("Teachers").Clear(); err != nil {
 			return err
 		}
 
-		if err := r.db.Delete(&model, "uuid = ?", model.Uuid).Error; err != nil {
+		if err := tx.Delete(&subject).Error; err != nil {
 			return err
 		}
 

@@ -140,9 +140,9 @@ func (s *SubjectService) UpdateSubject(subjectUuid string, body *request.UpdateS
 	return nil
 }
 
-func (s *SubjectService) DeleteSubject(Subject *domain.Subject) error {
+func (s *SubjectService) DeleteSubject(uuid string) error {
 
-	if err := s.Repo.DeleteSubject(Subject); err != nil {
+	if err := s.Repo.DeleteSubject(uuid); err != nil {
 
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			return &response.Error{
@@ -150,10 +150,7 @@ func (s *SubjectService) DeleteSubject(Subject *domain.Subject) error {
 				Message: "Data ini tidak dapat dihapus karena berelasi dengan data lain",
 			}
 		}
-		return &response.Error{
-			Code:    500,
-			Message: "Terjadi kesalahan sistem, silahkan hubungi developper",
-		}
+		return INTERNAL_ERROR
 	}
 
 	return nil

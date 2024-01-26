@@ -49,7 +49,7 @@ func (s *UserService) UpdateAvatar(model *domain.User) error {
 	return nil
 }
 
-func (s *UserService) GetDashboardData() (map[string]*int64 ,error) {
+func (s *UserService) GetDashboardData() (map[string]int64 ,error) {
 	res, err := s.Repo.CountStudentsTeachersAdmins()
 	if err != nil {
 		return nil, INTERNAL_ERROR

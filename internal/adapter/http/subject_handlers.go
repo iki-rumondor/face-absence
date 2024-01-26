@@ -219,17 +219,8 @@ func (h *SubjectHandler) UpdateSubject(c *gin.Context) {
 
 func (h *SubjectHandler) DeleteSubject(c *gin.Context) {
 	uuid := c.Param("uuid")
-	res, err := h.Service.GetSubject(uuid)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
 
-	model := domain.Subject{
-		Uuid: res.Uuid,
-	}
-
-	if err := h.Service.DeleteSubject(&model); err != nil {
+	if err := h.Service.DeleteSubject(uuid); err != nil {
 		utils.HandleError(c, err)
 		return
 	}

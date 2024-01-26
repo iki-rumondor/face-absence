@@ -26,19 +26,29 @@ func (r *UserRepoImplementation) FindUserByID(ID uint) (*domain.User, error) {
 func (r *UserRepoImplementation) UpdateAvatar(model *domain.User) error {
 	return r.db.Model(model).Where("id = ?", model.ID).Update("avatar", model.Avatar).Error
 }
-func (r *UserRepoImplementation) CountStudentsTeachersAdmins() (map[string]*int64, error) {
-	var resp map[string]*int64
+func (r *UserRepoImplementation) CountStudentsTeachersAdmins() (map[string]int64, error) {
+	var (
+		count_admin   int64
+		count_student int64
+		count_teacher int64
+	)
 
-	if err := r.db.Model(&domain.Admin{}).Count(resp["admin"]).Error; err != nil {
+	if err := r.db.Model(&domain.Admin{}).Count(&count_admin).Error; err != nil {
 		return nil, err
 	}
 
-	if err := r.db.Model(&domain.Student{}).Count(resp["student"]).Error; err != nil {
+	if err := r.db.Model(&domain.Student{}).Count(&count_student).Error; err != nil {
 		return nil, err
 	}
 
-	if err := r.db.Model(&domain.Teacher{}).Count(resp["teacher"]).Error; err != nil {
+	if err := r.db.Model(&domain.Teacher{}).Count(&count_teacher).Error; err != nil {
 		return nil, err
+	}
+
+	resp := map[string]int64{
+		"admin": count_admin,
+		"student": count_student,
+		"teacher": count_teacher,
 	}
 
 	return resp, nil
