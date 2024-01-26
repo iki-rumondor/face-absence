@@ -227,3 +227,18 @@ func (s *ClassService) GetTeacherClasses(userID uint) (*[]domain.Class, error) {
 
 	return &classes, nil
 }
+
+func (s *ClassService) GetTeacherClass(userID uint, classUuid string) (*domain.Class, error) {
+	class, err := s.Repo.FindTeacherClass(userID, classUuid)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("Guru dengan user id %d tidak ditemukan", userID),
+			}
+		}
+		return nil, INTERNAL_ERROR
+	}
+
+	return class, nil
+}

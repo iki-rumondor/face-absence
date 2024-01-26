@@ -15,6 +15,8 @@ type ClassRepository interface {
 	DeleteClass(*domain.Class) error
 	
 	FindTeacherClassesByUserID(userID uint) (*domain.Teacher, error)
+	FindTeacherClass(userID uint, classUuid string) (*domain.Class, error)
+	FindClassBy(column string, value interface{}) (*domain.Class, error)
 
 	GetClassPDF(data []*request.ClassPDFData) ([]byte, error)
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -138,6 +139,14 @@ func (r *ClassRepoImplementation) GetClassPDF(data []*request.ClassPDFData) ([]b
 	return pdfData, nil
 }
 
+func (r *ClassRepoImplementation) FindClassBy(column string, value interface{}) (*domain.Class, error) {
+	var class domain.Class
+	if err := r.db.Preload("Students").First(&class, fmt.Sprintf("%s = ?", column), value).Error; err != nil {
+		return nil, err
+	}
+	return &class, nil
+}
+
 func (r *ClassRepoImplementation) FindTeacherClassesByUserID(userID uint) (*domain.Teacher, error) {
 	var teacher domain.Teacher
 	if err := r.db.Preload("Classes.Students").First(&teacher, "user_id = ?", userID).Error; err != nil {
@@ -145,3 +154,21 @@ func (r *ClassRepoImplementation) FindTeacherClassesByUserID(userID uint) (*doma
 	}
 	return &teacher, nil
 }
+
+func (r *ClassRepoImplementation) FindTeacherClass(userID uint, classUuid string) (*domain.Class, error) {
+	
+	var teacher domain.Teacher
+	if err := r.db.First(&teacher, "user_id = ?", userID).Error; err != nil {
+		log.Println("Teacher with user id not found")
+		return nil, err
+	}
+
+	var class domain.Class
+	if err := r.db.First(&class, "teacher_id = ? AND uuid = ?", teacher.ID, classUuid).Error; err != nil{
+		return nil, err
+	}
+
+	return &class, nil
+}
+
+

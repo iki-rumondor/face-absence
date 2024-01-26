@@ -296,3 +296,50 @@ func (h *ClassHandler) GetTeacherClasses(c *gin.Context) {
 		Data:    resp,
 	})
 }
+
+func (h *ClassHandler) GetClassWithStudents(c *gin.Context) {
+
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		utils.HandleError(c, &response.Error{
+			Code:    403,
+			Message: "ID User tidak ditemukan",
+		})
+	}
+
+	classUuid := c.Param("uuid")
+
+	class, err := h.Service.GetTeacherClass(userID, classUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	var students []response.TeacherStudents
+	for _, item := range *class.Students {
+		students = append(students, response.TeacherStudents{
+			Uuid:         item.Uuid,
+			JK:           item.JK,
+			NIS:          item.NIS,
+			TempatLahir:  item.TempatLahir,
+			TanggalLahir: item.TanggalLahir,
+			Alamat:       item.Alamat,
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		})
+	}
+
+	var resp = response.TeacherClass{
+		Uuid:      class.Uuid,
+		Name:      class.Name,
+		Students:  &students,
+		CreatedAt: class.CreatedAt,
+		UpdatedAt: class.UpdatedAt,
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Data Kelas berhasil ditemukan",
+		Data:    resp,
+	})
+}
