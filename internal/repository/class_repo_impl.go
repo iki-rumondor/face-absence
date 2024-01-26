@@ -164,7 +164,7 @@ func (r *ClassRepoImplementation) FindTeacherClass(userID uint, classUuid string
 	}
 
 	var class domain.Class
-	if err := r.db.First(&class, "teacher_id = ? AND uuid = ?", teacher.ID, classUuid).Error; err != nil{
+	if err := r.db.Preload("Students").Preload("Teacher").First(&class, "teacher_id = ? AND uuid = ?", teacher.ID, classUuid).Error; err != nil{
 		return nil, err
 	}
 
