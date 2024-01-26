@@ -7,6 +7,7 @@ type Subject struct {
 	Uuid      string    `gorm:"not_null;unique"`
 	Name      string    `gorm:"not_null;type:varchar(32)"`
 	Teachers  []Teacher `gorm:"many2many:teacher_subjects;"`
+	Schedules *[]Schedule
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -20,6 +20,7 @@ type Teacher struct {
 	UserID        uint
 	User          *User
 	Classes       *[]Class
+	Subjects      []Subject `gorm:"many2many:teacher_subjects;"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }

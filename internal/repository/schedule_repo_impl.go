@@ -112,7 +112,7 @@ func (r *ScheduleRepoImplementation) DeleteSchedule(model *domain.Schedule) erro
 
 func (r *ScheduleRepoImplementation) FindTeacherByUserID(userID uint) (*domain.Teacher, error) {
 	var res domain.Teacher
-	if err := r.db.Preload("Subjects.Schedules.Class").Preload("Subjects.Schedules.SchoolYear").Preload("Subjects.Schedules.Subject.Teachers").Preload("User").First(&res, "user_id = ?", userID).Error; err != nil {
+	if err := r.db.Preload("Subjects.Schedules.Class").Preload("Subjects.Schedules.SchoolYear").Preload("Subjects.Schedules.Subject").Preload("User").First(&res, "user_id = ?", userID).Error; err != nil {
 		return nil, err
 	}
 
@@ -126,4 +126,3 @@ func (r *ScheduleRepoImplementation) FindUserByID(ID uint) (*domain.User, error)
 	}
 	return &user, nil
 }
-
