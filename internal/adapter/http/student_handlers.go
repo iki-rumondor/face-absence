@@ -131,7 +131,6 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 }
 
 func (h *StudentHandlers) UpdateStudentData(c *gin.Context) {
-
 	var body request.UpdateStudent
 	if err := c.BindJSON(&body); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{

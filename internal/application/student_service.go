@@ -343,7 +343,7 @@ func (s *StudentService) GetClassBy(column string, value interface{}) (*domain.C
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
-				Message: fmt.Sprintf("Kelas dengan uuid %s tidak ditemukan", class.Uuid),
+				Message: fmt.Sprintf("Kelas dengan uuid %s tidak ditemukan", value),
 			}
 		}
 		return nil, INTERNAL_ERROR
