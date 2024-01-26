@@ -209,3 +209,21 @@ func (s *ClassService) CreateClassPDF() ([]byte, error) {
 
 	return pdfData, nil
 }
+
+func (s *ClassService) GetTeacherClasses(userID uint) (*[]domain.Class, error) {
+	teacher, err := s.Repo.FindTeacherClassesByUserID(userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("Guru dengan user id %d tidak ditemukan", userID),
+			}
+		}
+		return nil, INTERNAL_ERROR
+	}
+
+	var classes []domain.Class
+	classes = append(classes, *teacher.Classes...)
+
+	return &classes, nil
+}

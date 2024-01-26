@@ -13,6 +13,8 @@ type ClassRepository interface {
 	FindClassByUuid(string) (*domain.Class, error)
 	UpdateClass(*domain.Class) error
 	DeleteClass(*domain.Class) error
+	
+	FindTeacherClassesByUserID(userID uint) (*domain.Teacher, error)
 
 	GetClassPDF(data []*request.ClassPDFData) ([]byte, error)
 }

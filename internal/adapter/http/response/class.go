@@ -17,6 +17,14 @@ type ClassData struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type TeacherClass struct {
+	Uuid      string             `json:"uuid"`
+	Name      string             `json:"name"`
+	Students  *[]TeacherStudents `json:"students"`
+	CreatedAt time.Time          `json:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at"`
+}
+
 type ClassOption struct {
 	Uuid string `json:"value"`
 	Name string `json:"label"`

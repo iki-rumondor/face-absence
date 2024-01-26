@@ -22,82 +22,6 @@ func NewStudentService(repo repository.StudentRepository) *StudentService {
 	}
 }
 
-// func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStudent, error) {
-
-// 	f, err := excelize.OpenFile(pathFile)
-// 	if err != nil {
-// 		return nil, INTERNAL_ERROR
-// 	}
-// 	defer f.Close()
-
-// 	// Get all the rows in the Siswa.
-// 	rows, err := f.GetRows("Siswa")
-// 	if err != nil {
-// 		return nil, INTERNAL_ERROR
-// 	}
-
-// 	defer func() {
-// 		if r := recover(); r != nil {
-// 			fmt.Println("Recovered from panic:", r)
-// 		}
-// 	}()
-
-// 	var failedStudent []response.FailedStudent
-
-// 	for i := 1; i < len(rows); i++ {
-// 		cols := rows[i]
-
-// 		classID, err := strconv.Atoi(cols[7])
-// 		if err != nil {
-// 			failedStudent = append(failedStudent, response.FailedStudent{
-// 				Nama:        cols[7],
-// 				Description: "ID kelas pada kolom 7 bukan sebuah angka",
-// 				Error:       err.Error(),
-// 			})
-// 			continue
-// 		}
-
-// 		user, err := s.Repo.CreateUser(&domain.User{
-// 			Nama:     cols[0],
-// 			Username: cols[1],
-// 			Password: cols[1],
-// 		})
-
-// 		if err != nil {
-// 			failedStudent = append(failedStudent, response.FailedStudent{
-// 				Nama:        cols[0],
-// 				Description: "Gagal menambah data user",
-// 				Error:       err.Error(),
-// 			})
-// 			continue
-// 		}
-
-// 		student := domain.Student{
-// 			Uuid:         uuid.NewString(),
-// 			NIS:          cols[2],
-// 			JK:           cols[3],
-// 			TempatLahir:  cols[4],
-// 			TanggalLahir: cols[5],
-// 			Alamat:       cols[6],
-// 			ClassID:      uint(classID),
-// 			UserID:       user.ID,
-// 		}
-
-// 		if err := s.Repo.SaveStudent(&student); err != nil {
-// 			failedStudent = append(failedStudent, response.FailedStudent{
-// 				Nama:        cols[0],
-// 				Description: "Gagal menambah data santri",
-// 				Error:       err.Error(),
-// 			})
-// 			s.Repo.DeleteUser(user)
-// 			continue
-// 		}
-
-// 	}
-
-// 	return &failedStudent, nil
-// }
-
 func (s *StudentService) CreateStudent(student *domain.Student) error {
 
 	if err := s.Repo.CreateStudent(student); err != nil {
@@ -235,6 +159,83 @@ func (s *StudentService) DeleteStudent(uuid string) error {
 
 	return nil
 }
+
+
+// func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStudent, error) {
+
+// 	f, err := excelize.OpenFile(pathFile)
+// 	if err != nil {
+// 		return nil, INTERNAL_ERROR
+// 	}
+// 	defer f.Close()
+
+// 	// Get all the rows in the Siswa.
+// 	rows, err := f.GetRows("Siswa")
+// 	if err != nil {
+// 		return nil, INTERNAL_ERROR
+// 	}
+
+// 	defer func() {
+// 		if r := recover(); r != nil {
+// 			fmt.Println("Recovered from panic:", r)
+// 		}
+// 	}()
+
+// 	var failedStudent []response.FailedStudent
+
+// 	for i := 1; i < len(rows); i++ {
+// 		cols := rows[i]
+
+// 		classID, err := strconv.Atoi(cols[7])
+// 		if err != nil {
+// 			failedStudent = append(failedStudent, response.FailedStudent{
+// 				Nama:        cols[7],
+// 				Description: "ID kelas pada kolom 7 bukan sebuah angka",
+// 				Error:       err.Error(),
+// 			})
+// 			continue
+// 		}
+
+// 		user, err := s.Repo.CreateUser(&domain.User{
+// 			Nama:     cols[0],
+// 			Username: cols[1],
+// 			Password: cols[1],
+// 		})
+
+// 		if err != nil {
+// 			failedStudent = append(failedStudent, response.FailedStudent{
+// 				Nama:        cols[0],
+// 				Description: "Gagal menambah data user",
+// 				Error:       err.Error(),
+// 			})
+// 			continue
+// 		}
+
+// 		student := domain.Student{
+// 			Uuid:         uuid.NewString(),
+// 			NIS:          cols[2],
+// 			JK:           cols[3],
+// 			TempatLahir:  cols[4],
+// 			TanggalLahir: cols[5],
+// 			Alamat:       cols[6],
+// 			ClassID:      uint(classID),
+// 			UserID:       user.ID,
+// 		}
+
+// 		if err := s.Repo.SaveStudent(&student); err != nil {
+// 			failedStudent = append(failedStudent, response.FailedStudent{
+// 				Nama:        cols[0],
+// 				Description: "Gagal menambah data santri",
+// 				Error:       err.Error(),
+// 			})
+// 			s.Repo.DeleteUser(user)
+// 			continue
+// 		}
+
+// 	}
+
+// 	return &failedStudent, nil
+// }
 
 // func (s *StudentService) CreateStudentPDF(filePath string) error {
 // 	data, err := s.Repo.FindAllStudents()

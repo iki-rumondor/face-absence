@@ -19,6 +19,7 @@ type Teacher struct {
 	Alamat        string `gorm:"not_null; varchar(120)"`
 	UserID        uint
 	User          *User
+	Classes       *[]Class
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }

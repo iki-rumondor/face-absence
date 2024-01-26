@@ -39,7 +39,7 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("User").Preload("Class").Find(&students).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Find(&students).Error; err != nil {
 		return nil, err
 	}
 
@@ -92,7 +92,7 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 
 func (r *StudentRepoImplementation) FindAllStudents() (*[]domain.Student, error) {
 	var students []domain.Student
-	if err := r.db.Preload("User").Preload("Class").Find(&students).Error; err != nil {
+	if err := r.db.Preload("Class").Find(&students).Error; err != nil {
 		return nil, err
 	}
 	return &students, nil
@@ -100,7 +100,7 @@ func (r *StudentRepoImplementation) FindAllStudents() (*[]domain.Student, error)
 
 func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, error) {
 	var student domain.Student
-	if err := r.db.Preload("User").Preload("Class").First(&student, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Class").First(&student, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 	return &student, nil
@@ -108,7 +108,7 @@ func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, e
 
 func (r *StudentRepoImplementation) FindStudentByUserID(userID uint) (*domain.Student, error) {
 	var student domain.Student
-	if err := r.db.Preload("User").Preload("Class").First(&student, "user_id = ?", userID).Error; err != nil {
+	if err := r.db.Preload("Class").First(&student, "user_id = ?", userID).Error; err != nil {
 		return nil, err
 	}
 	return &student, nil
@@ -141,3 +141,5 @@ func (r *StudentRepoImplementation) FindClassBy(column string, value interface{}
 func (r *StudentRepoImplementation) CreatePdfHistory(history *domain.PdfDownloadHistory) error {
 	return r.db.Create(history).Error
 }
+
+

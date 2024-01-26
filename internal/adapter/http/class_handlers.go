@@ -64,11 +64,9 @@ func (h *ClassHandler) CreateClass(c *gin.Context) {
 		Success: true,
 		Message: "Kelas baru berhasil ditambahkan",
 	})
-
 }
 
 func (h *ClassHandler) GetAllClasses(c *gin.Context) {
-
 	classes, err := h.Service.GetAllClasses()
 
 	if err != nil {
@@ -81,11 +79,9 @@ func (h *ClassHandler) GetAllClasses(c *gin.Context) {
 		Message: "Berhasil mendapatkan seluruh kelas",
 		Data:    classes,
 	})
-
 }
 
 func (h *ClassHandler) GetClassOption(c *gin.Context) {
-
 	classes, err := h.Service.GetClassOptions()
 
 	if err != nil {
@@ -98,11 +94,9 @@ func (h *ClassHandler) GetClassOption(c *gin.Context) {
 		Message: "Berhasil mendapatkan seluruh kelas",
 		Data:    classes,
 	})
-
 }
 
 func (h *ClassHandler) GetClassPagination(c *gin.Context) {
-
 	urlPath := c.Request.URL.Path
 
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "0"))
@@ -125,11 +119,9 @@ func (h *ClassHandler) GetClassPagination(c *gin.Context) {
 		Message: "Berhasil mendapatkan kelas",
 		Data:    result,
 	})
-
 }
 
 func (h *ClassHandler) GetClass(c *gin.Context) {
-
 	uuid := c.Param("uuid")
 	class, err := h.Service.GetClass(uuid)
 
@@ -172,11 +164,9 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 		Message: "Berhasil mendapatkan kelas",
 		Data:    res,
 	})
-
 }
 
 func (h *ClassHandler) UpdateClass(c *gin.Context) {
-
 	var body request.UpdateClass
 	if err := c.BindJSON(&body); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
@@ -221,11 +211,9 @@ func (h *ClassHandler) UpdateClass(c *gin.Context) {
 		Success: true,
 		Message: "Berhasil mengupdate data kelas",
 	})
-
 }
 
 func (h *ClassHandler) DeleteClass(c *gin.Context) {
-
 	uuid := c.Param("uuid")
 	classInDB, err := h.Service.GetClass(uuid)
 	if err != nil {
@@ -246,11 +234,9 @@ func (h *ClassHandler) DeleteClass(c *gin.Context) {
 		Success: true,
 		Message: "Berhasil menghapus data kelas",
 	})
-
 }
 
 func (h *ClassHandler) GetClassPDF(c *gin.Context) {
-
 	dataPDF, err := h.Service.CreateClassPDF()
 	if err != nil {
 		utils.HandleError(c, err)
@@ -260,4 +246,53 @@ func (h *ClassHandler) GetClassPDF(c *gin.Context) {
 	c.Header("Content-Type", "application/pdf")
 	c.Header("Content-Disposition", "attachment; filename=classes.pdf")
 	c.Data(http.StatusOK, "application/pdf", dataPDF)
+}
+
+func (h *ClassHandler) GetTeacherClasses(c *gin.Context) {
+
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		utils.HandleError(c, &response.Error{
+			Code:    403,
+			Message: "ID User tidak ditemukan",
+		})
+	}
+
+	classes, err := h.Service.GetTeacherClasses(userID)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	var resp []response.TeacherClass
+
+	for _, item := range *classes {
+		var students []response.TeacherStudents
+		for _, item := range *item.Students {
+			students = append(students, response.TeacherStudents{
+				Uuid:         item.Uuid,
+				JK:           item.JK,
+				NIS:          item.NIS,
+				TempatLahir:  item.TempatLahir,
+				TanggalLahir: item.TanggalLahir,
+				Alamat:       item.Alamat,
+				CreatedAt:    item.CreatedAt,
+				UpdatedAt:    item.UpdatedAt,
+			})
+		}
+
+		resp = append(resp, response.TeacherClass{
+			Uuid:      item.Uuid,
+			Name:      item.Name,
+			Students:  &students,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Data Kelas berhasil ditemukan",
+		Data:    resp,
+	})
 }

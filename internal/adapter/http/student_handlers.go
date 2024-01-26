@@ -69,53 +69,7 @@ func (h *StudentHandlers) CreateStudent(c *gin.Context) {
 		Success: true,
 		Message: "Santri berhasil ditambahkan",
 	})
-
 }
-
-// func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
-// 	file, err := c.FormFile("students")
-// 	if err != nil {
-// 		utils.HandleError(c, &response.Error{
-// 			Code:    400,
-// 			Message: "File students tidak ditemukan",
-// 		})
-// 		return
-// 	}
-
-// 	if err := utils.IsExcelFile(file); err != nil {
-// 		utils.HandleError(c, err)
-// 		return
-// 	}
-
-// 	tempFolder := "internal/assets/temp"
-// 	pathFile := filepath.Join(tempFolder, file.Filename)
-
-// 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
-// 		utils.HandleError(c, &response.Error{
-// 			Code:    500,
-// 			Message: "Terjadi kesalahan saat menyimpan file",
-// 		})
-// 	}
-
-// 	defer func() {
-// 		if err := os.Remove(pathFile); err != nil {
-// 			fmt.Println(err.Error())
-// 		}
-// 	}()
-
-// 	failed, err := h.Service.ImportStudents(pathFile)
-
-// 	if err != nil {
-// 		utils.HandleError(c, err)
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusCreated, response.SuccessResponse{
-// 		Success: true,
-// 		Message: "Santri berhasil ditambahkan",
-// 		Data:    failed,
-// 	})
-// }
 
 func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
 
@@ -220,6 +174,51 @@ func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
 		Message: "Data santri berhasil dihapus",
 	})
 }
+
+// func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
+// 	file, err := c.FormFile("students")
+// 	if err != nil {
+// 		utils.HandleError(c, &response.Error{
+// 			Code:    400,
+// 			Message: "File students tidak ditemukan",
+// 		})
+// 		return
+// 	}
+
+// 	if err := utils.IsExcelFile(file); err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
+
+// 	tempFolder := "internal/assets/temp"
+// 	pathFile := filepath.Join(tempFolder, file.Filename)
+
+// 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
+// 		utils.HandleError(c, &response.Error{
+// 			Code:    500,
+// 			Message: "Terjadi kesalahan saat menyimpan file",
+// 		})
+// 	}
+
+// 	defer func() {
+// 		if err := os.Remove(pathFile); err != nil {
+// 			fmt.Println(err.Error())
+// 		}
+// 	}()
+
+// 	failed, err := h.Service.ImportStudents(pathFile)
+
+// 	if err != nil {
+// 		utils.HandleError(c, err)
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusCreated, response.SuccessResponse{
+// 		Success: true,
+// 		Message: "Santri berhasil ditambahkan",
+// 		Data:    failed,
+// 	})
+// }
 
 // func (h *StudentHandlers) CreateReport(c *gin.Context) {
 // 	randomName := fmt.Sprintf("%s.pdf", uuid.NewString())

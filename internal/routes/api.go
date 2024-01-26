@@ -34,6 +34,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 	teacher := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsRole("GURU"))
 	{
+		teacher.GET("teacher/classes", middleware.SetUserID(), handlers.ClassHandler.GetTeacherClasses)
 		teacher.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 		// teacher.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
 		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetTeacherSchedules)

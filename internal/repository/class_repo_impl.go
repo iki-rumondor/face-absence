@@ -137,3 +137,11 @@ func (r *ClassRepoImplementation) GetClassPDF(data []*request.ClassPDFData) ([]b
 
 	return pdfData, nil
 }
+
+func (r *ClassRepoImplementation) FindTeacherClassesByUserID(userID uint) (*domain.Teacher, error) {
+	var teacher domain.Teacher
+	if err := r.db.Preload("Classes.Students").First(&teacher, "user_id = ?", userID).Error; err != nil {
+		return nil, err
+	}
+	return &teacher, nil
+}
