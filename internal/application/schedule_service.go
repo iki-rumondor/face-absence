@@ -60,7 +60,7 @@ func (s *ScheduleService) GetAllSchedules() (*[]domain.Schedule, error) {
 
 func (s *ScheduleService) GetTeacherSchedules(userID uint) (*[]domain.Schedule, error) {
 
-	_, err := s.Repo.FindTeacherByUserID(userID)
+	teacher, err := s.Repo.FindTeacherByUserID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
@@ -73,9 +73,9 @@ func (s *ScheduleService) GetTeacherSchedules(userID uint) (*[]domain.Schedule, 
 
 	var schedules []domain.Schedule
 
-	// for _, item := range *teacher.Subjects{
-	// 	schedules = append(schedules, *item.Schedules...)
-	// }
+	for _, item := range teacher.Subjects {
+		schedules = append(schedules, *item.Schedules...)
+	}
 
 	if err != nil {
 		return nil, INTERNAL_ERROR

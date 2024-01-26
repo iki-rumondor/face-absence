@@ -32,43 +32,49 @@ func (r *SubjectRepoImplementation) FindSubjectPagination(pagination *domain.Pag
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher.User").Find(&subjects).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teachers.User").Find(&subjects).Error; err != nil {
 		return nil, err
 	}
 
-	var res = []response.SubjectResponse{}
-	for _, subject := range subjects {
-		res = append(res, response.SubjectResponse{
-			Uuid: subject.Uuid,
-			Name: subject.Name,
-			// Teacher: &response.Teacher{
-			// 	Uuid:          subject.Teacher.Uuid,
-			// 	JK:            subject.Teacher.JK,
-			// 	Nip:           subject.Teacher.Nip,
-			// 	Nuptk:         subject.Teacher.Nuptk,
-			// 	StatusPegawai: subject.Teacher.StatusPegawai,
-			// 	TempatLahir:   subject.Teacher.TempatLahir,
-			// 	TanggalLahir:  subject.Teacher.TanggalLahir,
-			// 	NoHp:          subject.Teacher.NoHp,
-			// 	Jabatan:       subject.Teacher.Jabatan,
-			// 	TotalJtm:      subject.Teacher.TotalJtm,
-			// 	Alamat:        subject.Teacher.Alamat,
-			// 	User: &response.UserData{
-			// 		Nama:      subject.Teacher.User.Nama,
-			// 		Username:  subject.Teacher.User.Username,
-			// 		Avatar:    subject.Teacher.User.Avatar,
-			// 		CreatedAt: subject.Teacher.User.CreatedAt,
-			// 		UpdatedAt: subject.Teacher.User.UpdatedAt,
-			// 	},
-			// 	CreatedAt: subject.Teacher.CreatedAt,
-			// 	UpdatedAt: subject.Teacher.UpdatedAt,
-			// },
-			CreatedAt: subject.CreatedAt,
-			UpdatedAt: subject.UpdatedAt,
+	var resp []response.SubjectResponse
+
+	for _, res := range subjects {
+		var teachers []response.Teacher
+		for _, item := range res.Teachers {
+			teachers = append(teachers, response.Teacher{
+				Uuid:          item.Uuid,
+				JK:            item.JK,
+				Nip:           item.Nip,
+				Nuptk:         item.Nuptk,
+				StatusPegawai: item.StatusPegawai,
+				TempatLahir:   item.TempatLahir,
+				TanggalLahir:  item.TanggalLahir,
+				NoHp:          item.NoHp,
+				Jabatan:       item.Jabatan,
+				TotalJtm:      item.TotalJtm,
+				Alamat:        item.Alamat,
+				User: &response.UserData{
+					Nama:      item.User.Nama,
+					Username:  item.User.Username,
+					Avatar:    item.User.Avatar,
+					CreatedAt: item.User.CreatedAt,
+					UpdatedAt: item.User.UpdatedAt,
+				},
+				CreatedAt: item.CreatedAt,
+				UpdatedAt: item.UpdatedAt,
+			})
+		}
+
+		resp = append(resp, response.SubjectResponse{
+			Uuid:      res.Uuid,
+			Name:      res.Name,
+			Teachers:  &teachers,
+			CreatedAt: res.CreatedAt,
+			UpdatedAt: res.UpdatedAt,
 		})
 	}
 
-	pagination.Rows = res
+	pagination.Rows = resp
 
 	pagination.TotalRows = int(totalRows)
 
@@ -85,7 +91,7 @@ func (r *SubjectRepoImplementation) UpdateSubject(model *domain.Subject) error {
 
 func (r *SubjectRepoImplementation) FindSubjects() (*[]domain.Subject, error) {
 	var res []domain.Subject
-	if err := r.db.Preload("Teacher.User").Find(&res).Error; err != nil {
+	if err := r.db.Preload("Teachers.User").Find(&res).Error; err != nil {
 		return nil, err
 	}
 
@@ -94,7 +100,7 @@ func (r *SubjectRepoImplementation) FindSubjects() (*[]domain.Subject, error) {
 
 func (r *SubjectRepoImplementation) FindSubjectByUuid(uuid string) (*domain.Subject, error) {
 	var res domain.Subject
-	if err := r.db.Preload("Teacher.User").First(&res, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Teachers.User").First(&res, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 

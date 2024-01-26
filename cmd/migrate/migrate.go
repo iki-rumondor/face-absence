@@ -86,7 +86,7 @@ func seederData(db *gorm.DB) error {
 	}
 
 	teacher1 := domain.Teacher{
-		Uuid:          uuid.NewString(),
+		Uuid:          "teacher1",
 		Nuptk:         "1234567890",
 		StatusPegawai: "AKTIF",
 		Nip:           "987654321223",
@@ -101,7 +101,7 @@ func seederData(db *gorm.DB) error {
 	}
 
 	teacher2 := domain.Teacher{
-		Uuid:          uuid.NewString(),
+		Uuid:          "teacher2",
 		Nuptk:         "1234567890",
 		StatusPegawai: "AKTIF",
 		Nip:           "98765432122",
@@ -120,7 +120,7 @@ func seederData(db *gorm.DB) error {
 	}
 
 	class := domain.Class{
-		Uuid:      uuid.NewString(),
+		Uuid:      "class1",
 		Name:      "VII-A",
 		TeacherID: teacher1.ID,
 	}
@@ -130,7 +130,7 @@ func seederData(db *gorm.DB) error {
 	}
 
 	subject := domain.Subject{
-		Uuid: uuid.NewString(),
+		Uuid: "subject1",
 		Name: "Fisika",
 		Teachers: []domain.Teacher{
 			teacher1,
@@ -143,7 +143,7 @@ func seederData(db *gorm.DB) error {
 	}
 
 	student := domain.Student{
-		Uuid:         uuid.NewString(),
+		Uuid:         "student1",
 		NIS:          "12345678",
 		JK:           "LAKI-LAKI",
 		TempatLahir:  "Gorontalo",

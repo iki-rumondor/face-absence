@@ -41,8 +41,8 @@ func (s *SubjectService) CreateSubject(body *request.CreateSubject) error {
 	}
 
 	subject := domain.Subject{
-		Uuid: uuid.NewString(),
-		Name: body.Name,
+		Uuid:     uuid.NewString(),
+		Name:     body.Name,
 		Teachers: teachers,
 	}
 
@@ -69,7 +69,7 @@ func (s *SubjectService) SubjectPagination(urlPath string, pagination *domain.Pa
 
 }
 
-func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
+func (s *SubjectService) GetAllSubjects() (*[]domain.Subject, error) {
 
 	result, err := s.Repo.FindSubjects()
 
@@ -80,18 +80,7 @@ func (s *SubjectService) GetAllSubjects() (*[]response.SubjectResponse, error) {
 		}
 	}
 
-	var resp []response.SubjectResponse
-
-	for _, res := range *result {
-		resp = append(resp, response.SubjectResponse{
-			Uuid:      res.Uuid,
-			Name:      res.Name,
-			CreatedAt: res.CreatedAt,
-			UpdatedAt: res.UpdatedAt,
-		})
-	}
-
-	return &resp, nil
+	return result, nil
 }
 
 func (s *SubjectService) GetSubject(uuid string) (*domain.Subject, error) {
@@ -139,8 +128,8 @@ func (s *SubjectService) UpdateSubject(subjectUuid string, body *request.UpdateS
 	}
 
 	model := domain.Subject{
-		ID:   res.ID,
-		Name: body.Name,
+		ID:       res.ID,
+		Name:     body.Name,
 		Teachers: teachers,
 	}
 
