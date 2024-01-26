@@ -125,20 +125,24 @@ func (r *TeacherRepoImplementation) UpdateTeacherUser(teacher *domain.Teacher, u
 
 }
 
-func (r *TeacherRepoImplementation) DeleteTeacherUser(userID uint) error {
+func (r *TeacherRepoImplementation) DeleteTeacher(teacherUuid string) error {
+	return nil
+	// return r.db.Transaction(func(tx *gorm.DB) error {
+	// 	if err := tx.Model(teacher).Association("Languages").Clear(); err != nil{
+	// 		return err
+	// 	}
 
-	return r.db.Transaction(func(tx *gorm.DB) error {
 
-		if err := tx.Delete(&domain.Teacher{}, "user_id = ?", userID).Error; err != nil {
-			return err
-		}
+	// 	if err := tx.Delete(&domain.Teacher{}, "user_id = ?", userID).Error; err != nil {
+	// 		return err
+	// 	}
 
-		if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
-			return err
-		}
+	// 	if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
+	// 		return err
+	// 	}
 
-		return nil
-	})
+	// 	return nil
+	// })
 
 }
 

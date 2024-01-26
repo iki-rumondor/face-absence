@@ -10,7 +10,7 @@ type TeacherRepository interface {
 	FindTeacherByUuid(string) (*domain.Teacher, error)
 	FindTeacherByColumn(column, data string) (*domain.Teacher, error)
 	UpdateTeacherUser(*domain.Teacher, *domain.User) error
-	DeleteTeacherUser(userID uint) error
+	DeleteTeacher(string) error
 
 	FindUserByUsername(string) (*domain.User, error)
 }
