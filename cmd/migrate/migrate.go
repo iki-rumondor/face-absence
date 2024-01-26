@@ -143,6 +143,7 @@ func seederData(db *gorm.DB) error {
 	}
 
 	student := domain.Student{
+		Nama:         "Siswa",
 		Uuid:         "student1",
 		NIS:          "12345678",
 		JK:           "LAKI-LAKI",

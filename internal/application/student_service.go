@@ -121,6 +121,7 @@ func (s *StudentService) UpdateStudent(uuid string, body *request.UpdateStudent)
 
 	model := domain.Student{
 		ID:           student.ID,
+		Nama:          body.Nama,
 		NIS:          body.NIS,
 		JK:           body.JK,
 		TempatLahir:  body.TempatLahir,
