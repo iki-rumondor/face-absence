@@ -10,6 +10,10 @@ type UserData struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type Dashboard struct {
+	Stats map[string]*int64 `json:"stats"`
+}
+
 type VerifyTokenResponse struct {
 	Nama      string    `json:"nama"`
 	Username  string    `json:"username"`

@@ -46,9 +46,11 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	user := router.Group("api").Use(middleware.IsValidJWT())
 	{
 		// user.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
+		// user.GET("master/students/report", handlers.StudentHandler.CreateReport)
+		user.GET("dashboard", handlers.UserHandler.GetDashboardData)
+
 		user.POST("master/students", handlers.StudentHandler.CreateStudent)
 		user.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
-		// user.GET("master/students/report", handlers.StudentHandler.CreateReport)
 		user.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
 		user.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
 		user.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)

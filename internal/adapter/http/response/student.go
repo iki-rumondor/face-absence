@@ -3,6 +3,7 @@ package response
 import "time"
 
 type StudentResponse struct {
+	Nama         string             `json:"nama"`
 	Uuid         string             `json:"uuid"`
 	NIS          string             `json:"nis"`
 	JK           string             `json:"jk"`
@@ -16,6 +17,7 @@ type StudentResponse struct {
 }
 
 type TeacherStudents struct {
+	Nama         string    `json:"nama"`
 	Uuid         string    `json:"uuid"`
 	NIS          string    `json:"nis"`
 	JK           string    `json:"jk"`

@@ -91,10 +91,10 @@ func (r *SubjectRepoImplementation) UpdateSubject(model *domain.Subject) error {
 			return err
 		}
 
-		if err := r.db.Model(model).Association("Teachers").Replace(model.Teachers); err != nil{
+		if err := r.db.Model(model).Association("Teachers").Replace(model.Teachers); err != nil {
 			return err
 		}
-		
+
 		return nil
 	})
 }
@@ -118,7 +118,17 @@ func (r *SubjectRepoImplementation) FindSubjectByUuid(uuid string) (*domain.Subj
 }
 
 func (r *SubjectRepoImplementation) DeleteSubject(model *domain.Subject) error {
-	return r.db.Delete(&model, "uuid = ?", model.Uuid).Error
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(model).Association("Teachers").Clear(); err != nil {
+			return err
+		}
+
+		if err := r.db.Delete(&model, "uuid = ?", model.Uuid).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (r *SubjectRepoImplementation) FindTeacherByUuid(uuid string) (*domain.Teacher, error) {

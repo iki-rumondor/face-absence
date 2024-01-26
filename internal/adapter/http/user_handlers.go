@@ -83,3 +83,21 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 		Message: "Berhasil mengubah avatar user",
 	})
 }
+
+func (h *UserHandler) GetDashboardData(c *gin.Context) {
+	result, err := h.Service.GetDashboardData()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	resp := &response.Dashboard{
+		Stats: result,
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil mendapatkan data dashboard",
+		Data:    resp,
+	})
+}

@@ -107,6 +107,7 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 	}
 
 	res := response.StudentResponse{
+		Nama:         student.Nama,
 		Uuid:         student.Uuid,
 		JK:           student.JK,
 		NIS:          student.NIS,
