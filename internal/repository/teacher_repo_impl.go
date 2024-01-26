@@ -126,23 +126,27 @@ func (r *TeacherRepoImplementation) UpdateTeacherUser(teacher *domain.Teacher, u
 }
 
 func (r *TeacherRepoImplementation) DeleteTeacher(teacherUuid string) error {
-	return nil
-	// return r.db.Transaction(func(tx *gorm.DB) error {
-	// 	if err := tx.Model(teacher).Association("Languages").Clear(); err != nil{
-	// 		return err
-	// 	}
+	var teacher domain.Teacher
+	if err := r.db.Preload("User").First(&teacher, "uuid = ?", teacherUuid).Error; err != nil {
+		return err
+	}
 
+	return r.db.Transaction(func(tx *gorm.DB) error {
 
-	// 	if err := tx.Delete(&domain.Teacher{}, "user_id = ?", userID).Error; err != nil {
-	// 		return err
-	// 	}
+		if err := tx.Model(&teacher).Association("Subjects").Clear(); err != nil {
+			return err
+		}
 
-	// 	if err := tx.Delete(&domain.User{}, "id = ?", userID).Error; err != nil {
-	// 		return err
-	// 	}
+		if err := tx.Delete(&teacher).Error; err != nil {
+			return err
+		}
 
-	// 	return nil
-	// })
+		if err := tx.Delete(&teacher.User).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 
 }
 
