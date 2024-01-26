@@ -175,6 +175,18 @@ func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
 	})
 }
 
+func (h *StudentHandlers) GetStudentsPDF(c *gin.Context) {
+	dataPDF, err := h.Service.CreateStudentsPDF()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", "attachment; filename=classes.pdf")
+	c.Data(http.StatusOK, "application/pdf", dataPDF)
+}
+
 // func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
 // 	file, err := c.FormFile("students")
 // 	if err != nil {

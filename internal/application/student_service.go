@@ -3,6 +3,8 @@ package application
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"os"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -121,7 +123,7 @@ func (s *StudentService) UpdateStudent(uuid string, body *request.UpdateStudent)
 
 	model := domain.Student{
 		ID:           student.ID,
-		Nama:          body.Nama,
+		Nama:         body.Nama,
 		NIS:          body.NIS,
 		JK:           body.JK,
 		TempatLahir:  body.TempatLahir,
@@ -161,6 +163,50 @@ func (s *StudentService) DeleteStudent(uuid string) error {
 	return nil
 }
 
+func (s *StudentService) CreateStudentsPDF() ([]byte, error) {
+
+	students, err := s.GetAllStudents()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(*students) == 0 {
+		return nil, &response.Error{
+			Code:    404,
+			Message: "Data Kelas Masih Kosong",
+		}
+	}
+
+	var data []*request.StudentPDFData
+
+	for _, item := range *students {
+		data = append(data, &request.StudentPDFData{
+			Nama:         item.Nama,
+			NIS:          item.NIS,
+			JK:           item.JK,
+			TempatLahir:  item.TempatLahir,
+			TanggalLahir: item.TanggalLahir,
+			Alamat:       item.Alamat,
+			Kelas:        item.Class.Name,
+		})
+	}
+
+	resp, err := s.Repo.GetStudentsPDF(data)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	defer resp.Body.Close()
+
+	pdfData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return pdfData, nil
+}
 
 // func (s *StudentService) ImportStudents(pathFile string) (*[]response.FailedStudent, error) {
 

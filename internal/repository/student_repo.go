@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"net/http"
+
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 )
 
@@ -14,6 +17,8 @@ type StudentRepository interface {
 	DeleteStudent(student *domain.Student) error
 
 	FindClassBy(column string, value interface{}) (*domain.Class, error)
+
+	GetStudentsPDF(data []*request.StudentPDFData) (*http.Response, error)
 
 	FindLatestHistory() (*domain.PdfDownloadHistory, error)
 	CreatePdfHistory(*domain.PdfDownloadHistory) error

@@ -92,6 +92,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.GET("absences", handlers.AbsenceHandler.GetAllAbsences)
 
 		admin.GET("pdf/classes", handlers.ClassHandler.GetClassPDF)
+		admin.GET("pdf/students", handlers.StudentHandler.GetStudentsPDF)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 

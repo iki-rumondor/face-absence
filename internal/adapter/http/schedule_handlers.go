@@ -172,6 +172,7 @@ func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 
 		students = append(students, response.StudentResponse{
 			Uuid:         item.Uuid,
+			Nama:         item.Nama,
 			JK:           item.JK,
 			NIS:          item.NIS,
 			TempatLahir:  item.TempatLahir,
