@@ -1,6 +1,11 @@
 package repository
 
-import "github.com/iki-rumondor/init-golang-service/internal/domain"
+import (
+	"net/http"
+
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
+	"github.com/iki-rumondor/init-golang-service/internal/domain"
+)
 
 type TeacherRepository interface {
 	FindTeachersPagination(*domain.Pagination) (*domain.Pagination, error)
@@ -11,6 +16,6 @@ type TeacherRepository interface {
 	FindTeacherByColumn(column, data string) (*domain.Teacher, error)
 	UpdateTeacherUser(*domain.Teacher, *domain.User) error
 	DeleteTeacher(string) error
-
+	GetTeachersPDF(data []*request.TeacherPDFData) (*http.Response, error)
 	FindUserByUsername(string) (*domain.User, error)
 }

@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -122,6 +124,22 @@ func (r *StudentRepoImplementation) FindStudentByUserID(userID uint) (*domain.St
 
 func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student) error {
 	return r.db.Model(student).Updates(student).Error
+}
+
+func (r *StudentRepoImplementation) UpdateStudentImage(uuid, imagePath string) error {
+	var student domain.Student
+	if err := r.db.First(&student, "uuid = ?", uuid).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.Model(student).Update("image", imagePath).Error; err != nil {
+		if err := os.Remove(filepath.Join("internal/assets/avatar", imagePath)); err != nil {
+			log.Println(err.Error())
+		}
+		return err
+	}
+
+	return nil
 }
 
 func (r *StudentRepoImplementation) DeleteStudent(student *domain.Student) error {

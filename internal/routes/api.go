@@ -48,6 +48,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		// user.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
 		// user.GET("master/students/report", handlers.StudentHandler.CreateReport)
 		user.GET("dashboard", handlers.UserHandler.GetDashboardData)
+		user.PATCH("students/:uuid/image", handlers.StudentHandler.UpdateStudentImage)
 
 		user.POST("master/students", handlers.StudentHandler.CreateStudent)
 		user.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
@@ -93,6 +94,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 		admin.GET("pdf/classes", handlers.ClassHandler.GetClassPDF)
 		admin.GET("pdf/students", handlers.StudentHandler.GetStudentsPDF)
+		admin.GET("pdf/teachers", handlers.TeacherHandler.GetTeachersPDF)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 

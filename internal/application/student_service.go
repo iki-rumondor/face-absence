@@ -140,6 +140,22 @@ func (s *StudentService) UpdateStudent(uuid string, body *request.UpdateStudent)
 	return nil
 }
 
+func (s *StudentService) UpdateStudentImage(uuid string, imagePath string) error {
+
+	if err := s.Repo.UpdateStudentImage(uuid, imagePath); err != nil {
+		log.Println(err.Error())
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", uuid),
+			}
+		}
+		return INTERNAL_ERROR
+	}
+
+	return nil
+}
+
 func (s *StudentService) DeleteStudent(uuid string) error {
 
 	student, err := s.GetStudent(uuid)

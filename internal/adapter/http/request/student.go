@@ -19,3 +19,4 @@ type UpdateStudent struct {
 	Alamat       string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
 	ClassUuid    string `json:"class_uuid" valid:"required~field class_uuid tidak ditemukan"`
 }
+

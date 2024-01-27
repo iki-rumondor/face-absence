@@ -209,3 +209,16 @@ func (h *TeacherHandlers) DeleteTeacher(c *gin.Context) {
 		Message: "Berhasil menghapus data guru",
 	})
 }
+
+func (h *TeacherHandlers) GetTeachersPDF(c *gin.Context) {
+
+	dataPDF, err := h.Service.CreateTeachersPDF()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", "attachment; filename=teachers.pdf")
+	c.Data(http.StatusOK, "application/pdf", dataPDF)
+}

@@ -175,6 +175,27 @@ func (h *StudentHandlers) DeleteStudent(c *gin.Context) {
 	})
 }
 
+func (h *StudentHandlers) UpdateStudentImage(c *gin.Context) {
+
+	uuid := c.Param("uuid")
+
+	imagePath, err := utils.SaveUploadedImage(c)
+	if err != nil{
+		utils.HandleError(c, err)
+		return
+	}
+
+	if err := h.Service.UpdateStudentImage(uuid, imagePath); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Image santri berhasil diperbarui",
+	})
+}
+
 func (h *StudentHandlers) GetStudentsPDF(c *gin.Context) {
 	dataPDF, err := h.Service.CreateStudentsPDF()
 	if err != nil {
@@ -183,7 +204,7 @@ func (h *StudentHandlers) GetStudentsPDF(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/pdf")
-	c.Header("Content-Disposition", "attachment; filename=classes.pdf")
+	c.Header("Content-Disposition", "attachment; filename=students.pdf")
 	c.Data(http.StatusOK, "application/pdf", dataPDF)
 }
 

@@ -3,6 +3,8 @@ package application
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -170,7 +172,6 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
 }
 
 func (s *TeacherService) DeleteTeacher(uuid string) error {
-
 	if err := s.Repo.DeleteTeacher(uuid); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
@@ -189,5 +190,53 @@ func (s *TeacherService) DeleteTeacher(uuid string) error {
 	}
 
 	return nil
+}
 
+func (s *TeacherService) CreateTeachersPDF() ([]byte, error) {
+
+	teachers, err := s.GetTeachers()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(*teachers) == 0 {
+		return nil, &response.Error{
+			Code:    404,
+			Message: "Data Kelas Masih Kosong",
+		}
+	}
+
+	var data []*request.TeacherPDFData
+
+	for _, item := range *teachers {
+		data = append(data, &request.TeacherPDFData{
+			Nama:          item.User.Nama,
+			JK:            item.JK,
+			Nip:           item.Nip,
+			Nuptk:         item.Nuptk,
+			StatusPegawai: item.StatusPegawai,
+			TempatLahir:   item.TempatLahir,
+			TanggalLahir:  item.TanggalLahir,
+			NoHp:          item.NoHp,
+			Jabatan:       item.Jabatan,
+			TotalJtm:      item.TotalJtm,
+			Alamat:        item.Alamat,
+		})
+	}
+
+	resp, err := s.Repo.GetTeachersPDF(data)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	defer resp.Body.Close()
+
+	pdfData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return pdfData, nil
 }
