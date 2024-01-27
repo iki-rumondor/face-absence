@@ -15,6 +15,7 @@ type Repositories struct {
 	SchoolYear repository.SchoolYearRepository
 	Teacher    repository.TeacherRepository
 	User       repository.UserRepository
+	SchoolFee  repository.SchoolFeeRepository
 }
 
 func RegisterRepositories(gormDB *gorm.DB) *Repositories {
@@ -27,6 +28,7 @@ func RegisterRepositories(gormDB *gorm.DB) *Repositories {
 	schedule_repo := repository.NewScheduleRepository(gormDB)
 	user_repo := repository.NewUserRepository(gormDB)
 	absence_repo := repository.NewAbsenceRepository(gormDB)
+	school_fee_repo := repository.NewSchoolFeeRepository(gormDB)
 
 	return &Repositories{
 		Student:    student_repo,
@@ -38,6 +40,7 @@ func RegisterRepositories(gormDB *gorm.DB) *Repositories {
 		Schedule:   schedule_repo,
 		User:       user_repo,
 		Absence:    absence_repo,
+		SchoolFee:  school_fee_repo,
 	}
 
 }

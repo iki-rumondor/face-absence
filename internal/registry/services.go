@@ -12,6 +12,7 @@ type Services struct {
 	SchoolYear *application.SchoolYearService
 	Teacher    *application.TeacherService
 	User       *application.UserService
+	SchoolFee  *application.SchoolFeeService
 }
 
 func RegisterServices(repo *Repositories) *Services {
@@ -24,6 +25,7 @@ func RegisterServices(repo *Repositories) *Services {
 	schedule_service := application.NewScheduleService(repo.Schedule)
 	user_service := application.NewUserService(repo.User)
 	absence_service := application.NewAbsenceService(repo.Absence)
+	school_fee_service := application.NewSchoolFeeService(repo.SchoolFee)
 
 	return &Services{
 		Student:    student_service,
@@ -35,6 +37,7 @@ func RegisterServices(repo *Repositories) *Services {
 		Schedule:   schedule_service,
 		User:       user_service,
 		Absence:    absence_service,
+		SchoolFee:  school_fee_service,
 	}
 
 }

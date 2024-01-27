@@ -14,6 +14,7 @@ type Handlers struct {
 	ScheduleHandler   *customHTTP.ScheduleHandler
 	UserHandler       *customHTTP.UserHandler
 	AbsenceHandler    *customHTTP.AbsenceHandler
+	SchoolFeeHandler  *customHTTP.SchoolFeeHandler
 }
 
 func RegisterHandlers(s *Services) *Handlers {
@@ -27,6 +28,7 @@ func RegisterHandlers(s *Services) *Handlers {
 	schedule_handler := customHTTP.NewScheduleHandler(s.Schedule, s.Class, s.Subject, s.Teacher, s.SchoolYear)
 	user_handler := customHTTP.NewUserHandler(s.User)
 	absence_handler := customHTTP.NewAbsenceHandler(s.Absence, s.Schedule, s.Student)
+	school_fee_handler := customHTTP.NewSchoolFeeHandler(s.SchoolFee)
 
 	return &Handlers{
 		StudentHandler:    student_handler,
@@ -38,5 +40,6 @@ func RegisterHandlers(s *Services) *Handlers {
 		ScheduleHandler:   schedule_handler,
 		UserHandler:       user_handler,
 		AbsenceHandler:    absence_handler,
+		SchoolFeeHandler:  school_fee_handler,
 	}
 }
