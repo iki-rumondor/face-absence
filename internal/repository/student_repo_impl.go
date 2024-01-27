@@ -60,6 +60,8 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 			TempatLahir:  student.TempatLahir,
 			TanggalLahir: student.TanggalLahir,
 			Alamat:       student.Alamat,
+			TanggalMasuk: student.TanggalMasuk,
+			Image:        student.Image,
 			Class: &response.ClassData{
 				Uuid:      student.Class.Uuid,
 				Name:      student.Class.Name,
@@ -185,4 +187,22 @@ func (r *StudentRepoImplementation) GetStudentsPDF(data []*request.StudentPDFDat
 	}
 
 	return resp, nil
+}
+
+func (r *StudentRepoImplementation) CreateBatchStudents(students *[]domain.Student, classUuid string) error {
+	var class domain.Class
+	if err := r.db.First(&class, "uuid = ?", class.Uuid).Error; err != nil {
+		return err
+	}
+
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for _, item := range *students {
+			item.ClassID = class.ID
+			if err := tx.Create(item).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }

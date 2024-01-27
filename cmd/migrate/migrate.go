@@ -150,6 +150,7 @@ func seederData(db *gorm.DB) error {
 		TempatLahir:  "Gorontalo",
 		TanggalLahir: "2000-01-01",
 		Alamat:       "Alamat Siswa",
+		TanggalMasuk: "26-01-2000",
 		ClassID:      class.ID,
 	}
 

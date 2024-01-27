@@ -9,6 +9,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/database"
 	"github.com/iki-rumondor/init-golang-service/internal/registry"
 	"github.com/iki-rumondor/init-golang-service/internal/routes"
+	"github.com/iki-rumondor/init-golang-service/internal/utils"
 )
 
 func main() {
@@ -33,6 +34,8 @@ func main() {
 	if PORT == "" {
 		PORT = "8080"
 	}
+
+	utils.InitCustomValidation()
 
 	routes.StartServer(handlers).Run(":" + PORT)
 }

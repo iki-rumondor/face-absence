@@ -177,6 +177,8 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 				TempatLahir:  item.Student.TempatLahir,
 				TanggalLahir: item.Student.TanggalLahir,
 				Alamat:       item.Student.Alamat,
+				TanggalMasuk: item.Student.TanggalMasuk,
+				Image:        item.Student.Image,
 			},
 			Schedule: &response.ScheduleResponse{
 				Uuid:  item.Schedule.Uuid,

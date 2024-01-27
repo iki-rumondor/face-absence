@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	"strings"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 )
 
@@ -33,4 +34,12 @@ func IsValidImageExtension(filename string) bool {
 func IsValidImageSize(size int64) bool {
 	const maxFileSize = 5 * 1024 * 1024
 	return size <= maxFileSize
+}
+
+func InitCustomValidation() {
+
+	govalidator.TagMap["date"] = govalidator.Validator(func(str string) bool {
+		var dateFormat = "02-01-2006"
+		return IsValidDate(dateFormat, str)
+	})
 }

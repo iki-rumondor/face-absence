@@ -3,6 +3,8 @@ package customHTTP
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -56,6 +58,7 @@ func (h *StudentHandlers) CreateStudent(c *gin.Context) {
 		JK:           body.JK,
 		TempatLahir:  body.TempatLahir,
 		TanggalLahir: body.TanggalLahir,
+		TanggalMasuk: body.TanggalMasuk,
 		Alamat:       body.Alamat,
 		ClassID:      class.ID,
 	}
@@ -114,6 +117,8 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 		TempatLahir:  student.TempatLahir,
 		TanggalLahir: student.TanggalLahir,
 		Alamat:       student.Alamat,
+		TanggalMasuk: student.TanggalMasuk,
+		Image:        student.Image,
 		Class: &response.ClassData{
 			Uuid:      student.Class.Uuid,
 			Name:      student.Class.Name,
@@ -180,7 +185,7 @@ func (h *StudentHandlers) UpdateStudentImage(c *gin.Context) {
 	uuid := c.Param("uuid")
 
 	imagePath, err := utils.SaveUploadedImage(c)
-	if err != nil{
+	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
@@ -208,50 +213,56 @@ func (h *StudentHandlers) GetStudentsPDF(c *gin.Context) {
 	c.Data(http.StatusOK, "application/pdf", dataPDF)
 }
 
-// func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
-// 	file, err := c.FormFile("students")
-// 	if err != nil {
-// 		utils.HandleError(c, &response.Error{
-// 			Code:    400,
-// 			Message: "File students tidak ditemukan",
-// 		})
-// 		return
-// 	}
+func (h *StudentHandlers) ImportStudentsData(c *gin.Context) {
+	var body request.ImportStudents
+	if err := c.BindJSON(&body); err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: err.Error(),
+		})
+		return
+	}
 
-// 	if err := utils.IsExcelFile(file); err != nil {
-// 		utils.HandleError(c, err)
-// 		return
-// 	}
+	file, err := c.FormFile("students")
+	if err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "File students tidak ditemukan",
+		})
+		return
+	}
 
-// 	tempFolder := "internal/assets/temp"
-// 	pathFile := filepath.Join(tempFolder, file.Filename)
+	if err := utils.IsExcelFile(file); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
 
-// 	if err := c.SaveUploadedFile(file, pathFile); err != nil {
-// 		utils.HandleError(c, &response.Error{
-// 			Code:    500,
-// 			Message: "Terjadi kesalahan saat menyimpan file",
-// 		})
-// 	}
+	tempFolder := "internal/assets/temp"
+	pathFile := filepath.Join(tempFolder, file.Filename)
 
-// 	defer func() {
-// 		if err := os.Remove(pathFile); err != nil {
-// 			fmt.Println(err.Error())
-// 		}
-// 	}()
+	if err := c.SaveUploadedFile(file, pathFile); err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    500,
+			Message: "Terjadi kesalahan saat menyimpan file",
+		})
+	}
 
-// 	failed, err := h.Service.ImportStudents(pathFile)
+	defer func() {
+		if err := os.Remove(pathFile); err != nil {
+			fmt.Println(err.Error())
+		}
+	}()
 
-// 	if err != nil {
-// 		utils.HandleError(c, err)
-// 		return
-// 	}
+	if err := h.Service.ImportStudents(pathFile, &body); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
 
-// 	c.JSON(http.StatusCreated, response.SuccessResponse{
-// 		Success: true,
-// 		Message: "Santri berhasil ditambahkan",
-// 		Data:    failed,
-// 	})
-// }
+	c.JSON(http.StatusCreated, response.SuccessResponse{
+		Success: true,
+		Message: "Santri berhasil ditambahkan",
+	})
+}
 
 // func (h *StudentHandlers) CreateReport(c *gin.Context) {
 // 	randomName := fmt.Sprintf("%s.pdf", uuid.NewString())

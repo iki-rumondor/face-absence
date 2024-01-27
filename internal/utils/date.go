@@ -80,3 +80,8 @@ func IsAfterTime(targetTime string) bool {
 
 	return witaTime.After(timeFormat)
 }
+
+func IsValidDate(format, value string) bool{
+	_, err := time.Parse(format, value)
+	return err == nil
+}

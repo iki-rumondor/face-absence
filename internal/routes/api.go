@@ -50,6 +50,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		user.GET("dashboard", handlers.UserHandler.GetDashboardData)
 		user.PATCH("students/:uuid/image", handlers.StudentHandler.UpdateStudentImage)
 
+		user.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
 		user.POST("master/students", handlers.StudentHandler.CreateStudent)
 		user.GET("master/students", handlers.StudentHandler.GetAllStudentsData)
 		user.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)

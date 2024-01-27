@@ -20,6 +20,7 @@ type StudentRepository interface {
 	FindClassBy(column string, value interface{}) (*domain.Class, error)
 
 	GetStudentsPDF(data []*request.StudentPDFData) (*http.Response, error)
+	CreateBatchStudents(*[]domain.Student, string) error
 
 	FindLatestHistory() (*domain.PdfDownloadHistory, error)
 	CreatePdfHistory(*domain.PdfDownloadHistory) error

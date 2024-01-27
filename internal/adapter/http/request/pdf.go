@@ -14,6 +14,7 @@ type StudentPDFData struct {
 	TanggalLahir string `json:"Tanggal Lahir"`
 	Alamat       string `json:"Alamat"`
 	Kelas        string `json:"Kelas"`
+	TanggalMasuk string `json:"Tanggal Masuk"`
 }
 
 type TeacherPDFData struct {

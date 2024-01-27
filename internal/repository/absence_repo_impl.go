@@ -46,6 +46,8 @@ func (r *AbsenceRepoImplementation) FindAbsencePagination(pagination *domain.Pag
 				TempatLahir:  item.Student.TempatLahir,
 				TanggalLahir: item.Student.TanggalLahir,
 				Alamat:       item.Student.Alamat,
+				TanggalMasuk: item.Student.TanggalMasuk,
+				Image:        item.Student.Image,
 			},
 			Schedule: &response.ScheduleResponse{
 				Uuid:  item.Schedule.Uuid,
@@ -106,4 +108,3 @@ func (r *AbsenceRepoImplementation) FindStudentByUserID(userID uint) (*domain.St
 
 	return &res, nil
 }
-

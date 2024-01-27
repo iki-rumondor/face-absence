@@ -178,6 +178,8 @@ func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 			TempatLahir:  item.TempatLahir,
 			TanggalLahir: item.TanggalLahir,
 			Alamat:       item.Alamat,
+			TanggalMasuk: item.TanggalMasuk,
+			Image:        item.Image,
 			Absence:      &absences,
 			CreatedAt:    item.CreatedAt,
 			UpdatedAt:    item.UpdatedAt,

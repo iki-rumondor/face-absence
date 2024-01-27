@@ -10,6 +10,8 @@ type StudentResponse struct {
 	TempatLahir  string             `json:"tempat_lahir"`
 	TanggalLahir string             `json:"tanggal_lahir"`
 	Alamat       string             `json:"alamat"`
+	TanggalMasuk string             `json:"tanggal_masuk"`
+	Image        string             `json:"image"`
 	Class        *ClassData         `json:"class"`
 	Absence      *[]AbsenceResponse `json:"absence"`
 	CreatedAt    time.Time          `json:"created_at"`
