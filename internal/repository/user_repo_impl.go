@@ -26,6 +26,7 @@ func (r *UserRepoImplementation) FindUserByID(ID uint) (*domain.User, error) {
 func (r *UserRepoImplementation) UpdateAvatar(model *domain.User) error {
 	return r.db.Model(model).Where("id = ?", model.ID).Update("avatar", model.Avatar).Error
 }
+
 func (r *UserRepoImplementation) CountStudentsTeachersAdmins() (map[string]int64, error) {
 	var (
 		count_admin   int64

@@ -14,14 +14,15 @@ type StudentRepository interface {
 	FindStudent(string) (*domain.Student, error)
 	FindStudentByUserID(uint) (*domain.Student, error)
 	UpdateStudent(student *domain.Student) error
-	UpdateStudentImage(uuid, imagePath string) error
+	UpdateStudentImage(student *domain.Student, imagePath, faceString string) error
 	DeleteStudent(student *domain.Student) error
 
 	FindClassBy(column string, value interface{}) (*domain.Class, error)
 
 	GetStudentsPDF(data []*request.StudentPDFData) (*http.Response, error)
 	CreateBatchStudents(*[]domain.Student, string) error
-
+	GetFaceEncode(pathFile string) (map[string]interface{}, error)
+	
 	FindLatestHistory() (*domain.PdfDownloadHistory, error)
 	CreatePdfHistory(*domain.PdfDownloadHistory) error
 }

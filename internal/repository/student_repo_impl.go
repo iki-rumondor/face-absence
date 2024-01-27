@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
+	"io"
 	"math"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -128,20 +129,33 @@ func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student) error
 	return r.db.Model(student).Updates(student).Error
 }
 
-func (r *StudentRepoImplementation) UpdateStudentImage(uuid, imagePath string) error {
-	var student domain.Student
-	if err := r.db.First(&student, "uuid = ?", uuid).Error; err != nil {
-		return err
-	}
+func (r *StudentRepoImplementation) UpdateStudentImage(student *domain.Student, imagePath, faceString string) error {
+	var studentFace domain.StudentFace
+	result := r.db.First(&studentFace, "student_id = ?", student.ID).RowsAffected
 
-	if err := r.db.Model(student).Update("image", imagePath).Error; err != nil {
-		if err := os.Remove(filepath.Join("internal/assets/avatar", imagePath)); err != nil {
-			log.Println(err.Error())
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(student).Update("image", imagePath).Error; err != nil {
+			return err
 		}
-		return err
-	}
 
-	return nil
+		if result > 0 {
+			if err := tx.Model(&studentFace).Update("face_encode", faceString).Error; err != nil {
+				return err
+			}
+		}
+
+		model := domain.StudentFace{
+			FaceEncode: faceString,
+			StudentID:  student.ID,
+		}
+
+		if err := tx.Create(&model).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 }
 
 func (r *StudentRepoImplementation) DeleteStudent(student *domain.Student) error {
@@ -176,7 +190,7 @@ func (r *StudentRepoImplementation) GetStudentsPDF(data []*request.StudentPDFDat
 
 	var API_URL = os.Getenv("LARAVEL_API")
 	if API_URL == "" {
-		return nil, err
+		API_URL = "http://127.0.0.1:8000/api"
 	}
 
 	url := fmt.Sprintf("%s/generate-pdf/Daftar_Santri", API_URL)
@@ -205,4 +219,62 @@ func (r *StudentRepoImplementation) CreateBatchStudents(students *[]domain.Stude
 
 		return nil
 	})
+}
+
+func (r *StudentRepoImplementation) GetFaceEncode(pathFile string) (map[string]interface{}, error) {
+	var API_URL = os.Getenv("FLASK_API")
+	if API_URL == "" {
+		API_URL = "http://localhost:5000"
+	}
+
+	endpoint := fmt.Sprintf("%s/encode_face", API_URL)
+
+	var requestBody bytes.Buffer
+	writer := multipart.NewWriter(&requestBody)
+
+	file, err := os.Open(filepath.Join("internal/assets/avatar", pathFile))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	fileWriter, err := writer.CreateFormFile("image", pathFile)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.Copy(fileWriter, file)
+	if err != nil {
+		return nil, err
+	}
+
+	writer.Close()
+
+	request, err := http.NewRequest("POST", endpoint, &requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var data map[string]interface{}
+
+	if err := json.Unmarshal(responseBody, &data); err != nil {
+		fmt.Println("Error unmarshalling JSON:", err)
+		return nil, err
+	}
+
+	return data, nil
 }

@@ -1,6 +1,7 @@
 package application
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -147,15 +148,46 @@ func (s *StudentService) UpdateStudent(uuid string, body *request.UpdateStudent)
 
 func (s *StudentService) UpdateStudentImage(uuid string, imagePath string) error {
 
-	if err := s.Repo.UpdateStudentImage(uuid, imagePath); err != nil {
+	student, err := s.GetStudent(uuid)
+	if err != nil {
 		log.Println(err.Error())
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return &response.Error{
-				Code:    404,
-				Message: fmt.Sprintf("Santri dengan uuid %s tidak ditemukan", uuid),
-			}
+		return err
+	}
+
+	oldImage := student.Image
+
+	resp, err := s.Repo.GetFaceEncode(imagePath)
+	if err != nil {
+		return &response.Error{
+			Code:    400,
+			Message: err.Error(),
 		}
+	}
+
+	if resp["success"] == false {
+		return &response.Error{
+			Code:    400,
+			Message: resp["message"].(string),
+		}
+	}
+
+	face, err := json.Marshal(resp["face"])
+	if err != nil {
+		log.Println("Error marshalling JSON:", err)
+		return err
+	}
+
+	faceString := string(face)
+
+	if err := s.Repo.UpdateStudentImage(student, imagePath, faceString); err != nil {
+		log.Println(err.Error())
 		return INTERNAL_ERROR
+	}
+
+	if student.Image != "default-avatar.jpg" {
+		if err := os.Remove("internal/assets/avatar/" + oldImage); err != nil {
+			log.Println(err.Error())
+		}
 	}
 
 	return nil

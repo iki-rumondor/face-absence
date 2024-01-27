@@ -2,6 +2,7 @@ package customHTTP
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -191,6 +192,9 @@ func (h *StudentHandlers) UpdateStudentImage(c *gin.Context) {
 	}
 
 	if err := h.Service.UpdateStudentImage(uuid, imagePath); err != nil {
+		if err := os.Remove("internal/assets/avatar/" + imagePath); err != nil {
+			log.Println(err.Error())
+		}
 		utils.HandleError(c, err)
 		return
 	}

@@ -129,7 +129,6 @@ func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
 // }
 
 func (s *AbsenceService) CreateFormAbsence(imageOne, imageTwo string) (*response.FormAbsence, error) {
-	// Buat buffer untuk menampung data form
 	var requestBody bytes.Buffer
 	writer := multipart.NewWriter(&requestBody)
 
@@ -157,14 +156,12 @@ func (s *AbsenceService) CreateFormAbsence(imageOne, imageTwo string) (*response
 			return nil, err
 		}
 
-		// Salin isi file ke writer form
 		_, err = io.Copy(fileWriter, file)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	// Selesaikan form
 	writer.Close()
 
 	return &response.FormAbsence{
