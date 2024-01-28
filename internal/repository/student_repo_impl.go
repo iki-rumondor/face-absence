@@ -129,29 +129,29 @@ func (r *StudentRepoImplementation) UpdateStudent(student *domain.Student) error
 	return r.db.Model(student).Updates(student).Error
 }
 
-func (r *StudentRepoImplementation) UpdateStudentImage(student *domain.Student, imagePath, faceString string) error {
-	var studentFace domain.StudentFace
-	result := r.db.First(&studentFace, "student_id = ?", student.ID).RowsAffected
+func (r *StudentRepoImplementation) UpdateStudentImage(student *domain.Student, imagePath string) error {
+	// var studentFace domain.StudentFace
+	// result := r.db.First(&studentFace, "student_id = ?", student.ID).RowsAffected
 
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(student).Update("image", imagePath).Error; err != nil {
 			return err
 		}
 
-		if result > 0 {
-			if err := tx.Model(&studentFace).Update("face_encode", faceString).Error; err != nil {
-				return err
-			}
-		}
+		// if result > 0 {
+		// 	if err := tx.Model(&studentFace).Update("face_encode", faceString).Error; err != nil {
+		// 		return err
+		// 	}
+		// }
 
-		model := domain.StudentFace{
-			FaceEncode: faceString,
-			StudentID:  student.ID,
-		}
+		// model := domain.StudentFace{
+		// 	FaceEncode: faceString,
+		// 	StudentID:  student.ID,
+		// }
 
-		if err := tx.Create(&model).Error; err != nil {
-			return err
-		}
+		// if err := tx.Create(&model).Error; err != nil {
+		// 	return err
+		// }
 
 		return nil
 	})

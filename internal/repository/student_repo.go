@@ -14,7 +14,7 @@ type StudentRepository interface {
 	FindStudent(string) (*domain.Student, error)
 	FindStudentByUserID(uint) (*domain.Student, error)
 	UpdateStudent(student *domain.Student) error
-	UpdateStudentImage(student *domain.Student, imagePath, faceString string) error
+	UpdateStudentImage(student *domain.Student, imagePath string) error
 	DeleteStudent(student *domain.Student) error
 
 	FindClassBy(column string, value interface{}) (*domain.Class, error)
