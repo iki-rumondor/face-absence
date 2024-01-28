@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"github.com/iki-rumondor/init-golang-service/internal/repository"
@@ -27,24 +29,7 @@ func NewAbsenceService(repo repository.AbsenceRepository) *AbsenceService {
 	}
 }
 
-func (s *AbsenceService) CheckStudentIsAbsence(studentID, scheduleID uint) error {
-	if result := s.Repo.CheckStudentIsAbsence(studentID, scheduleID); result != 0 {
-		return &response.Error{
-			Code:    403,
-			Message: "Anda Sudah Melakukan Absensi Untuk Jadwal Tersebut",
-		}
-	}
-	return nil
-}
-
-func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
-	schedule, err := s.Repo.FindScheduleByID(scheduleID)
-	if err != nil {
-		return "", &response.Error{
-			Code:    404,
-			Message: "Jadwal tidak ditemukan",
-		}
-	}
+func (s *AbsenceService) CheckSchedule(schedule *domain.Schedule) (string, error) {
 
 	if ok := utils.IsDayEqualTo(schedule.Day); !ok {
 		return "", &response.Error{
@@ -69,64 +54,100 @@ func (s *AbsenceService) CheckSchedule(scheduleID uint) (string, error) {
 	return status, nil
 }
 
-// func (s *AbsenceService) CreateAbsence(absence *domain.Absence, faceImage string) error {
-// 	user, err := s.Repo.FindUserByID(absence.Student.UserID)
-// 	if err != nil {
-// 		return &response.Error{
-// 			Code:    404,
-// 			Message: "User tidak ditemukan",
-// 		}
-// 	}
+func (s *AbsenceService) CreateAbsence(req *request.CreateAbsence, faceImage string) error {
 
-// 	if user.Avatar == nil || *user.Avatar == "default-avatar.jpg" {
-// 		return &response.Error{
-// 			Code:    404,
-// 			Message: "User tidak memiliki avatar, silahkan upload avatar terlebih dahulu",
-// 		}
-// 	}
+	student, err := s.Repo.FindStudentByUuid(req.StudentUuid)
+	if err != nil {
+		return &response.Error{
+			Code:    404,
+			Message: "Santri tidak ditemukan",
+		}
+	}
 
-// 	avatarPath := fmt.Sprintf("internal/assets/avatar/%s", *user.Avatar)
+	schedule, err := s.Repo.FindScheduleByUuid(req.ScheduleUuid)
+	if err != nil {
+		return &response.Error{
+			Code:    404,
+			Message: "Jadwal tidak ditemukan",
+		}
+	}
 
-// 	formAbsence, err := s.CreateFormAbsence(avatarPath, faceImage)
+	if result := s.Repo.CheckStudentIsAbsence(student.ID, schedule.ID); result > 0 {
+		return &response.Error{
+			Code:    403,
+			Message: "Anda Sudah Melakukan Absensi Untuk Jadwal Tersebut",
+		}
+	}
 
-// 	if err != nil {
-// 		return &response.Error{
-// 			Code:    500,
-// 			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
-// 		}
-// 	}
+	status, err := s.CheckSchedule(schedule)
+	if err != nil {
+		return err
+	}
 
-// 	var FLASK = os.Getenv("FLASK_API")
-// 	if FLASK == "" {
-// 		FLASK = "http://127.0.0.1:5000"
-// 	}
+	absence := domain.Absence{
+		Uuid:       uuid.NewString(),
+		StudentID:  student.ID,
+		ScheduleID: schedule.ID,
+		Student:    student,
+		Status:     status,
+	}
 
-// 	url := fmt.Sprintf("%s/compare", FLASK)
+	if student.Image == "default-avatar.jpg" {
+		return &response.Error{
+			Code:    404,
+			Message: "Santri masih menggunakan default avatar",
+		}
+	}
 
-// 	res, err := s.CreatePostRequest(url, formAbsence)
-// 	if err != nil {
-// 		return &response.Error{
-// 			Code:    500,
-// 			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
-// 		}
-// 	}
+	imagePath := fmt.Sprintf("internal/assets/avatar/%s", student.Image)
 
-// 	if !res["matching"] {
-// 		return &response.Error{
-// 			Code:    400,
-// 			Message: "Wajah anda tidak sama dengan yang tersimpan di database",
-// 		}
-// 	}
+	formAbsence, err := s.CreateFormAbsence(imagePath, faceImage)
 
-// 	if err := s.Repo.CreateAbsence(absence); err != nil {
-// 		return &response.Error{
-// 			Code:    500,
-// 			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
-// 		}
-// 	}
+	if err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+		}
+	}
 
-// 	return nil
-// }
+	var FLASK = os.Getenv("FLASK_API")
+	if FLASK == "" {
+		FLASK = "http://localhost:5000"
+	}
+
+	url := fmt.Sprintf("%s/compare", FLASK)
+
+	res, err := s.CreatePostRequest(url, formAbsence)
+	if err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+		}
+	}
+
+	if res["success"] == false {
+		return &response.Error{
+			Code:    400,
+			Message: res["message"].(string),
+		}
+	}
+
+	if !res["matching"].(bool) {
+		return &response.Error{
+			Code:    400,
+			Message: "Wajah anda tidak sama dengan yang tersimpan di database",
+		}
+	}
+
+	if err := s.Repo.CreateAbsence(&absence); err != nil {
+		return &response.Error{
+			Code:    500,
+			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+		}
+	}
+
+	return nil
+}
 
 func (s *AbsenceService) CreateFormAbsence(imageOne, imageTwo string) (*response.FormAbsence, error) {
 	var requestBody bytes.Buffer
@@ -170,7 +191,7 @@ func (s *AbsenceService) CreateFormAbsence(imageOne, imageTwo string) (*response
 	}, nil
 }
 
-func (s *AbsenceService) CreatePostRequest(url string, formAbsence *response.FormAbsence) (map[string]bool, error) {
+func (s *AbsenceService) CreatePostRequest(url string, formAbsence *response.FormAbsence) (map[string]interface{}, error) {
 
 	// Buat permintaan POST
 	request, err := http.NewRequest("POST", url, formAbsence.RequestBody)
@@ -195,7 +216,7 @@ func (s *AbsenceService) CreatePostRequest(url string, formAbsence *response.For
 		return nil, err
 	}
 
-	var data map[string]bool
+	var data map[string]interface{}
 
 	if err := json.Unmarshal(responseBody, &data); err != nil {
 		fmt.Println("Error unmarshalling JSON:", err)

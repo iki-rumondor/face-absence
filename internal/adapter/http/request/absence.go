@@ -1,5 +1,6 @@
 package request
 
 type CreateAbsence struct {
-	ScheduleID uint `json:"schedule_id" valid:"required~field schedule_id is not found"`
+	StudentUuid  string `form:"student_uuid"`
+	ScheduleUuid string `form:"schedule_uuid"`
 }

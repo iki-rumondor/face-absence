@@ -37,7 +37,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		teacher.GET("teacher/classes", middleware.SetUserID(), handlers.ClassHandler.GetTeacherClasses)
 		teacher.GET("teacher/classes/:uuid", middleware.SetUserID(), handlers.ClassHandler.GetClassWithStudents)
 		teacher.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
-		// teacher.POST("absence", middleware.SetUserID(), handlers.AbsenceHandler.CreateAbsence)
+		teacher.POST("absence", handlers.AbsenceHandler.CreateAbsence)
 		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetTeacherSchedules)
 		teacher.GET("schedules/:uuid", handlers.ScheduleHandler.GetScheduleForStudent)
 		teacher.GET("absences/history", middleware.SetUserID(), handlers.AbsenceHandler.GetStudentAbsences)

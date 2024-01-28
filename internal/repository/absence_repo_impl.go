@@ -87,6 +87,21 @@ func (r *AbsenceRepoImplementation) CreateAbsence(model *domain.Absence) error {
 	return r.db.Create(&model).Error
 }
 
+func (r *AbsenceRepoImplementation) FindStudentByUuid(studentUuid string) (*domain.Student, error) {
+	var student domain.Student
+	if err := r.db.First(&student, "uuid = ?", studentUuid).Error; err != nil {
+		return nil, err
+	}
+	return &student, nil
+}
+
+func (r *AbsenceRepoImplementation) FindScheduleByUuid(scheduleUuid string) (*domain.Schedule, error) {
+	var schedule domain.Schedule
+	if err := r.db.First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {
+		return nil, err
+	}
+	return &schedule, nil
+}
 func (r *AbsenceRepoImplementation) CheckStudentIsAbsence(studentID, scheduleID uint) int {
 	return int(r.db.First(&domain.Absence{}, "student_id = ? AND schedule_id = ?", studentID, scheduleID).RowsAffected)
 }

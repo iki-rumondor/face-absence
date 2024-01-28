@@ -22,6 +22,7 @@ type StudentRepository interface {
 	GetStudentsPDF(data []*request.StudentPDFData) (*http.Response, error)
 	CreateBatchStudents(*[]domain.Student, string) error
 	GetFaceEncode(pathFile string) (map[string]interface{}, error)
+	CheckIsFace(pathFile string) (map[string]interface{}, error)
 	
 	FindLatestHistory() (*domain.PdfDownloadHistory, error)
 	CreatePdfHistory(*domain.PdfDownloadHistory) error

@@ -155,28 +155,21 @@ func (s *StudentService) UpdateStudentImage(uuid string, imagePath string) error
 
 	oldImage := student.Image
 
-	// resp, err := s.Repo.GetFaceEncode(imagePath)
-	// if err != nil {
-	// 	return &response.Error{
-	// 		Code:    400,
-	// 		Message: err.Error(),
-	// 	}
-	// }
+	resp, err := s.Repo.CheckIsFace(imagePath)
+	if err != nil {
+		return &response.Error{
+			Code:    400,
+			Message: err.Error(),
+		}
+	}
 
-	// if resp["success"] == false {
-	// 	return &response.Error{
-	// 		Code:    400,
-	// 		Message: resp["message"].(string),
-	// 	}
-	// }
+	if resp["success"] == false {
+		return &response.Error{
+			Code:    400,
+			Message: resp["message"].(string),
+		}
+	}
 
-	// face, err := json.Marshal(resp["face"])
-	// if err != nil {
-	// 	log.Println("Error marshalling JSON:", err)
-	// 	return err
-	// }
-
-	// faceString := string(face)
 
 	if err := s.Repo.UpdateStudentImage(student, imagePath); err != nil {
 		log.Println(err.Error())

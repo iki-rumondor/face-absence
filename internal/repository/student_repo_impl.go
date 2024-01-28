@@ -278,3 +278,61 @@ func (r *StudentRepoImplementation) GetFaceEncode(pathFile string) (map[string]i
 
 	return data, nil
 }
+
+func (r *StudentRepoImplementation) CheckIsFace(pathFile string) (map[string]interface{}, error) {
+	var API_URL = os.Getenv("FLASK_API")
+	if API_URL == "" {
+		API_URL = "http://localhost:5000"
+	}
+
+	endpoint := fmt.Sprintf("%s/check_face", API_URL)
+
+	var requestBody bytes.Buffer
+	writer := multipart.NewWriter(&requestBody)
+
+	file, err := os.Open(filepath.Join("internal/assets/avatar", pathFile))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	fileWriter, err := writer.CreateFormFile("image", pathFile)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.Copy(fileWriter, file)
+	if err != nil {
+		return nil, err
+	}
+
+	writer.Close()
+
+	request, err := http.NewRequest("POST", endpoint, &requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var data map[string]interface{}
+
+	if err := json.Unmarshal(responseBody, &data); err != nil {
+		fmt.Println("Error unmarshalling JSON:", err)
+		return nil, err
+	}
+
+	return data, nil
+}
