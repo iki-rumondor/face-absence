@@ -39,7 +39,7 @@ func IsValidImageSize(size int64) bool {
 func InitCustomValidation() {
 
 	govalidator.TagMap["date"] = govalidator.Validator(func(str string) bool {
-		var dateFormat = "02-01-2006"
+		var dateFormat = "2006-01-02"
 		return IsValidDate(dateFormat, str)
 	})
 }
