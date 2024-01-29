@@ -287,7 +287,8 @@ func (r *StudentRepoImplementation) CheckIsFace(pathFile string) (map[string]int
 	}
 
 	endpoint := fmt.Sprintf("%s/check_face", API_URL)
-
+	log.Println(endpoint)
+	
 	var requestBody bytes.Buffer
 	writer := multipart.NewWriter(&requestBody)
 
