@@ -328,7 +328,7 @@ func (r *StudentRepoImplementation) CheckIsFace(pathFile string) (map[string]int
 		return nil, err
 	}
 
-	log.Println(responseBody)
+	log.Println(string(responseBody))
 	var data map[string]interface{}
 	if err := json.Unmarshal(responseBody, &data); err != nil {
 		fmt.Println("Error unmarshalling JSON:", err)
