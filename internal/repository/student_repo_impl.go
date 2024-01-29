@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"mime/multipart"
 	"net/http"
@@ -328,11 +329,11 @@ func (r *StudentRepoImplementation) CheckIsFace(pathFile string) (map[string]int
 	}
 
 	var data map[string]interface{}
-
 	if err := json.Unmarshal(responseBody, &data); err != nil {
 		fmt.Println("Error unmarshalling JSON:", err)
 		return nil, err
 	}
+	log.Println(data)
 
 	return data, nil
 }

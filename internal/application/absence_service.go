@@ -106,7 +106,7 @@ func (s *AbsenceService) CreateAbsence(req *request.CreateAbsence, faceImage str
 	if err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+			Message: "Gagal Terhubung Dengan Face Recognition",
 		}
 	}
 
@@ -121,7 +121,7 @@ func (s *AbsenceService) CreateAbsence(req *request.CreateAbsence, faceImage str
 	if err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+			Message: "Gagal Terhubung Dengan Face Recognition",
 		}
 	}
 
@@ -142,7 +142,7 @@ func (s *AbsenceService) CreateAbsence(req *request.CreateAbsence, faceImage str
 	if err := s.Repo.CreateAbsence(&absence); err != nil {
 		return &response.Error{
 			Code:    500,
-			Message: "Kesalahan dalam sistem, silahkan hubungi developer",
+			Message: "Gagal Menyimpan Absensi Dalam Database",
 		}
 	}
 
