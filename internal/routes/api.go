@@ -36,7 +36,6 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 	{
 		teacher.GET("teacher/classes", middleware.SetUserID(), handlers.ClassHandler.GetTeacherClasses)
 		teacher.GET("teacher/classes/:uuid", middleware.SetUserID(), handlers.ClassHandler.GetClassWithStudents)
-		teacher.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 		teacher.POST("absence", handlers.AbsenceHandler.CreateAbsence)
 		teacher.GET("schedules", middleware.SetUserID(), handlers.ScheduleHandler.GetTeacherSchedules)
 		teacher.GET("schedules/:uuid", handlers.ScheduleHandler.GetScheduleForStudent)
@@ -45,6 +44,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 
 	user := router.Group("api").Use(middleware.IsValidJWT())
 	{
+		user.PATCH("users/avatar", middleware.SetUserID(), handlers.UserHandler.UpdateAvatar)
 		// user.POST("master/students/import", handlers.StudentHandler.ImportStudentsData)
 		// user.GET("master/students/report", handlers.StudentHandler.CreateReport)
 		user.GET("dashboard", handlers.UserHandler.GetDashboardData)
