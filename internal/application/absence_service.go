@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -124,6 +125,8 @@ func (s *AbsenceService) CreateAbsence(req *request.CreateAbsence, faceImage str
 			Message: "Gagal Terhubung Dengan Face Recognition",
 		}
 	}
+
+	log.Println(res)
 
 	if res["success"] == false {
 		return &response.Error{
