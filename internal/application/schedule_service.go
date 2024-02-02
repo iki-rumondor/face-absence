@@ -102,6 +102,12 @@ func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {
 }
 
 func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
+	schedule, err := s.GetSchedule(model.Uuid)
+	if err != nil{
+		return err
+	}
+
+	model.ID = schedule.ID
 
 	if err := s.Repo.UpdateSchedule(model); err != nil {
 		if utils.IsErrorType(err) {

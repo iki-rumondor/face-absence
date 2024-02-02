@@ -76,7 +76,7 @@ func (r *ScheduleRepoImplementation) CreateSchedule(model *domain.Schedule) erro
 }
 
 func (r *ScheduleRepoImplementation) UpdateSchedule(model *domain.Schedule) error {
-	return r.db.Model(model).Where("uuid = ?", model.ID).Updates(model).Error
+	return r.db.Model(model).Updates(model).Error
 }
 
 func (r *ScheduleRepoImplementation) FindSchedules() (*[]domain.Schedule, error) {

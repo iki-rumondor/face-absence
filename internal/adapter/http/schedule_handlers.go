@@ -157,6 +157,8 @@ func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
 		return
 	}
 
+	
+
 	var students []response.StudentResponse
 
 	for _, item := range *schedule.Class.Students {
