@@ -55,5 +55,9 @@ func (s *UserService) GetDashboardData() (map[string]int64 ,error) {
 		return nil, INTERNAL_ERROR
 	}
 
+	res["admin_woman"] = res["admin"] - res["admin_man"]
+	res["student_woman"] = res["student"] - res["student_man"]
+	res["teacher_woman"] = res["teacher"] - res["teacher_man"]
+
 	return res, nil
 }

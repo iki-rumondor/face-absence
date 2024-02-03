@@ -91,8 +91,30 @@ func (h *UserHandler) GetDashboardData(c *gin.Context) {
 		return
 	}
 
+	stats := map[string]int64{
+		"admin":   result["admin"],
+		"student": result["student"],
+		"teacher": result["teacher"],
+	}
+
+	graph := map[string]interface{}{
+		"admin": map[string]interface{}{
+			"label": []string{"Laki-laki", "Perempuan"},
+			"data":  []int64{result["admin_man"], result["admin_woman"]},
+		},
+		"student": map[string]interface{}{
+			"label": []string{"Laki-laki", "Perempuan"},
+			"data":  []int64{result["student_man"], result["student_woman"]},
+		},
+		"teacher": map[string]interface{}{
+			"label": []string{"Laki-laki", "Perempuan"},
+			"data":  []int64{result["teacher_man"], result["teacher_woman"]},
+		},
+	}
+
 	resp := &response.Dashboard{
-		Stats: result,
+		Stats: stats,
+		Graph: graph,
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{

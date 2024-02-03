@@ -48,6 +48,7 @@ func freshDatabase(db *gorm.DB) error {
 	})
 	db.Create(&domain.Admin{
 		Uuid:   uuid.NewString(),
+		JK:     "LAKI-LAKI",
 		UserID: 1,
 	})
 
@@ -90,7 +91,7 @@ func seederData(db *gorm.DB) error {
 		Nuptk:         "1234567890",
 		StatusPegawai: "AKTIF",
 		Nip:           "987654321223",
-		JK:            "Laki-laki",
+		JK:            "LAKI-LAKI",
 		TempatLahir:   "Jakarta",
 		TanggalLahir:  "1990-01-01",
 		NoHp:          "081234567890",
@@ -105,7 +106,7 @@ func seederData(db *gorm.DB) error {
 		Nuptk:         "1234567890",
 		StatusPegawai: "AKTIF",
 		Nip:           "98765432122",
-		JK:            "Laki-laki",
+		JK:            "LAKI-LAKI",
 		TempatLahir:   "Jakarta",
 		TanggalLahir:  "1990-01-01",
 		NoHp:          "081234567890",

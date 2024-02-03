@@ -11,7 +11,8 @@ type UserData struct {
 }
 
 type Dashboard struct {
-	Stats map[string]int64 `json:"stats"`
+	Stats map[string]int64       `json:"stats"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 type VerifyTokenResponse struct {
