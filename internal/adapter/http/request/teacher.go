@@ -29,5 +29,4 @@ type UpdateTeacher struct {
 	TotalJtm      string `json:"total_jtm" valid:"required~field total_jtm tidak ditemukan"`
 	Alamat        string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
 	Nama          string `json:"nama" valid:"required~field nama tidak ditemukan"`
-	Username      string `json:"username" valid:"required~field username tidak ditemukan"`
 }

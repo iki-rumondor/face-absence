@@ -1,6 +1,10 @@
 package utils
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"log"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 func HashPassword(p string) (string, error) {
 	salt := 8
@@ -14,6 +18,7 @@ func HashPassword(p string) (string, error) {
 }
 
 func ComparePassword(h, p string) error {
+	log.Println(h, p)
 	hash, pass := []byte(h), []byte(p)
 
 	if err := bcrypt.CompareHashAndPassword(hash, pass); err != nil {

@@ -57,6 +57,20 @@ func (r *SchoolFeeRepoImplementation) FindSchoolFeeBy(column string, value inter
 	return &schoolFee, nil
 }
 
+func (r *SchoolFeeRepoImplementation) FindStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
+	var student domain.Student
+	if err := r.db.First(&student, "uuid = ?", studentUuid).Error; err != nil{
+		return nil, err
+	}
+
+	var schoolFee domain.SchoolFee
+	if err := r.db.Preload("Student.Class").First(&schoolFee, "student_id = ?", student.ID).Error; err != nil {
+		return nil, err
+	}
+
+	return &schoolFee, nil
+}
+
 func (r *SchoolFeeRepoImplementation) UpdateSchoolFee(uuid string, req *request.SchoolFee) error {
 	var schoolFee domain.SchoolFee
 	if err := r.db.First(&schoolFee, "uuid = ?", uuid).Error; err != nil {

@@ -2,6 +2,7 @@ package application
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -60,6 +61,23 @@ func (s *SchoolFeeService) GetSchoolFeeByUuid(uuid string) (*domain.SchoolFee, e
 
 	schoolFee, err := s.Repo.FindSchoolFeeBy("uuid", uuid)
 	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return schoolFee, nil
+}
+
+func (s *SchoolFeeService) GetStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
+
+	schoolFee, err := s.Repo.FindStudentSchoolFee(studentUuid)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("SPP Santri dengan uuid %s tidak ditemukan", studentUuid),
+			}
+		}
 		log.Println(err.Error())
 		return nil, INTERNAL_ERROR
 	}

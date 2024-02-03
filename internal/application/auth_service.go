@@ -3,6 +3,7 @@ package application
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -26,7 +27,9 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 
 	// find user from database
 	result, err := s.Repo.FindByUsername(user.Username)
+	log.Println("Usernamenya : " + result.Username)
 	if err != nil {
+		log.Println("Username Salah")
 		return "", &response.Error{
 			Code:    404,
 			Message: "Username atau Password salah",
@@ -61,6 +64,7 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 
 	// verify user password
 	if err := utils.ComparePassword(result.Password, user.Password); err != nil {
+		log.Println("Password salah")
 		return "", &response.Error{
 			Code:    404,
 			Message: "Username atau Password salah",

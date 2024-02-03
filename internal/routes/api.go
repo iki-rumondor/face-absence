@@ -94,6 +94,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.POST("school_fees", handlers.SchoolFeeHandler.CreateSchoolFee)
 		admin.GET("school_fees", handlers.SchoolFeeHandler.GetAllSchoolFees)
 		admin.GET("school_fees/:uuid", handlers.SchoolFeeHandler.GetSchoolFee)
+		admin.GET("school_fees/student/:uuid", handlers.SchoolFeeHandler.GetStudentSchoolFee)
 		admin.PUT("school_fees/:uuid", handlers.SchoolFeeHandler.UpdateSchoolFee)
 		admin.DELETE("school_fees/:uuid", handlers.SchoolFeeHandler.DeleteSchoolFee)
 

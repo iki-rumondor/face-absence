@@ -93,6 +93,48 @@ func (h *SchoolFeeHandler) GetSchoolFee(c *gin.Context) {
 	})
 }
 
+func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
+	uuid := c.Param("uuid")
+	schoolFee, err := h.Service.GetStudentSchoolFee(uuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	res := response.SchoolFee{
+		Uuid:    schoolFee.Uuid,
+		Date:    schoolFee.Date,
+		Nominal: schoolFee.Nominal,
+		Student: &response.StudentResponse{
+			Nama:         schoolFee.Student.Nama,
+			Uuid:         schoolFee.Student.Uuid,
+			JK:           schoolFee.Student.JK,
+			NIS:          schoolFee.Student.NIS,
+			TempatLahir:  schoolFee.Student.TempatLahir,
+			TanggalLahir: schoolFee.Student.TanggalLahir,
+			Alamat:       schoolFee.Student.Alamat,
+			TanggalMasuk: schoolFee.Student.TanggalMasuk,
+			Image:        schoolFee.Student.Image,
+			Class: &response.ClassData{
+				Uuid:      schoolFee.Student.Class.Uuid,
+				Name:      schoolFee.Student.Class.Name,
+				CreatedAt: schoolFee.Student.Class.CreatedAt,
+				UpdatedAt: schoolFee.Student.Class.UpdatedAt,
+			},
+			CreatedAt: schoolFee.Student.CreatedAt,
+			UpdatedAt: schoolFee.Student.UpdatedAt,
+		},
+		CreatedAt: schoolFee.CreatedAt,
+		UpdatedAt: schoolFee.UpdatedAt,
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil mendapatkan SPP",
+		Data:    &res,
+	})
+}
+
 func (h *SchoolFeeHandler) GetAllSchoolFees(c *gin.Context) {
 	urlPath := c.Request.URL.Path
 
