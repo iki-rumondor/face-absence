@@ -26,7 +26,7 @@ func NewAbsenceRepository(db *gorm.DB) AbsenceRepository {
 func (r *AbsenceRepoImplementation) FindAllAbsences() (*[]domain.Absence, error) {
 	var absences []domain.Absence
 	
-	if err := r.db.Preload("Student.Class").Preload("Schedule").Find(&absences).Error; err != nil{
+	if err := r.db.Preload("Student.Class").Preload("Schedule.Subject").Find(&absences).Error; err != nil{
 		return nil, err
 	}
 
