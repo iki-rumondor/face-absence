@@ -30,3 +30,19 @@ type TeacherPDFData struct {
 	Jabatan       string `json:"Jabatan"`
 	TotalJtm      string `json:"Total JTM"`
 }
+
+type AbsencePDFData struct {
+	StudentName string `json:"Nama Siswa"`
+	Class       string `json:"Kelas"`
+	Subject     string `json:"Mata Pelajaran"`
+	Date        string `json:"Tanggal"`
+	Status      string `json:"Status"`
+}
+
+type SchoolFeePDFData struct {
+	StudentName string `json:"Nama Siswa"`
+	Class       string `json:"Kelas"`
+	Date        string `json:"Tanggal"`
+	Month       string `json:"Bulan"`
+	Nominal     string `json:"Status"`
+}

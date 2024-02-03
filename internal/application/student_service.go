@@ -219,7 +219,7 @@ func (s *StudentService) CreateStudentsPDF() ([]byte, error) {
 	if len(*students) == 0 {
 		return nil, &response.Error{
 			Code:    404,
-			Message: "Data Kelas Masih Kosong",
+			Message: "Data Santri Masih Kosong",
 		}
 	}
 

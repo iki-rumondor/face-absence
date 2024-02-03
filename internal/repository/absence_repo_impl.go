@@ -1,6 +1,13 @@
 package repository
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"gorm.io/gorm"
@@ -14,6 +21,16 @@ func NewAbsenceRepository(db *gorm.DB) AbsenceRepository {
 	return &AbsenceRepoImplementation{
 		db: db,
 	}
+}
+
+func (r *AbsenceRepoImplementation) FindAllAbsences() (*[]domain.Absence, error) {
+	var absences []domain.Absence
+	
+	if err := r.db.Preload("Student.Class").Preload("Schedule").Find(&absences).Error; err != nil{
+		return nil, err
+	}
+
+	return &absences, nil
 }
 
 func (r *AbsenceRepoImplementation) FindAbsencePagination(pagination *domain.Pagination) (*domain.Pagination, error) {
@@ -122,4 +139,25 @@ func (r *AbsenceRepoImplementation) FindStudentByUserID(userID uint) (*domain.St
 	}
 
 	return &res, nil
+}
+
+func (r *AbsenceRepoImplementation) GetAbsencesPDF(data []*request.AbsencePDFData) (*http.Response, error) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	var API_URL = os.Getenv("LARAVEL_API")
+	if API_URL == "" {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/generate-pdf/Daftar_Absensi", API_URL)
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

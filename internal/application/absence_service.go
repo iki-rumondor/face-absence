@@ -267,3 +267,45 @@ func (s *AbsenceService) GetAbsencesUser(userID uint) (*[]domain.Absence, error)
 	return result, nil
 
 }
+
+func (s *AbsenceService) CreateAbsencesPDF() ([]byte, error) {
+	absences, err := s.Repo.FindAllAbsences()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(*absences) == 0 {
+		return nil, &response.Error{
+			Code:    404,
+			Message: "Data Absensi Masih Kosong",
+		}
+	}
+
+	var data []*request.AbsencePDFData
+
+	for _, item := range *absences {
+		data = append(data, &request.AbsencePDFData{
+			StudentName: item.Student.Nama,
+			Class:       item.Student.Class.Name,
+			Subject:     item.Schedule.Subject.Name,
+			Date:        item.CreatedAt.Format("dd-mm-YYYY"),
+			Status:      item.Status,
+		})
+	}
+
+	resp, err := s.Repo.GetAbsencesPDF(data)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	defer resp.Body.Close()
+
+	pdfData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return pdfData, nil
+}

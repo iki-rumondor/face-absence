@@ -169,3 +169,16 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 	})
 
 }
+
+func (h *AbsenceHandler) GetAbsencesPDF(c *gin.Context) {
+
+	dataPDF, err := h.Service.CreateAbsencesPDF()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", "attachment; filename=absences.pdf")
+	c.Data(http.StatusOK, "application/pdf", dataPDF)
+}
