@@ -69,9 +69,9 @@ func (s *SchoolFeeService) GetSchoolFeeByUuid(uuid string) (*domain.SchoolFee, e
 	return schoolFee, nil
 }
 
-func (s *SchoolFeeService) GetStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
+func (s *SchoolFeeService) GetStudentSchoolFee(studentUuid string) (*[]domain.SchoolFee, error) {
 
-	schoolFee, err := s.Repo.FindStudentSchoolFee(studentUuid)
+	schoolFees, err := s.Repo.FindStudentSchoolFee(studentUuid)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
@@ -83,7 +83,7 @@ func (s *SchoolFeeService) GetStudentSchoolFee(studentUuid string) (*domain.Scho
 		return nil, INTERNAL_ERROR
 	}
 
-	return schoolFee, nil
+	return schoolFees, nil
 }
 
 func (s *SchoolFeeService) UpdateSchoolFee(uuid string, req *request.SchoolFee) error {

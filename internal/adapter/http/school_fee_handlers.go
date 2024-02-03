@@ -101,31 +101,35 @@ func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
 		return
 	}
 
-	res := response.SchoolFee{
-		Uuid:    schoolFee.Uuid,
-		Date:    schoolFee.Date.Format("02-01-2006"),
-		Nominal: schoolFee.Nominal,
-		Student: &response.StudentResponse{
-			Nama:         schoolFee.Student.Nama,
-			Uuid:         schoolFee.Student.Uuid,
-			JK:           schoolFee.Student.JK,
-			NIS:          schoolFee.Student.NIS,
-			TempatLahir:  schoolFee.Student.TempatLahir,
-			TanggalLahir: schoolFee.Student.TanggalLahir,
-			Alamat:       schoolFee.Student.Alamat,
-			TanggalMasuk: schoolFee.Student.TanggalMasuk,
-			Image:        schoolFee.Student.Image,
-			Class: &response.ClassData{
-				Uuid:      schoolFee.Student.Class.Uuid,
-				Name:      schoolFee.Student.Class.Name,
-				CreatedAt: schoolFee.Student.Class.CreatedAt,
-				UpdatedAt: schoolFee.Student.Class.UpdatedAt,
+	var res []response.SchoolFee
+
+	for _, item := range *schoolFee{
+		res = append(res, response.SchoolFee{
+			Uuid:    item.Uuid,
+			Date:    item.Date.Format("02-01-2006"),
+			Nominal: item.Nominal,
+			Student: &response.StudentResponse{
+				Nama:         item.Student.Nama,
+				Uuid:         item.Student.Uuid,
+				JK:           item.Student.JK,
+				NIS:          item.Student.NIS,
+				TempatLahir:  item.Student.TempatLahir,
+				TanggalLahir: item.Student.TanggalLahir,
+				Alamat:       item.Student.Alamat,
+				TanggalMasuk: item.Student.TanggalMasuk,
+				Image:        item.Student.Image,
+				Class: &response.ClassData{
+					Uuid:      item.Student.Class.Uuid,
+					Name:      item.Student.Class.Name,
+					CreatedAt: item.Student.Class.CreatedAt,
+					UpdatedAt: item.Student.Class.UpdatedAt,
+				},
+				CreatedAt: item.Student.CreatedAt,
+				UpdatedAt: item.Student.UpdatedAt,
 			},
-			CreatedAt: schoolFee.Student.CreatedAt,
-			UpdatedAt: schoolFee.Student.UpdatedAt,
-		},
-		CreatedAt: schoolFee.CreatedAt,
-		UpdatedAt: schoolFee.UpdatedAt,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		})
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{
