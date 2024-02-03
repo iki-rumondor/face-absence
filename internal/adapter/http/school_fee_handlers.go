@@ -238,7 +238,8 @@ func (h *SchoolFeeHandler) DeleteSchoolFee(c *gin.Context) {
 
 func (h *SchoolFeeHandler) GetSchoolFeesPDF(c *gin.Context) {
 
-	dataPDF, err := h.Service.CreateSchoolFeesPDF()
+	studentUuid := c.Param("studentUuid")
+	dataPDF, err := h.Service.CreateSchoolFeesPDF(studentUuid)
 	if err != nil {
 		utils.HandleError(c, err)
 		return

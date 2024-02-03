@@ -25,8 +25,8 @@ func NewAbsenceRepository(db *gorm.DB) AbsenceRepository {
 
 func (r *AbsenceRepoImplementation) FindAllAbsences() (*[]domain.Absence, error) {
 	var absences []domain.Absence
-	
-	if err := r.db.Preload("Student.Class").Preload("Schedule.Subject").Find(&absences).Error; err != nil{
+
+	if err := r.db.Preload("Student.Class").Preload("Schedule.Subject").Find(&absences).Error; err != nil {
 		return nil, err
 	}
 
@@ -114,11 +114,12 @@ func (r *AbsenceRepoImplementation) FindStudentByUuid(studentUuid string) (*doma
 
 func (r *AbsenceRepoImplementation) FindScheduleByUuid(scheduleUuid string) (*domain.Schedule, error) {
 	var schedule domain.Schedule
-	if err := r.db.First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {
+	if err := r.db.Preload("Absences.Student").Preload("Class").Preload("Subject").Preload("SchoolYear").First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {
 		return nil, err
 	}
 	return &schedule, nil
 }
+
 func (r *AbsenceRepoImplementation) CheckStudentIsAbsence(studentID, scheduleID uint) int {
 	return int(r.db.First(&domain.Absence{}, "student_id = ? AND schedule_id = ?", studentID, scheduleID).RowsAffected)
 }
@@ -141,7 +142,7 @@ func (r *AbsenceRepoImplementation) FindStudentByUserID(userID uint) (*domain.St
 	return &res, nil
 }
 
-func (r *AbsenceRepoImplementation) GetAbsencesPDF(data []*request.AbsencePDFData) (*http.Response, error) {
+func (r *AbsenceRepoImplementation) GetAbsencesPDF(data *request.AbsencePDFData) (*http.Response, error) {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -152,7 +153,7 @@ func (r *AbsenceRepoImplementation) GetAbsencesPDF(data []*request.AbsencePDFDat
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/generate-pdf/Daftar_Absensi", API_URL)
+	url := fmt.Sprintf("%s/absence-pdf", API_URL)
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {

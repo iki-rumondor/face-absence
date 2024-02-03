@@ -30,7 +30,7 @@ func (r *SchoolFeeRepoImplementation) CreateSchoolFee(req *request.SchoolFee) er
 	}
 
 	date, err := utils.FormatToTime(req.Date, "2006-01-02")
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -93,7 +93,7 @@ func (r *SchoolFeeRepoImplementation) UpdateSchoolFee(uuid string, req *request.
 	}
 
 	date, err := utils.FormatToTime(req.Date, "2006-01-02")
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -116,7 +116,7 @@ func (r *SchoolFeeRepoImplementation) DeleteSchoolFee(uuid string) error {
 	return r.db.Delete(&schoolFee).Error
 }
 
-func (r *SchoolFeeRepoImplementation) GetSchoolFeesPDF(data []*request.SchoolFeePDFData) (*http.Response, error) {
+func (r *SchoolFeeRepoImplementation) GetSchoolFeesPDF(data *request.SchoolFeePDFData) (*http.Response, error) {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func (r *SchoolFeeRepoImplementation) GetSchoolFeesPDF(data []*request.SchoolFee
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/generate-pdf/Daftar_Pembayaran_SPP", API_URL)
+	url := fmt.Sprintf("%s/school-fee-pdf", API_URL)
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {

@@ -124,8 +124,8 @@ func (s *SchoolFeeService) DeleteSchoolFee(uuid string) error {
 	return nil
 }
 
-func (s *SchoolFeeService) CreateSchoolFeesPDF() ([]byte, error) {
-	schoolFees, err := s.Repo.FindAllSchoolFees(0, 0)
+func (s *SchoolFeeService) CreateSchoolFeesPDF(studentUuid string) ([]byte, error) {
+	schoolFees, err := s.Repo.FindStudentSchoolFee(studentUuid)
 	if err != nil {
 		return nil, err
 	}
@@ -137,20 +137,26 @@ func (s *SchoolFeeService) CreateSchoolFeesPDF() ([]byte, error) {
 		}
 	}
 
-	var data []*request.SchoolFeePDFData
+	var fee []request.SchoolFeeData
+	var name, class string
 
 	for _, item := range *schoolFees {
-		data = append(data, &request.SchoolFeePDFData{
-
-			StudentName: item.Student.Nama,
-			Class:       item.Student.Class.Name,
+		name = item.Student.Nama
+		class = item.Student.Class.Name
+		fee = append(fee, request.SchoolFeeData{
 			Nominal:     item.Nominal,
 			Date:        item.Date.Format("02-01-2006"),
 			Month:       utils.GetBulanIndonesia(item.Date.Format("01")),
 		})
 	}
 
-	resp, err := s.Repo.GetSchoolFeesPDF(data)
+	data := request.SchoolFeePDFData{
+		StudentName: name,
+		Class: class,
+		SchoolFeeData: fee,
+	}
+
+	resp, err := s.Repo.GetSchoolFeesPDF(&data)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, INTERNAL_ERROR

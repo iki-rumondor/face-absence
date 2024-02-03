@@ -171,8 +171,9 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 }
 
 func (h *AbsenceHandler) GetAbsencesPDF(c *gin.Context) {
-
-	dataPDF, err := h.Service.CreateAbsencesPDF()
+	scheduleUuid := c.Param("scheduleUuid")
+	
+	dataPDF, err := h.Service.CreateAbsencesPDF(scheduleUuid)
 	if err != nil {
 		utils.HandleError(c, err)
 		return

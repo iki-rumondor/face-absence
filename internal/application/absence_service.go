@@ -268,32 +268,38 @@ func (s *AbsenceService) GetAbsencesUser(userID uint) (*[]domain.Absence, error)
 
 }
 
-func (s *AbsenceService) CreateAbsencesPDF() ([]byte, error) {
-	absences, err := s.Repo.FindAllAbsences()
+func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid string) ([]byte, error) {
+	schedule, err := s.Repo.FindScheduleByUuid(scheduleUuid)
 	if err != nil {
-		return nil, err
-	}
-
-	if len(*absences) == 0 {
-		return nil, &response.Error{
-			Code:    404,
-			Message: "Data Absensi Masih Kosong",
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: "Jadwal Tidak Ditemukan",
+			}
 		}
+		return nil, INTERNAL_ERROR
 	}
 
-	var data []*request.AbsencePDFData
+	var students []request.StudentsAbsence
 
-	for _, item := range *absences {
-		data = append(data, &request.AbsencePDFData{
-			StudentName: item.Student.Nama,
-			Class:       item.Student.Class.Name,
-			Subject:     item.Schedule.Subject.Name,
-			Date:        item.CreatedAt.Format("02-01-2006"),
-			Status:      item.Status,
+	for _, item := range *schedule.Absences {
+		students = append(students, request.StudentsAbsence{
+			Nis:        item.Student.NIS,
+			Nama:       item.Student.Nama,
+			Keterangan: item.Status,
 		})
 	}
 
-	resp, err := s.Repo.GetAbsencesPDF(data)
+	var data = request.AbsencePDFData{
+		Date:            schedule.Day,
+		Time:            fmt.Sprintf("%s - %s", schedule.Start, schedule.End),
+		Class:           schedule.Class.Name,
+		Subject:         schedule.Subject.Name,
+		SchoolYear:      schedule.SchoolYear.Name,
+		StudentsAbsence: students,
+	}
+
+	resp, err := s.Repo.GetAbsencesPDF(&data)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, INTERNAL_ERROR

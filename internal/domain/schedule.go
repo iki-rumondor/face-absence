@@ -16,6 +16,7 @@ type Schedule struct {
 	Class        *Class
 	Subject      *Subject
 	SchoolYear   *SchoolYear
+	Absences     *[]Absence
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

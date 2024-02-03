@@ -17,7 +17,7 @@ type AbsenceRepository interface {
 	FindScheduleByID(uint) (*domain.Schedule, error)
 	CreateAbsence(*domain.Absence) error
 	FindAbsencesStudent(studentID uint) (*[]domain.Absence, error)
-	GetAbsencesPDF(data []*request.AbsencePDFData) (*http.Response, error)
+	GetAbsencesPDF(data *request.AbsencePDFData) (*http.Response, error)
 
 	FindStudentByUserID(userID uint) (*domain.Student, error)
 }

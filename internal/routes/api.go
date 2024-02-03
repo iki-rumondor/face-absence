@@ -56,6 +56,8 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		user.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
 		user.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
 		user.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
+		user.GET("pdf/absences/:scheduleUuid", handlers.AbsenceHandler.GetAbsencesPDF)
+		user.GET("pdf/school-fees/:studentUuid", handlers.SchoolFeeHandler.GetSchoolFeesPDF)
 	}
 
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsRole("ADMIN"))
@@ -103,8 +105,6 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.GET("pdf/classes", handlers.ClassHandler.GetClassPDF)
 		admin.GET("pdf/students", handlers.StudentHandler.GetStudentsPDF)
 		admin.GET("pdf/teachers", handlers.TeacherHandler.GetTeachersPDF)
-		admin.GET("pdf/absences", handlers.AbsenceHandler.GetAbsencesPDF)
-		admin.GET("pdf/school-fees", handlers.SchoolFeeHandler.GetSchoolFeesPDF)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
 	}
 
