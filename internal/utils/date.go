@@ -37,6 +37,25 @@ func GetHariIndonesia(englishDay string) string {
 	return hariMapping[englishDay]
 }
 
+func GetBulanIndonesia(month string) string {
+	bulanMapping := map[string]string{
+		"01": "Januari",
+		"02": "Februari",
+		"03": "Maret",
+		"04": "April",
+		"05": "Mei",
+		"06": "Juni",
+		"07": "Juli",
+		"08": "Agustus",
+		"09": "September",
+		"10": "Oktober",
+		"11": "November",
+		"12": "Desember",
+	}
+
+	return bulanMapping[month]
+}
+
 func IsDayEqualTo(dayString string) bool {
 	hariInggris := time.Now().Weekday().String()
 	hariIndonesia := GetHariIndonesia(hariInggris)
@@ -81,7 +100,7 @@ func IsAfterTime(targetTime string) bool {
 	return witaTime.After(timeFormat)
 }
 
-func IsValidDate(format, value string) bool{
+func IsValidDate(format, value string) bool {
 	_, err := time.Parse(format, value)
 	return err == nil
 }

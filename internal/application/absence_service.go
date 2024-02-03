@@ -288,7 +288,7 @@ func (s *AbsenceService) CreateAbsencesPDF() ([]byte, error) {
 			StudentName: item.Student.Nama,
 			Class:       item.Student.Class.Name,
 			Subject:     item.Schedule.Subject.Name,
-			Date:        item.CreatedAt.Format("dd-mm-YYYY"),
+			Date:        item.CreatedAt.Format("02-01-2006"),
 			Status:      item.Status,
 		})
 	}

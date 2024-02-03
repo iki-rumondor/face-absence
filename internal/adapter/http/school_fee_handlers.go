@@ -61,7 +61,7 @@ func (h *SchoolFeeHandler) GetSchoolFee(c *gin.Context) {
 
 	res := response.SchoolFee{
 		Uuid:    schoolFee.Uuid,
-		Date:    schoolFee.Date,
+		Date:    schoolFee.Date.Format("02-01-2006"),
 		Nominal: schoolFee.Nominal,
 		Student: &response.StudentResponse{
 			Nama:         schoolFee.Student.Nama,
@@ -103,7 +103,7 @@ func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
 
 	res := response.SchoolFee{
 		Uuid:    schoolFee.Uuid,
-		Date:    schoolFee.Date,
+		Date:    schoolFee.Date.Format("02-01-2006"),
 		Nominal: schoolFee.Nominal,
 		Student: &response.StudentResponse{
 			Nama:         schoolFee.Student.Nama,
@@ -152,7 +152,7 @@ func (h *SchoolFeeHandler) GetAllSchoolFees(c *gin.Context) {
 	for _, item := range *schoolFees {
 		rows = append(rows, response.SchoolFee{
 			Uuid:    item.Uuid,
-			Date:    item.Date,
+			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
 			Student: &response.StudentResponse{
 				Nama:         item.Student.Nama,
@@ -230,4 +230,17 @@ func (h *SchoolFeeHandler) DeleteSchoolFee(c *gin.Context) {
 		Success: true,
 		Message: "Berhasil menghapus data SPP",
 	})
+}
+
+func (h *SchoolFeeHandler) GetSchoolFeesPDF(c *gin.Context) {
+
+	dataPDF, err := h.Service.CreateSchoolFeesPDF()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", "attachment; filename=absences.pdf")
+	c.Data(http.StatusOK, "application/pdf", dataPDF)
 }

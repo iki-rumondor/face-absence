@@ -8,10 +8,10 @@ import (
 )
 
 type SchoolFee struct {
-	ID        uint   `gorm:"primaryKey"`
-	Uuid      string `gorm:"not_null; unique;"`
-	Date      string `gorm:"not_null; varchar(20)"`
-	Nominal   int    `gorm:"not_null; varchar(10)"`
+	ID        uint      `gorm:"primaryKey"`
+	Uuid      string    `gorm:"not_null;unique;"`
+	Date      time.Time `gorm:"not_null;type:date"`
+	Nominal   int       `gorm:"not_null;varchar(10)"`
 	StudentID uint
 	Student   *Student
 	CreatedAt time.Time

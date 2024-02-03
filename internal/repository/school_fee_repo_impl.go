@@ -1,10 +1,15 @@
 package repository
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
+	"github.com/iki-rumondor/init-golang-service/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -24,8 +29,13 @@ func (r *SchoolFeeRepoImplementation) CreateSchoolFee(req *request.SchoolFee) er
 		return err
 	}
 
+	date, err := utils.FormatToTime(req.Date, "2006-01-02")
+	if err != nil{
+		return err
+	}
+
 	schoolFee := domain.SchoolFee{
-		Date:      req.Date,
+		Date:      date,
 		Nominal:   req.Nominal,
 		StudentID: student.ID,
 	}
@@ -59,7 +69,7 @@ func (r *SchoolFeeRepoImplementation) FindSchoolFeeBy(column string, value inter
 
 func (r *SchoolFeeRepoImplementation) FindStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
 	var student domain.Student
-	if err := r.db.First(&student, "uuid = ?", studentUuid).Error; err != nil{
+	if err := r.db.First(&student, "uuid = ?", studentUuid).Error; err != nil {
 		return nil, err
 	}
 
@@ -82,9 +92,14 @@ func (r *SchoolFeeRepoImplementation) UpdateSchoolFee(uuid string, req *request.
 		return err
 	}
 
+	date, err := utils.FormatToTime(req.Date, "2006-01-02")
+	if err != nil{
+		return err
+	}
+
 	model := domain.SchoolFee{
 		ID:        schoolFee.ID,
-		Date:      req.Date,
+		Date:      date,
 		Nominal:   req.Nominal,
 		StudentID: student.ID,
 	}
@@ -99,4 +114,25 @@ func (r *SchoolFeeRepoImplementation) DeleteSchoolFee(uuid string) error {
 	}
 
 	return r.db.Delete(&schoolFee).Error
+}
+
+func (r *SchoolFeeRepoImplementation) GetSchoolFeesPDF(data []*request.SchoolFeePDFData) (*http.Response, error) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	var API_URL = os.Getenv("LARAVEL_API")
+	if API_URL == "" {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/generate-pdf/Daftar_Pembayaran_SPP", API_URL)
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

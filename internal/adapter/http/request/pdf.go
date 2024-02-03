@@ -44,5 +44,5 @@ type SchoolFeePDFData struct {
 	Class       string `json:"Kelas"`
 	Date        string `json:"Tanggal"`
 	Month       string `json:"Bulan"`
-	Nominal     string `json:"Status"`
+	Nominal     int    `json:"Nominal"`
 }

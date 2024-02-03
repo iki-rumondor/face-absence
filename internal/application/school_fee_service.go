@@ -3,6 +3,7 @@ package application
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -121,4 +122,47 @@ func (s *SchoolFeeService) DeleteSchoolFee(uuid string) error {
 	}
 
 	return nil
+}
+
+func (s *SchoolFeeService) CreateSchoolFeesPDF() ([]byte, error) {
+	schoolFees, err := s.Repo.FindAllSchoolFees(0, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(*schoolFees) == 0 {
+		return nil, &response.Error{
+			Code:    404,
+			Message: "Data SPP Masih Kosong",
+		}
+	}
+
+	var data []*request.SchoolFeePDFData
+
+	for _, item := range *schoolFees {
+		data = append(data, &request.SchoolFeePDFData{
+
+			StudentName: item.Student.Nama,
+			Class:       item.Student.Class.Name,
+			Nominal:     item.Nominal,
+			Date:        item.Date.Format("02-01-2006"),
+			Month:       utils.GetBulanIndonesia(item.Date.Format("01")),
+		})
+	}
+
+	resp, err := s.Repo.GetSchoolFeesPDF(data)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	defer resp.Body.Close()
+
+	pdfData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return pdfData, nil
 }
