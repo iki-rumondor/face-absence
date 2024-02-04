@@ -113,6 +113,16 @@ func (r *AbsenceRepoImplementation) FindStudentByUuid(studentUuid string) (*doma
 	return &student, nil
 }
 
+func (r *AbsenceRepoImplementation) FindAbsenceByDate(scheduleID uint, date string) (*[]domain.Absence, error) {
+	var res []domain.Absence
+
+	if err := r.db.Preload("Student").Find(&res, "schedule_id = ? AND DATE(created_at) = ?", scheduleID, date).Error; err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (r *AbsenceRepoImplementation) FindScheduleByUuid(scheduleUuid string) (*domain.Schedule, error) {
 	var schedule domain.Schedule
 	if err := r.db.Preload("Absences.Student").Preload("Class.Students").Preload("Subject").Preload("SchoolYear").First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {

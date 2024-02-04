@@ -268,7 +268,7 @@ func (s *AbsenceService) GetAbsencesUser(userID uint) (*[]domain.Absence, error)
 
 }
 
-func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid string) ([]byte, error) {
+func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, date string) ([]byte, error) {
 	schedule, err := s.Repo.FindScheduleByUuid(scheduleUuid)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -280,11 +280,16 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid string) ([]byte, error) 
 		return nil, INTERNAL_ERROR
 	}
 
+	absences, err := s.Repo.FindAbsenceByDate(schedule.ID, date)
+	if err != nil {
+		return nil, INTERNAL_ERROR
+	}
+
 	var students []request.StudentsAbsence
 
 	for _, item := range *schedule.Class.Students {
 		status := "TANPA KETERANGAN"
-		for _, abs := range *schedule.Absences {
+		for _, abs := range *absences {
 			if abs.Student.ID == item.ID {
 				status = abs.Status
 			}
@@ -299,7 +304,7 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid string) ([]byte, error) 
 	}
 
 	var data = request.AbsencePDFData{
-		Date:            schedule.Day,
+		Date:            date,
 		Time:            fmt.Sprintf("%s - %s", schedule.Start, schedule.End),
 		Class:           schedule.Class.Name,
 		Subject:         schedule.Subject.Name,
