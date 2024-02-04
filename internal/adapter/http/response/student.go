@@ -18,6 +18,21 @@ type StudentResponse struct {
 	UpdatedAt    time.Time          `json:"updated_at"`
 }
 
+type StudentAbsenceResponse struct {
+	Nama          string    `json:"nama"`
+	Uuid          string    `json:"uuid"`
+	NIS           string    `json:"nis"`
+	JK            string    `json:"jk"`
+	TempatLahir   string    `json:"tempat_lahir"`
+	TanggalLahir  string    `json:"tanggal_lahir"`
+	Alamat        string    `json:"alamat"`
+	TanggalMasuk  string    `json:"tanggal_masuk"`
+	Image         string    `json:"image"`
+	StatusAbsence string    `json:"absence_status"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
 type TeacherStudents struct {
 	Nama         string    `json:"nama"`
 	Uuid         string    `json:"uuid"`

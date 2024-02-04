@@ -148,43 +148,56 @@ func (h *ScheduleHandler) GetAllSchedules(c *gin.Context) {
 
 }
 
-func (h *ScheduleHandler) GetScheduleForStudent(c *gin.Context) {
+func (h *ScheduleHandler) GetScheduleByUuid(c *gin.Context) {
 
 	uuid := c.Param("uuid")
-	schedule, err := h.Service.GetSchedule(uuid)
+
+	date := c.DefaultQuery("date", "")
+	if date == "" {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "Query Date Tidak Ditemukan",
+		})
+		return
+	}
+
+	if !utils.IsValidDateFormat(date) {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: "Format Date Harus YYYY-MM-DD",
+		})
+		return
+	}
+
+	schedule, absence, err := h.Service.GetScheduleByDate(uuid, date)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
-	
-
-	var students []response.StudentResponse
+	var students []response.StudentAbsenceResponse
 
 	for _, item := range *schedule.Class.Students {
-		var absences []response.AbsenceResponse
-		for _, item := range *item.Absences {
-			absences = append(absences, response.AbsenceResponse{
-				Uuid:      item.Uuid,
-				Status:    item.Status,
-				CreatedAt: item.CreatedAt,
-				UpdatedAt: item.UpdatedAt,
-			})
+		status := "TANPA KETERANGAN"
+		for _, abs := range *absence {
+			if item.ID == abs.StudentID {
+				status = abs.Status
+			}
 		}
 
-		students = append(students, response.StudentResponse{
-			Uuid:         item.Uuid,
-			Nama:         item.Nama,
-			JK:           item.JK,
-			NIS:          item.NIS,
-			TempatLahir:  item.TempatLahir,
-			TanggalLahir: item.TanggalLahir,
-			Alamat:       item.Alamat,
-			TanggalMasuk: item.TanggalMasuk,
-			Image:        item.Image,
-			Absence:      &absences,
-			CreatedAt:    item.CreatedAt,
-			UpdatedAt:    item.UpdatedAt,
+		students = append(students, response.StudentAbsenceResponse{
+			Uuid:          item.Uuid,
+			Nama:          item.Nama,
+			JK:            item.JK,
+			NIS:           item.NIS,
+			TempatLahir:   item.TempatLahir,
+			TanggalLahir:  item.TanggalLahir,
+			Alamat:        item.Alamat,
+			TanggalMasuk:  item.TanggalMasuk,
+			Image:         item.Image,
+			StatusAbsence: status,
+			CreatedAt:     item.CreatedAt,
+			UpdatedAt:     item.UpdatedAt,
 		})
 	}
 

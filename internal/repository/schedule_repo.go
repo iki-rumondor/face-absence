@@ -8,6 +8,7 @@ type ScheduleRepository interface {
 	FindSchedules() (*[]domain.Schedule, error)
 	FindSchedulesByClass(classID uint) (*[]domain.Schedule, error)
 	FindScheduleByUuid(string) (*domain.Schedule, error)
+	FindAbsenceByDate(scheduleID uint, date string) (*[]domain.Absence, error)
 	UpdateSchedule(*domain.Schedule) error
 	DeleteSchedule(*domain.Schedule) error
 

@@ -137,6 +137,7 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 			Status: item.Status,
 			Student: &response.StudentResponse{
 				Uuid:         item.Student.Uuid,
+				Nama:         item.Student.Nama,
 				JK:           item.Student.JK,
 				NIS:          item.Student.NIS,
 				TempatLahir:  item.Student.TempatLahir,
@@ -172,7 +173,7 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 
 func (h *AbsenceHandler) GetAbsencesPDF(c *gin.Context) {
 	scheduleUuid := c.Param("scheduleUuid")
-	
+
 	dataPDF, err := h.Service.CreateAbsencesPDF(scheduleUuid)
 	if err != nil {
 		utils.HandleError(c, err)

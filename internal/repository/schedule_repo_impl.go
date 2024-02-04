@@ -106,6 +106,16 @@ func (r *ScheduleRepoImplementation) FindScheduleByUuid(uuid string) (*domain.Sc
 	return &res, nil
 }
 
+func (r *ScheduleRepoImplementation) FindAbsenceByDate(scheduleID uint, date string) (*[]domain.Absence, error) {
+	var res []domain.Absence
+
+	if err := r.db.Preload("Student").Find(&res, "schedule_id = ? AND DATE(created_at) = ?", scheduleID, date).Error; err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (r *ScheduleRepoImplementation) DeleteSchedule(model *domain.Schedule) error {
 	return r.db.Delete(&model, "uuid = ?", model.Uuid).Error
 }

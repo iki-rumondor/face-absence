@@ -101,9 +101,25 @@ func (s *ScheduleService) GetSchedule(uuid string) (*domain.Schedule, error) {
 	return result, nil
 }
 
+func (s *ScheduleService) GetScheduleByDate(uuid, day string) (*domain.Schedule, *[]domain.Absence, error) {
+
+	schedule, err := s.GetSchedule(uuid)
+	if err != nil {
+		return nil, nil, err
+	}
+
+
+	absence, err := s.Repo.FindAbsenceByDate(schedule.ID, day)
+	if err != nil {
+		return nil, nil, INTERNAL_ERROR
+	}
+
+	return schedule, absence, nil
+}
+
 func (s *ScheduleService) UpdateSchedule(model *domain.Schedule) error {
 	schedule, err := s.GetSchedule(model.Uuid)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 

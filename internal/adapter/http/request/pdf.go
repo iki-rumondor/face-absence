@@ -45,6 +45,7 @@ type StudentsAbsence struct {
 	Nis        string `json:"nis"`
 	Nama       string `json:"nama"`
 	Keterangan string `json:"keterangan"`
+	Waktu      string `json:"waktu_absensi"`
 }
 
 type SchoolFeePDFData struct {

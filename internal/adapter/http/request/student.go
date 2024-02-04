@@ -7,7 +7,7 @@ type CreateStudent struct {
 	TempatLahir  string `json:"tempat_lahir" valid:"required~field tempat_lahir tidak ditemukan"`
 	TanggalLahir string `json:"tanggal_lahir" valid:"required~field tanggal_lahir tidak ditemukan"`
 	Alamat       string `json:"alamat" valid:"required~field alamat tidak ditemukan"`
-	TanggalMasuk string `json:"tanggal_masuk" valid:"required~field tanggal_masuk tidak ditemukan, date~format tanggal DD-MM-YYYY"`
+	TanggalMasuk string `json:"tanggal_masuk" valid:"required~field tanggal_masuk tidak ditemukan, date~format tanggal masuk YYYY-MM-DD"`
 	ClassUuid    string `json:"class_uuid" valid:"required~field class_uuid tidak ditemukan"`
 }
 

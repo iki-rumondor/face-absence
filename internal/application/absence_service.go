@@ -282,11 +282,19 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid string) ([]byte, error) 
 
 	var students []request.StudentsAbsence
 
-	for _, item := range *schedule.Absences {
+	for _, item := range *schedule.Class.Students {
+		status := "TANPA KETERANGAN"
+		for _, abs := range *schedule.Absences {
+			if abs.Student.ID == item.ID {
+				status = abs.Status
+			}
+		}
+
 		students = append(students, request.StudentsAbsence{
-			Nis:        item.Student.NIS,
-			Nama:       item.Student.Nama,
-			Keterangan: item.Status,
+			Nis:        item.NIS,
+			Nama:       item.Nama,
+			Keterangan: status,
+			Waktu:      item.CreatedAt.Format("02-01-2006"),
 		})
 	}
 

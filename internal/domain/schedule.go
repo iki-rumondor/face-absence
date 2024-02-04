@@ -17,6 +17,7 @@ type Schedule struct {
 	Subject      *Subject
 	SchoolYear   *SchoolYear
 	Absences     *[]Absence
+	// Students     []Student `gorm:"many2many:student_schedules;"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

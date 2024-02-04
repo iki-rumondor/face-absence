@@ -21,5 +21,6 @@ func RegisterModels() []Model {
 		{Model: domain.TeacherSubjects{}},
 		{Model: domain.SchoolFee{}},
 		{Model: domain.StudentFace{}},
+		{Model: domain.StudentSchedules{}},
 	}
 }

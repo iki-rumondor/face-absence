@@ -58,6 +58,7 @@ func (r *AbsenceRepoImplementation) FindAbsencePagination(pagination *domain.Pag
 			Status: item.Status,
 			Student: &response.StudentResponse{
 				Uuid:         item.Student.Uuid,
+				Nama:         item.Student.Nama,
 				JK:           item.Student.JK,
 				NIS:          item.Student.NIS,
 				TempatLahir:  item.Student.TempatLahir,
@@ -114,7 +115,7 @@ func (r *AbsenceRepoImplementation) FindStudentByUuid(studentUuid string) (*doma
 
 func (r *AbsenceRepoImplementation) FindScheduleByUuid(scheduleUuid string) (*domain.Schedule, error) {
 	var schedule domain.Schedule
-	if err := r.db.Preload("Absences.Student").Preload("Class").Preload("Subject").Preload("SchoolYear").First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {
+	if err := r.db.Preload("Absences.Student").Preload("Class.Students").Preload("Subject").Preload("SchoolYear").First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {
 		return nil, err
 	}
 	return &schedule, nil
