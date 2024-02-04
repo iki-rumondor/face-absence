@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -26,14 +27,39 @@ func NewSchoolFeeService(repo repository.SchoolFeeRepository) *SchoolFeeService 
 
 func (s *SchoolFeeService) CreateSchoolFee(req *request.SchoolFee) error {
 
-	if err := s.Repo.CreateSchoolFee(req); err != nil {
-		log.Println(err.Error())
+	student, err := s.Repo.FindStudentByUuid(req.StudentUuid)
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
 				Message: "Siswa dengan uuid yang dimasukkan tidak ditemukan",
 			}
 		}
+		return INTERNAL_ERROR
+	}
+
+	dateParts := strings.Split(req.Date, "-")
+
+	if result := s.Repo.CountStudentSchoolFee(student.ID, dateParts[0], dateParts[1]); result > 0 {
+		return &response.Error{
+			Code:    400,
+			Message: "Santri Sudah Melakukan Pembayaran SPP Pada Bulan Ini",
+		}
+	}
+
+	date, err := utils.FormatToTime(req.Date, "2006-01-02")
+	if err != nil {
+		return err
+	}
+
+	model := domain.SchoolFee{
+		Date:      date,
+		Nominal:   req.Nominal,
+		StudentID: student.ID,
+	}
+
+	if err := s.Repo.CreateSchoolFee(&model); err != nil {
+		log.Println(err.Error())
 		return INTERNAL_ERROR
 	}
 
@@ -93,7 +119,7 @@ func (s *SchoolFeeService) UpdateSchoolFee(uuid string, req *request.SchoolFee) 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
-				Message: "Siswa dengan uuid yang dimasukkan tidak ditemukan",
+				Message: "Data Tidak Ditemukan",
 			}
 		}
 		return INTERNAL_ERROR
@@ -109,7 +135,7 @@ func (s *SchoolFeeService) DeleteSchoolFee(uuid string) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &response.Error{
 				Code:    404,
-				Message: "Siswa dengan uuid yang dimasukkan tidak ditemukan",
+				Message: "Data tidak ditemukan",
 			}
 		}
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
@@ -144,15 +170,15 @@ func (s *SchoolFeeService) CreateSchoolFeesPDF(studentUuid string) ([]byte, erro
 		name = item.Student.Nama
 		class = item.Student.Class.Name
 		fee = append(fee, request.SchoolFeeData{
-			Nominal:     item.Nominal,
-			Date:        item.Date.Format("02-01-2006"),
-			Month:       utils.GetBulanIndonesia(item.Date.Format("01")),
+			Nominal: item.Nominal,
+			Date:    item.Date.Format("02-01-2006"),
+			Month:   utils.GetBulanIndonesia(item.Date.Format("01")),
 		})
 	}
 
 	data := request.SchoolFeePDFData{
-		StudentName: name,
-		Class: class,
+		StudentName:   name,
+		Class:         class,
 		SchoolFeeData: fee,
 	}
 

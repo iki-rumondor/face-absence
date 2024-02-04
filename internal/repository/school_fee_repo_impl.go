@@ -23,24 +23,8 @@ func NewSchoolFeeRepository(db *gorm.DB) SchoolFeeRepository {
 	}
 }
 
-func (r *SchoolFeeRepoImplementation) CreateSchoolFee(req *request.SchoolFee) error {
-	var student domain.Student
-	if err := r.db.First(&student, "uuid = ?", req.StudentUuid).Error; err != nil {
-		return err
-	}
-
-	date, err := utils.FormatToTime(req.Date, "2006-01-02")
-	if err != nil {
-		return err
-	}
-
-	schoolFee := domain.SchoolFee{
-		Date:      date,
-		Nominal:   req.Nominal,
-		StudentID: student.ID,
-	}
-
-	return r.db.Create(&schoolFee).Error
+func (r *SchoolFeeRepoImplementation) CreateSchoolFee(model *domain.SchoolFee) error {
+	return r.db.Create(&model).Error
 }
 
 func (r *SchoolFeeRepoImplementation) FindAllSchoolFees(limit, offset int) (*[]domain.SchoolFee, error) {
@@ -135,4 +119,15 @@ func (r *SchoolFeeRepoImplementation) GetSchoolFeesPDF(data *request.SchoolFeePD
 	}
 
 	return resp, nil
+}
+
+func (r *SchoolFeeRepoImplementation) FindStudentByUuid(uuid string) (*domain.Student, error) {
+	var result domain.Student
+	if err := r.db.First(&result, "uuid = ?", uuid).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+func (r *SchoolFeeRepoImplementation) CountStudentSchoolFee(studentID uint, month, year string) int {
+	return int(r.db.First(&domain.SchoolFee{}, "student_id = ? AND YEAR(date) = ? AND MONTH(date) = ?", studentID, month, year).RowsAffected)
 }
