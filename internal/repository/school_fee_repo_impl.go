@@ -115,10 +115,10 @@ func (r *SchoolFeeRepoImplementation) UpdateSchoolFee(uuid string, req *request.
 	}
 
 	model := domain.SchoolFee{
-		ID:    schoolFee.ID,
-		Date:  date,
-		Month: req.Month,
-		// Nominal:   req.Nominal,
+		ID:           schoolFee.ID,
+		Date:         date,
+		Month:        req.Month,
+		Status:       req.Status,
 		StudentID:    student.ID,
 		SchoolYearID: sy.ID,
 	}

@@ -64,6 +64,7 @@ func (h *SchoolFeeHandler) GetSchoolFee(c *gin.Context) {
 		Date:    schoolFee.Date.Format("02-01-2006"),
 		Nominal: schoolFee.Nominal,
 		Month:   schoolFee.Month,
+		Status:  schoolFee.Status,
 		SchoolYear: &response.SchoolYearResponse{
 			Uuid: schoolFee.SchoolYear.Uuid,
 			Name: schoolFee.SchoolYear.Name,
@@ -114,6 +115,7 @@ func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
 			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
 			Month:   item.Month,
+			Status:  item.Status,
 			SchoolYear: &response.SchoolYearResponse{
 				Uuid: item.SchoolYear.Uuid,
 				Name: item.SchoolYear.Name,
@@ -165,6 +167,7 @@ func (h *SchoolFeeHandler) GetBySchoolYear(c *gin.Context) {
 			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
 			Month:   item.Month,
+			Status:  item.Status,
 			SchoolYear: &response.SchoolYearResponse{
 				Uuid: item.SchoolYear.Uuid,
 				Name: item.SchoolYear.Name,
@@ -213,6 +216,7 @@ func (h *SchoolFeeHandler) GetNewStudentSchoolFee(c *gin.Context) {
 		Date:    result.Date.Format("02-01-2006"),
 		Nominal: result.Nominal,
 		Month:   result.Month,
+		Status:  result.Status,
 		SchoolYear: &response.SchoolYearResponse{
 			Uuid: result.SchoolYear.Uuid,
 			Name: result.SchoolYear.Name,
@@ -267,6 +271,7 @@ func (h *SchoolFeeHandler) GetAllSchoolFees(c *gin.Context) {
 			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
 			Month:   item.Month,
+			Status:  item.Status,
 			SchoolYear: &response.SchoolYearResponse{
 				Uuid: item.SchoolYear.Uuid,
 				Name: item.SchoolYear.Name,

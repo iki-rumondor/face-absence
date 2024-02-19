@@ -73,6 +73,7 @@ func (s *SchoolFeeService) CreateSchoolFee(req *request.SchoolFee) error {
 		Date:         date,
 		Nominal:      nominal,
 		Month:        req.Month,
+		Status:       req.Status,
 		SchoolYearID: schoolYear.ID,
 		StudentID:    student.ID,
 	}

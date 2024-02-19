@@ -61,6 +61,7 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 				Date:    item.Date.Format("02-01-2006"),
 				Nominal: item.Nominal,
 				Month:   item.Month,
+				Status:  item.Status,
 				SchoolYear: &response.SchoolYearResponse{
 					Uuid: item.SchoolYear.Uuid,
 					Name: item.SchoolYear.Name,

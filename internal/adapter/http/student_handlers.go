@@ -118,6 +118,7 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
 			Month:   item.Month,
+			Status:  item.Status,
 			SchoolYear: &response.SchoolYearResponse{
 				Uuid: item.SchoolYear.Uuid,
 				Name: item.SchoolYear.Name,
