@@ -20,4 +20,7 @@ type SchoolFeeRepository interface {
 	FindSchoolFeeBy(column string, value interface{}) (*domain.SchoolFee, error)
 	UpdateSchoolFee(uuid string, req *request.SchoolFee) error
 	DeleteSchoolFee(uuid string) error
+
+	GetUtils(key string) (string, error)
+	UpdateUtils(key, value string) error
 }

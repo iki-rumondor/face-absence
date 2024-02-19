@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -63,9 +64,14 @@ func (s *SchoolFeeService) CreateSchoolFee(req *request.SchoolFee) error {
 		return INTERNAL_ERROR
 	}
 
+	nominal, err := s.GetSchoolFeeNominal()
+	if err != nil {
+		return err
+	}
+
 	model := domain.SchoolFee{
 		Date:         date,
-		// Nominal:      req.Nominal,
+		Nominal:      nominal,
 		Month:        req.Month,
 		SchoolYearID: schoolYear.ID,
 		StudentID:    student.ID,
@@ -238,4 +244,33 @@ func (s *SchoolFeeService) CreateSchoolFeesPDF(studentUuid string) ([]byte, erro
 	}
 
 	return pdfData, nil
+}
+
+func (s *SchoolFeeService) GetSchoolFeeNominal() (int, error) {
+
+	result, err := s.Repo.GetUtils("school_fee_nominal")
+	if err != nil {
+		log.Println(err.Error())
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, &response.Error{
+				Code:    404,
+				Message: "Data tidak ditemukan",
+			}
+		}
+		return 0, INTERNAL_ERROR
+	}
+
+	nominal, _ := strconv.Atoi(result)
+
+	return nominal, nil
+}
+
+func (s *SchoolFeeService) UpdateSchoolFeeNominal(nominal int) error {
+
+	if err := s.Repo.UpdateUtils("school_fee_nominal", fmt.Sprintf("%d", nominal)); err != nil {
+		log.Println(err.Error())
+		return INTERNAL_ERROR
+	}
+
+	return nil
 }

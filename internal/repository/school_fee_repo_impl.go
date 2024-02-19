@@ -175,3 +175,16 @@ func (r *SchoolFeeRepoImplementation) FindSchoolYearByUuid(uuid string) (*domain
 func (r *SchoolFeeRepoImplementation) CountStudentSchoolFee(studentID uint, month, year string) int {
 	return int(r.db.First(&domain.SchoolFee{}, "student_id = ? AND YEAR(date) = ? AND MONTH(date) = ?", studentID, month, year).RowsAffected)
 }
+
+func (r *SchoolFeeRepoImplementation) GetUtils(key string) (string, error) {
+	var result domain.Utils
+	if err := r.db.First(&result, "name = ?", key).Error; err != nil {
+		return "", err
+	}
+
+	return result.Value, nil
+}
+
+func (r *SchoolFeeRepoImplementation) UpdateUtils(name, value string) error {
+	return r.db.Model(&domain.Utils{}).Where("name = ?", name).Update("value", value).Error
+}

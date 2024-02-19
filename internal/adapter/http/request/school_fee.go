@@ -7,3 +7,7 @@ type SchoolFee struct {
 	StudentUuid    string `json:"student_uuid" valid:"required~field student_uuid tidak ditemukan"`
 	SchoolYearUuid string `json:"school_year_uuid" valid:"required~field school_year_uuid tidak ditemukan"`
 }
+
+type UpdateNominal struct {
+	Nominal int `json:"nominal" valid:"required~field nominal tidak ditemukan, numeric~nominal harus angka"`
+}

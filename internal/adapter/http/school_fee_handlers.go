@@ -362,3 +362,45 @@ func (h *SchoolFeeHandler) GetSchoolFeesPDF(c *gin.Context) {
 	c.Header("Content-Disposition", "attachment; filename=absences.pdf")
 	c.Data(http.StatusOK, "application/pdf", dataPDF)
 }
+
+func (h *SchoolFeeHandler) GetSchoolFeeNominal(c *gin.Context) {
+	nominal, err := h.Service.GetSchoolFeeNominal()
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"nominal": nominal,
+	})
+}
+
+func (h *SchoolFeeHandler) UpdateSchoolFeeNominal(c *gin.Context) {
+	var body request.UpdateNominal
+	if err := c.BindJSON(&body); err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if _, err := govalidator.ValidateStruct(&body); err != nil {
+		utils.HandleError(c, &response.Error{
+			Code:    400,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if err := h.Service.UpdateSchoolFeeNominal(body.Nominal); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil memperbarui nominal tetap SPP",
+	})
+}

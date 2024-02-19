@@ -24,6 +24,10 @@ func ReadTerminal(db *gorm.DB, args []string) {
 		if err := migrateDatabase(db); err != nil {
 			log.Fatal(err.Error())
 		}
+	case args[1] == "utils":
+		if err := utilsFresh(db); err != nil {
+			log.Fatal(err.Error())
+		}
 	case args[1] == "truncate":
 		if err := truncateTable(db, args[2]); err != nil {
 			log.Fatal(err.Error())
@@ -59,6 +63,7 @@ func freshDatabase(db *gorm.DB) error {
 	return nil
 }
 func migrateDatabase(db *gorm.DB) error {
+
 	for _, model := range registry.RegisterModels() {
 		if err := db.Debug().AutoMigrate(model.Model); err != nil {
 			return err
@@ -68,8 +73,24 @@ func migrateDatabase(db *gorm.DB) error {
 	return nil
 }
 
-func truncateTable(db *gorm.DB, table string) error{
+func truncateTable(db *gorm.DB, table string) error {
 	return db.Exec(fmt.Sprintf("TRUNCATE TABLE %s", table)).Error
+}
+
+func utilsFresh(db *gorm.DB) error {
+	if err := db.Migrator().DropTable(&domain.Utils{}); err != nil {
+		return err
+	}
+	if err := db.Debug().AutoMigrate(&domain.Utils{}); err != nil {
+		return err
+	}
+
+	db.Create(&domain.Utils{
+		Name:   "school_fee_nominal",
+		Value: "1150000",
+	})
+
+	return nil
 }
 
 func seederData(db *gorm.DB) error {
