@@ -11,6 +11,7 @@ type SchoolFeeRepository interface {
 	CreateSchoolFee(model *domain.SchoolFee) error
 	FindAllSchoolFees(limit, offset int) (*[]domain.SchoolFee, error)
 	FindStudentSchoolFee(studentUuid string) (*[]domain.SchoolFee, error)
+	FindBySchoolYear(schoolYearUuid string) (*[]domain.SchoolFee, error)
 	FirstStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error)
 	FindStudentByUuid(string) (*domain.Student, error)
 	FindSchoolYearByUuid(string) (*domain.SchoolYear, error)

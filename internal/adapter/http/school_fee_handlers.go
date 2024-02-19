@@ -149,6 +149,57 @@ func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
 	})
 }
 
+func (h *SchoolFeeHandler) GetBySchoolYear(c *gin.Context) {
+	schoolYearUuid := c.Param("schoolYearUuid")
+	schoolFee, err := h.Service.GetBySchoolYear(schoolYearUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	var res []response.SchoolFee
+
+	for _, item := range *schoolFee {
+		res = append(res, response.SchoolFee{
+			Uuid:    item.Uuid,
+			Date:    item.Date.Format("02-01-2006"),
+			Nominal: item.Nominal,
+			Month:   item.Month,
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid: item.SchoolYear.Uuid,
+				Name: item.SchoolYear.Name,
+			},
+			Student: &response.StudentResponse{
+				Nama:         item.Student.Nama,
+				Uuid:         item.Student.Uuid,
+				JK:           item.Student.JK,
+				NIS:          item.Student.NIS,
+				TempatLahir:  item.Student.TempatLahir,
+				TanggalLahir: item.Student.TanggalLahir,
+				Alamat:       item.Student.Alamat,
+				TanggalMasuk: item.Student.TanggalMasuk,
+				Image:        item.Student.Image,
+				Class: &response.ClassData{
+					Uuid:      item.Student.Class.Uuid,
+					Name:      item.Student.Class.Name,
+					CreatedAt: item.Student.Class.CreatedAt,
+					UpdatedAt: item.Student.Class.UpdatedAt,
+				},
+				CreatedAt: item.Student.CreatedAt,
+				UpdatedAt: item.Student.UpdatedAt,
+			},
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil mendapatkan SPP",
+		Data:    &res,
+	})
+}
+
 func (h *SchoolFeeHandler) GetNewStudentSchoolFee(c *gin.Context) {
 	studentUuid := c.Param("studentUuid")
 	result, err := h.Service.GetNewStudentSchoolFee(studentUuid)

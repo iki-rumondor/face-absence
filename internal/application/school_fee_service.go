@@ -125,6 +125,17 @@ func (s *SchoolFeeService) GetStudentSchoolFee(studentUuid string) (*[]domain.Sc
 	return schoolFees, nil
 }
 
+func (s *SchoolFeeService) GetBySchoolYear(studentUuid string) (*[]domain.SchoolFee, error) {
+
+	schoolFees, err := s.Repo.FindBySchoolYear(studentUuid)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return schoolFees, nil
+}
+
 func (s *SchoolFeeService) GetNewStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
 
 	schoolFees, err := s.Repo.FirstStudentSchoolFee(studentUuid)
