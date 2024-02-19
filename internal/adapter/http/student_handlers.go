@@ -110,6 +110,21 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 		return
 	}
 
+	var school_fees []response.SchoolFee
+
+	for _, item := range *student.SchoolFees {
+		school_fees = append(school_fees, response.SchoolFee{
+			Uuid:    item.Uuid,
+			Date:    item.Date.Format("02-01-2006"),
+			Nominal: item.Nominal,
+			Month:   item.Month,
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid: item.SchoolYear.Uuid,
+				Name: item.SchoolYear.Name,
+			},
+		})
+	}
+
 	res := response.StudentResponse{
 		Nama:         student.Nama,
 		Uuid:         student.Uuid,
@@ -126,8 +141,9 @@ func (h *StudentHandlers) GetStudentData(c *gin.Context) {
 			CreatedAt: student.Class.CreatedAt,
 			UpdatedAt: student.Class.UpdatedAt,
 		},
-		CreatedAt: student.CreatedAt,
-		UpdatedAt: student.UpdatedAt,
+		SchoolFees: &school_fees,
+		CreatedAt:  student.CreatedAt,
+		UpdatedAt:  student.UpdatedAt,
 	}
 
 	c.JSON(http.StatusOK, response.SuccessResponse{

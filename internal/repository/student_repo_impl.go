@@ -48,12 +48,26 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Find(&students).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Preload("SchoolFees.SchoolYear").Find(&students).Error; err != nil {
 		return nil, err
 	}
 
 	var res = []response.StudentResponse{}
 	for _, student := range students {
+		var school_fees []response.SchoolFee
+		for _, item := range *student.SchoolFees {
+			school_fees = append(school_fees, response.SchoolFee{
+				Uuid:    item.Uuid,
+				Date:    item.Date.Format("02-01-2006"),
+				Nominal: item.Nominal,
+				Month:   item.Month,
+				SchoolYear: &response.SchoolYearResponse{
+					Uuid: item.SchoolYear.Uuid,
+					Name: item.SchoolYear.Name,
+				},
+			})
+		}
+
 		res = append(res, response.StudentResponse{
 			Nama:         student.Nama,
 			Uuid:         student.Uuid,
@@ -70,8 +84,9 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 				CreatedAt: student.Class.CreatedAt,
 				UpdatedAt: student.Class.UpdatedAt,
 			},
-			CreatedAt: student.CreatedAt,
-			UpdatedAt: student.UpdatedAt,
+			SchoolFees: &school_fees,
+			CreatedAt:  student.CreatedAt,
+			UpdatedAt:  student.UpdatedAt,
 		})
 	}
 
@@ -112,7 +127,7 @@ func (r *StudentRepoImplementation) FindAllStudents() (*[]domain.Student, error)
 
 func (r *StudentRepoImplementation) FindStudent(uuid string) (*domain.Student, error) {
 	var student domain.Student
-	if err := r.db.Preload("Class").First(&student, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Class").Preload("SchoolFees.SchoolYear").First(&student, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 	return &student, nil
@@ -288,7 +303,7 @@ func (r *StudentRepoImplementation) CheckIsFace(pathFile string) (map[string]int
 
 	endpoint := fmt.Sprintf("%s/check_face", API_URL)
 	log.Println(endpoint)
-	
+
 	var requestBody bytes.Buffer
 	writer := multipart.NewWriter(&requestBody)
 

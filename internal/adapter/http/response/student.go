@@ -14,6 +14,7 @@ type StudentResponse struct {
 	Image        string             `json:"image"`
 	Class        *ClassData         `json:"class"`
 	Absence      *[]AbsenceResponse `json:"absence"`
+	SchoolFees   *[]SchoolFee       `json:"school_fees"`
 	CreatedAt    time.Time          `json:"created_at"`
 	UpdatedAt    time.Time          `json:"updated_at"`
 }
