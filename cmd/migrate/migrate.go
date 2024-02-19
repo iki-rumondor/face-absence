@@ -24,6 +24,10 @@ func ReadTerminal(db *gorm.DB, args []string) {
 		if err := migrateDatabase(db); err != nil {
 			log.Fatal(err.Error())
 		}
+	case args[1] == "truncate":
+		if err := truncateTable(db, args[2]); err != nil {
+			log.Fatal(err.Error())
+		}
 	default:
 		fmt.Println("Hello")
 	}
@@ -62,6 +66,10 @@ func migrateDatabase(db *gorm.DB) error {
 	}
 
 	return nil
+}
+
+func truncateTable(db *gorm.DB, table string) error{
+	return db.Exec(fmt.Sprintf("TRUNCATE TABLE %s", table)).Error
 }
 
 func seederData(db *gorm.DB) error {
