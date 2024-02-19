@@ -63,6 +63,11 @@ func (h *SchoolFeeHandler) GetSchoolFee(c *gin.Context) {
 		Uuid:    schoolFee.Uuid,
 		Date:    schoolFee.Date.Format("02-01-2006"),
 		Nominal: schoolFee.Nominal,
+		Month:   schoolFee.Month,
+		SchoolYear: &response.SchoolYearResponse{
+			Uuid: schoolFee.SchoolYear.Uuid,
+			Name: schoolFee.SchoolYear.Name,
+		},
 		Student: &response.StudentResponse{
 			Nama:         schoolFee.Student.Nama,
 			Uuid:         schoolFee.Student.Uuid,
@@ -103,11 +108,16 @@ func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
 
 	var res []response.SchoolFee
 
-	for _, item := range *schoolFee{
+	for _, item := range *schoolFee {
 		res = append(res, response.SchoolFee{
 			Uuid:    item.Uuid,
 			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
+			Month:   item.Month,
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid: item.SchoolYear.Uuid,
+				Name: item.SchoolYear.Name,
+			},
 			Student: &response.StudentResponse{
 				Nama:         item.Student.Nama,
 				Uuid:         item.Student.Uuid,
@@ -139,6 +149,53 @@ func (h *SchoolFeeHandler) GetStudentSchoolFee(c *gin.Context) {
 	})
 }
 
+func (h *SchoolFeeHandler) GetNewStudentSchoolFee(c *gin.Context) {
+	studentUuid := c.Param("studentUuid")
+	result, err := h.Service.GetNewStudentSchoolFee(studentUuid)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	var res = response.SchoolFee{
+		Uuid:    result.Uuid,
+		Date:    result.Date.Format("02-01-2006"),
+		Nominal: result.Nominal,
+		Month:   result.Month,
+		SchoolYear: &response.SchoolYearResponse{
+			Uuid: result.SchoolYear.Uuid,
+			Name: result.SchoolYear.Name,
+		},
+		Student: &response.StudentResponse{
+			Nama:         result.Student.Nama,
+			Uuid:         result.Student.Uuid,
+			JK:           result.Student.JK,
+			NIS:          result.Student.NIS,
+			TempatLahir:  result.Student.TempatLahir,
+			TanggalLahir: result.Student.TanggalLahir,
+			Alamat:       result.Student.Alamat,
+			TanggalMasuk: result.Student.TanggalMasuk,
+			Image:        result.Student.Image,
+			Class: &response.ClassData{
+				Uuid:      result.Student.Class.Uuid,
+				Name:      result.Student.Class.Name,
+				CreatedAt: result.Student.Class.CreatedAt,
+				UpdatedAt: result.Student.Class.UpdatedAt,
+			},
+			CreatedAt: result.Student.CreatedAt,
+			UpdatedAt: result.Student.UpdatedAt,
+		},
+		CreatedAt: result.CreatedAt,
+		UpdatedAt: result.UpdatedAt,
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil mendapatkan SPP",
+		Data:    &res,
+	})
+}
+
 func (h *SchoolFeeHandler) GetAllSchoolFees(c *gin.Context) {
 	urlPath := c.Request.URL.Path
 
@@ -158,6 +215,11 @@ func (h *SchoolFeeHandler) GetAllSchoolFees(c *gin.Context) {
 			Uuid:    item.Uuid,
 			Date:    item.Date.Format("02-01-2006"),
 			Nominal: item.Nominal,
+			Month:   item.Month,
+			SchoolYear: &response.SchoolYearResponse{
+				Uuid: item.SchoolYear.Uuid,
+				Name: item.SchoolYear.Name,
+			},
 			Student: &response.StudentResponse{
 				Nama:         item.Student.Nama,
 				Uuid:         item.Student.Uuid,

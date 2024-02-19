@@ -11,7 +11,9 @@ type SchoolFeeRepository interface {
 	CreateSchoolFee(model *domain.SchoolFee) error
 	FindAllSchoolFees(limit, offset int) (*[]domain.SchoolFee, error)
 	FindStudentSchoolFee(studentUuid string) (*[]domain.SchoolFee, error)
+	FirstStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error)
 	FindStudentByUuid(string) (*domain.Student, error)
+	FindSchoolYearByUuid(string) (*domain.SchoolYear, error)
 	CountStudentSchoolFee(uint, string, string) int
 	GetSchoolFeesPDF(data *request.SchoolFeePDFData) (*http.Response, error)
 	FindSchoolFeeBy(column string, value interface{}) (*domain.SchoolFee, error)

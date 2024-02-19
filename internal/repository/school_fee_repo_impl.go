@@ -30,7 +30,7 @@ func (r *SchoolFeeRepoImplementation) CreateSchoolFee(model *domain.SchoolFee) e
 func (r *SchoolFeeRepoImplementation) FindAllSchoolFees(limit, offset int) (*[]domain.SchoolFee, error) {
 	var schoolFees []domain.SchoolFee
 
-	query := r.db.Offset(offset).Preload("Student.Class")
+	query := r.db.Offset(offset).Preload("Student.Class").Preload("SchoolYear")
 	if limit > 0 {
 		query = query.Limit(limit)
 	}
@@ -44,7 +44,7 @@ func (r *SchoolFeeRepoImplementation) FindAllSchoolFees(limit, offset int) (*[]d
 
 func (r *SchoolFeeRepoImplementation) FindSchoolFeeBy(column string, value interface{}) (*domain.SchoolFee, error) {
 	var schoolFee domain.SchoolFee
-	if err := r.db.Preload("Student.Class").First(&schoolFee, fmt.Sprintf("%s = ?", column), value).Error; err != nil {
+	if err := r.db.Preload("Student.Class").Preload("SchoolYear").First(&schoolFee, fmt.Sprintf("%s = ?", column), value).Error; err != nil {
 		return nil, err
 	}
 
@@ -58,7 +58,21 @@ func (r *SchoolFeeRepoImplementation) FindStudentSchoolFee(studentUuid string) (
 	}
 
 	var schoolFee []domain.SchoolFee
-	if err := r.db.Preload("Student.Class").Find(&schoolFee, "student_id = ?", student.ID).Error; err != nil {
+	if err := r.db.Preload("Student.Class").Preload("SchoolYear").Find(&schoolFee, "student_id = ?", student.ID).Error; err != nil {
+		return nil, err
+	}
+
+	return &schoolFee, nil
+}
+
+func (r *SchoolFeeRepoImplementation) FirstStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
+	var student domain.Student
+	if err := r.db.First(&student, "uuid = ?", studentUuid).Error; err != nil {
+		return nil, err
+	}
+
+	var schoolFee domain.SchoolFee
+	if err := r.db.Preload("Student.Class").Preload("SchoolYear").Order("created_at desc").First(&schoolFee, "student_id = ?", student.ID).Error; err != nil {
 		return nil, err
 	}
 
@@ -76,16 +90,23 @@ func (r *SchoolFeeRepoImplementation) UpdateSchoolFee(uuid string, req *request.
 		return err
 	}
 
+	var sy domain.SchoolYear
+	if err := r.db.First(&sy, "uuid = ?", req.SchoolYearUuid).Error; err != nil {
+		return err
+	}
+
 	date, err := utils.FormatToTime(req.Date, "2006-01-02")
 	if err != nil {
 		return err
 	}
 
 	model := domain.SchoolFee{
-		ID:        schoolFee.ID,
-		Date:      date,
-		Nominal:   req.Nominal,
-		StudentID: student.ID,
+		ID:    schoolFee.ID,
+		Date:  date,
+		Month: req.Month,
+		// Nominal:   req.Nominal,
+		StudentID:    student.ID,
+		SchoolYearID: sy.ID,
 	}
 
 	return r.db.Model(&model).Updates(&model).Error
@@ -128,6 +149,15 @@ func (r *SchoolFeeRepoImplementation) FindStudentByUuid(uuid string) (*domain.St
 	}
 	return &result, nil
 }
+
+func (r *SchoolFeeRepoImplementation) FindSchoolYearByUuid(uuid string) (*domain.SchoolYear, error) {
+	var result domain.SchoolYear
+	if err := r.db.First(&result, "uuid = ?", uuid).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (r *SchoolFeeRepoImplementation) CountStudentSchoolFee(studentID uint, month, year string) int {
 	return int(r.db.First(&domain.SchoolFee{}, "student_id = ? AND YEAR(date) = ? AND MONTH(date) = ?", studentID, month, year).RowsAffected)
 }

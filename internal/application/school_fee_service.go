@@ -52,10 +52,23 @@ func (s *SchoolFeeService) CreateSchoolFee(req *request.SchoolFee) error {
 		return err
 	}
 
+	schoolYear, err := s.Repo.FindSchoolYearByUuid(req.SchoolYearUuid)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &response.Error{
+				Code:    404,
+				Message: "Tahun Pelajaran dengan uuid yang dimasukkan tidak ditemukan",
+			}
+		}
+		return INTERNAL_ERROR
+	}
+
 	model := domain.SchoolFee{
-		Date:      date,
-		Nominal:   req.Nominal,
-		StudentID: student.ID,
+		Date:         date,
+		// Nominal:      req.Nominal,
+		Month:        req.Month,
+		SchoolYearID: schoolYear.ID,
+		StudentID:    student.ID,
 	}
 
 	if err := s.Repo.CreateSchoolFee(&model); err != nil {
@@ -98,6 +111,23 @@ func (s *SchoolFeeService) GetSchoolFeeByUuid(uuid string) (*domain.SchoolFee, e
 func (s *SchoolFeeService) GetStudentSchoolFee(studentUuid string) (*[]domain.SchoolFee, error) {
 
 	schoolFees, err := s.Repo.FindStudentSchoolFee(studentUuid)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: fmt.Sprintf("SPP Santri dengan uuid %s tidak ditemukan", studentUuid),
+			}
+		}
+		log.Println(err.Error())
+		return nil, INTERNAL_ERROR
+	}
+
+	return schoolFees, nil
+}
+
+func (s *SchoolFeeService) GetNewStudentSchoolFee(studentUuid string) (*domain.SchoolFee, error) {
+
+	schoolFees, err := s.Repo.FirstStudentSchoolFee(studentUuid)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
