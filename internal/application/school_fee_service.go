@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"strconv"
-	"strings"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -39,20 +38,6 @@ func (s *SchoolFeeService) CreateSchoolFee(req *request.SchoolFee) error {
 		return INTERNAL_ERROR
 	}
 
-	dateParts := strings.Split(req.Date, "-")
-
-	if result := s.Repo.CountStudentSchoolFee(student.ID, dateParts[0], dateParts[1]); result > 0 {
-		return &response.Error{
-			Code:    400,
-			Message: "Santri Sudah Melakukan Pembayaran SPP Pada Bulan Ini",
-		}
-	}
-
-	date, err := utils.FormatToTime(req.Date, "2006-01-02")
-	if err != nil {
-		return err
-	}
-
 	schoolYear, err := s.Repo.FindSchoolYearByUuid(req.SchoolYearUuid)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -62,6 +47,18 @@ func (s *SchoolFeeService) CreateSchoolFee(req *request.SchoolFee) error {
 			}
 		}
 		return INTERNAL_ERROR
+	}
+
+	if result := s.Repo.CheckStudentSchoolFee(student.ID, schoolYear.ID, req.Month); result > 0 {
+		return &response.Error{
+			Code:    400,
+			Message: "Santri Sudah Melakukan Pembayaran SPP Pada Bulan Ini",
+		}
+	}
+
+	date, err := utils.FormatToTime(req.Date, "2006-01-02")
+	if err != nil {
+		return err
 	}
 
 	nominal, err := s.GetSchoolFeeNominal()

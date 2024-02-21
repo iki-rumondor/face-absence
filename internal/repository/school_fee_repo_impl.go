@@ -176,6 +176,11 @@ func (r *SchoolFeeRepoImplementation) CountStudentSchoolFee(studentID uint, mont
 	return int(r.db.First(&domain.SchoolFee{}, "student_id = ? AND YEAR(date) = ? AND MONTH(date) = ?", studentID, month, year).RowsAffected)
 }
 
+func (r *SchoolFeeRepoImplementation) CheckStudentSchoolFee(studentID, yearID uint, month string) int {
+
+	return int(r.db.First(&domain.SchoolFee{}, "student_id = ? AND school_year_id = ? AND month = ?", studentID, yearID, month).RowsAffected)
+}
+
 func (r *SchoolFeeRepoImplementation) GetUtils(key string) (string, error) {
 	var result domain.Utils
 	if err := r.db.First(&result, "name = ?", key).Error; err != nil {
