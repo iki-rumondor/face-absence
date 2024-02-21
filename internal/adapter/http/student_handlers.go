@@ -81,10 +81,12 @@ func (h *StudentHandlers) GetAllStudentsData(c *gin.Context) {
 
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "0"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	search := c.DefaultQuery("search", "")
 
 	pagination := domain.Pagination{
-		Limit: limit,
-		Page:  page,
+		Limit:  limit,
+		Page:   page,
+		Search: search,
 	}
 
 	result, err := h.Service.StudentsPagination(urlPath, &pagination)

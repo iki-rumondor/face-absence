@@ -38,7 +38,7 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 	var totalPages, fromRow, toRow = 0, 0, 0
 	var totalRows int64 = 0
 
-	if err := r.db.Model(&domain.Student{}).Count(&totalRows).Error; err != nil {
+	if err := r.db.Model(&domain.Student{}).Where("nama LIKE ?", fmt.Sprintf("%%%s%%", pagination.Search)).Count(&totalRows).Error; err != nil {
 		return nil, err
 	}
 
@@ -48,7 +48,7 @@ func (r *StudentRepoImplementation) PaginationStudents(pagination *domain.Pagina
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Preload("SchoolFees.SchoolYear").Find(&students).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Class").Preload("SchoolFees.SchoolYear").Find(&students, "nama LIKE ?", fmt.Sprintf("%%%s%%", pagination.Search)).Error; err != nil {
 		return nil, err
 	}
 
