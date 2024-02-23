@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
@@ -132,7 +133,9 @@ func (r *AbsenceRepoImplementation) FindScheduleByUuid(scheduleUuid string) (*do
 }
 
 func (r *AbsenceRepoImplementation) CheckStudentIsAbsence(studentID, scheduleID uint) int {
-	return int(r.db.First(&domain.Absence{}, "student_id = ? AND schedule_id = ?", studentID, scheduleID).RowsAffected)
+	now := time.Now()
+	formatted := now.Format("2006-01-02")
+	return int(r.db.First(&domain.Absence{}, "student_id = ? AND schedule_id = ? AND DATE(created_at) = ?", studentID, scheduleID, formatted).RowsAffected)
 }
 
 func (r *AbsenceRepoImplementation) FindAbsencesStudent(studentID uint) (*[]domain.Absence, error) {

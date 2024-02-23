@@ -217,7 +217,8 @@ func (s *SchoolFeeService) CreateSchoolFeesPDF(studentUuid string) ([]byte, erro
 		fee = append(fee, request.SchoolFeeData{
 			Nominal: item.Nominal,
 			Date:    item.Date.Format("02-01-2006"),
-			Month:   utils.GetBulanIndonesia(item.Date.Format("01")),
+			Month:   item.Month,
+			Status:   item.Status,
 		})
 	}
 

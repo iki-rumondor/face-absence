@@ -58,4 +58,5 @@ type SchoolFeeData struct {
 	Date    string `json:"tanggal"`
 	Month   string `json:"bulan"`
 	Nominal int    `json:"nominal"`
+	Status  string `json:"status"`
 }
