@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -57,8 +58,15 @@ func GetBulanIndonesia(month string) string {
 }
 
 func IsDayEqualTo(dayString string) bool {
-	hariInggris := time.Now().Weekday().String()
+	loc, err := time.LoadLocation("Asia/Makassar")
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	timeInWIT := time.Now().In(loc)
+	hariInggris := timeInWIT.Weekday().String()
 	hariIndonesia := GetHariIndonesia(hariInggris)
+	log.Println(hariIndonesia)
 
 	return strings.EqualFold(hariIndonesia, dayString)
 }
