@@ -33,6 +33,7 @@ type TeacherPDFData struct {
 
 type AbsencePDFData struct {
 	Semester        string            `json:"semester"`
+	Subject         string            `json:"mapel"`
 	Class           string            `json:"kelas"`
 	Month           string            `json:"bulan"`
 	JumlahHari      int               `json:"jumlah_hari"`

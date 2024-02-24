@@ -326,7 +326,7 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 		var JumlahAlpha, JumlahIzin, JumlahSakit int
 		for i := 1; i <= jumlahHari; i++ {
 
-			status := "ALPA"
+			status := "TANPA KETERANGAN"
 			for _, abs := range *absences {
 				log.Println("day :", abs.CreatedAt.Day())
 				if item.ID == abs.StudentID && i == abs.CreatedAt.Day() {
@@ -339,6 +339,10 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 						break
 					}
 					if abs.Status == "IZIN" {
+						status = abs.Status
+						break
+					}
+					if abs.Status == "ALPA" {
 						status = abs.Status
 						break
 					}
@@ -371,6 +375,7 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 	}
 
 	var data = request.AbsencePDFData{
+		Subject:         schedule.Subject.Name,
 		Semester:        semester,
 		JumlahHari:      jumlahHari,
 		Month:           utils.GetBulanIndonesia(fmt.Sprintf("%02d", month)),
