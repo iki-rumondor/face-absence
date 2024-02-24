@@ -12,6 +12,7 @@ import (
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type AbsenceRepoImplementation struct {
@@ -124,12 +125,30 @@ func (r *AbsenceRepoImplementation) FindAbsenceByDate(scheduleID uint, date stri
 	return &res, nil
 }
 
+func (r *AbsenceRepoImplementation) FindAbsenceByYearMonth(scheduleID uint, year, month int) (*[]domain.Absence, error) {
+	var res []domain.Absence
+
+	if err := r.db.Preload("Student").Find(&res, "schedule_id = ? AND YEAR(created_at) = ? AND MONTH(created_at) = ?", scheduleID, year, month).Error; err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (r *AbsenceRepoImplementation) FindScheduleByUuid(scheduleUuid string) (*domain.Schedule, error) {
 	var schedule domain.Schedule
 	if err := r.db.Preload("Absences.Student").Preload("Class.Students").Preload("Subject").Preload("SchoolYear").First(&schedule, "uuid = ?", scheduleUuid).Error; err != nil {
 		return nil, err
 	}
 	return &schedule, nil
+}
+
+func (r *AbsenceRepoImplementation) FindSchoolYear(uuid string) (*domain.SchoolYear, error) {
+	var result domain.SchoolYear
+	if err := r.db.Preload(clause.Associations).First(&result, "uuid = ?", uuid).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func (r *AbsenceRepoImplementation) CheckStudentIsAbsence(studentID, scheduleID uint) int {

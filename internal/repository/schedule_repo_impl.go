@@ -115,6 +115,25 @@ func (r *ScheduleRepoImplementation) FindAbsenceByDate(scheduleID uint, date str
 
 	return &res, nil
 }
+func (r *ScheduleRepoImplementation) NewFindAbsenceByDate(scheduleID uint, date string) (*[]domain.Student, error) {
+	var students []domain.Student
+
+	subQuery := r.db.Model(&domain.Absence{}).Where("DATE(created_at) = ?", date).Select("student_id")
+	if err := r.db.Find(&students, "id IN (?)", subQuery).Error; err != nil {
+		return nil, err
+	}
+
+	return &students, nil
+}
+func (r *ScheduleRepoImplementation) FindStudentsByClassID(classID uint) (*[]domain.Student, error) {
+	var students []domain.Student
+
+	if err := r.db.Find(&students, "class_id = ?", classID).Error; err != nil {
+		return nil, err
+	}
+
+	return &students, nil
+}
 
 func (r *ScheduleRepoImplementation) DeleteSchedule(model *domain.Schedule) error {
 	return r.db.Delete(&model, "uuid = ?", model.Uuid).Error

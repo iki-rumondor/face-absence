@@ -56,7 +56,7 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		user.GET("master/students/:uuid", handlers.StudentHandler.GetStudentData)
 		user.PUT("master/students/:uuid", handlers.StudentHandler.UpdateStudentData)
 		user.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
-		user.GET("pdf/absences/:scheduleUuid/:date", handlers.AbsenceHandler.GetAbsencesPDF)
+		user.GET("pdf/absences/:scheduleUuid/:schoolYearUuid/:month", handlers.AbsenceHandler.GetAbsencesPDF)
 		user.GET("pdf/school-fees/:studentUuid", handlers.SchoolFeeHandler.GetSchoolFeesPDF)
 	}
 

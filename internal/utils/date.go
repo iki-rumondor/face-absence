@@ -112,3 +112,10 @@ func IsValidDate(format, value string) bool {
 	_, err := time.Parse(format, value)
 	return err == nil
 }
+
+func JumlahHariPadaBulan(bulan int, tahun int) int {
+	tanggalPertamaBulanBerikutnya := time.Date(tahun, time.Month(bulan)+1, 1, 0, 0, 0, 0, time.UTC)
+	tanggalTerakhirBulanSekarang := tanggalPertamaBulanBerikutnya.AddDate(0, 0, -1)
+	jumlahHari := tanggalTerakhirBulanSekarang.Day()
+	return jumlahHari
+}

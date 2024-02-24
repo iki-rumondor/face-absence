@@ -32,20 +32,25 @@ type TeacherPDFData struct {
 }
 
 type AbsencePDFData struct {
-	Date            string            `json:"tanggal"`
-	Time            string            `json:"waktu"`
+	Semester        string            `json:"semester"`
 	Class           string            `json:"kelas"`
-	Subject         string            `json:"mapel"`
-	Teacher         string            `json:"guru"`
+	Month           string            `json:"bulan"`
+	JumlahHari      int               `json:"jumlah_hari"`
 	SchoolYear      string            `json:"tahun_ajaran"`
 	StudentsAbsence []StudentsAbsence `json:"siswa"`
 }
 
 type StudentsAbsence struct {
-	Nis        string `json:"nis"`
-	Nama       string `json:"nama"`
-	Keterangan string `json:"keterangan"`
-	Waktu      string `json:"waktu_absensi"`
+	Nama        string    `json:"nama"`
+	Absences    []Absence `json:"absensi"`
+	JumlahSakit int       `json:"jml_s"`
+	JumlahAlpha int       `json:"jml_a"`
+	JumlahIzin  int       `json:"jml_i"`
+}
+
+type Absence struct {
+	Tanggal int    `json:"tanggal"`
+	Status  string `json:"absensi"`
 }
 
 type SchoolFeePDFData struct {

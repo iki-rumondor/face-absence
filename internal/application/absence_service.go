@@ -10,6 +10,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
@@ -268,7 +270,7 @@ func (s *AbsenceService) GetAbsencesUser(userID uint) (*[]domain.Absence, error)
 
 }
 
-func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, date string) ([]byte, error) {
+func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, month int) ([]byte, error) {
 	schedule, err := s.Repo.FindScheduleByUuid(scheduleUuid)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -280,35 +282,100 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, date string) ([]byte, e
 		return nil, INTERNAL_ERROR
 	}
 
-	absences, err := s.Repo.FindAbsenceByDate(schedule.ID, date)
+	year, err := s.Repo.FindSchoolYear(schoolYearUuid)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &response.Error{
+				Code:    404,
+				Message: "Tahun Ajaran Tidak Ditemukan",
+			}
+		}
+		return nil, INTERNAL_ERROR
+	}
+
+	var semester = "Ganjil"
+	if month >= 1 && month <= 6 {
+		semester = "Genap"
+	}
+
+	parts := strings.Split(year.Name, "/")
+	if len(parts) != 2 {
+		return nil, INTERNAL_ERROR
+	}
+
+	yearName := parts[0]
+	if semester == "Genap" {
+		yearName = parts[1]
+	}
+
+	yearInt, err := strconv.Atoi(yearName)
 	if err != nil {
 		return nil, INTERNAL_ERROR
 	}
 
+	absences, err := s.Repo.FindAbsenceByYearMonth(schedule.ID, yearInt, month)
+	if err != nil {
+		return nil, INTERNAL_ERROR
+	}
+
+	jumlahHari := utils.JumlahHariPadaBulan(month, yearInt)
+
 	var students []request.StudentsAbsence
-
 	for _, item := range *schedule.Class.Students {
-		status := "TANPA KETERANGAN"
-		for _, abs := range *absences {
-			if abs.Student.ID == item.ID {
-				status = abs.Status
-			}
-		}
+		var studentAbs []request.Absence
+		var JumlahAlpha, JumlahIzin, JumlahSakit int
+		for i := 1; i <= jumlahHari; i++ {
 
+			status := "ALPA"
+			for _, abs := range *absences {
+				log.Println("day :", abs.CreatedAt.Day())
+				if item.ID == abs.StudentID && i == abs.CreatedAt.Day() {
+					if abs.Status == "HADIR" {
+						status = abs.Status
+						break
+					}
+					if abs.Status == "SAKIT" {
+						status = abs.Status
+						break
+					}
+					if abs.Status == "IZIN" {
+						status = abs.Status
+						break
+					}
+				}
+			}
+			if status == "ALPA" {
+				JumlahAlpha++
+			}
+
+			if status == "SAKIT" {
+				JumlahSakit++
+			}
+
+			if status == "IZIN" {
+				JumlahIzin++
+			}
+
+			studentAbs = append(studentAbs, request.Absence{
+				Tanggal: i,
+				Status:  status,
+			})
+		}
 		students = append(students, request.StudentsAbsence{
-			Nis:        item.NIS,
-			Nama:       item.Nama,
-			Keterangan: status,
-			Waktu:      item.CreatedAt.Format("02-01-2006"),
+			Nama:        item.Nama,
+			Absences:    studentAbs,
+			JumlahSakit: JumlahSakit,
+			JumlahIzin:  JumlahIzin,
+			JumlahAlpha: JumlahAlpha,
 		})
 	}
 
 	var data = request.AbsencePDFData{
-		Date:            date,
-		Time:            fmt.Sprintf("%s - %s", schedule.Start, schedule.End),
+		Semester:        semester,
+		JumlahHari:      jumlahHari,
+		Month:           utils.GetBulanIndonesia(fmt.Sprintf("%02d", month)),
 		Class:           schedule.Class.Name,
-		Subject:         schedule.Subject.Name,
-		SchoolYear:      schedule.SchoolYear.Name,
+		SchoolYear:      year.Name,
 		StudentsAbsence: students,
 	}
 

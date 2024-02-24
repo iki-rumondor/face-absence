@@ -173,9 +173,19 @@ func (h *AbsenceHandler) GetStudentAbsences(c *gin.Context) {
 
 func (h *AbsenceHandler) GetAbsencesPDF(c *gin.Context) {
 	scheduleUuid := c.Param("scheduleUuid")
-	date := c.Param("date")
+	schoolYearUuid := c.Param("schoolYearUuid")
+	month := c.Param("month")
 
-	dataPDF, err := h.Service.CreateAbsencesPDF(scheduleUuid, date)
+	intMonth, err := strconv.Atoi(month)
+	if err != nil {
+		utils.HandleError(c, &response.Error{
+			Code: 400,
+			Message: "Bulan Tidak Valid",
+		})
+		return
+	}
+
+	dataPDF, err := h.Service.CreateAbsencesPDF(scheduleUuid, schoolYearUuid, intMonth)
 	if err != nil {
 		utils.HandleError(c, err)
 		return

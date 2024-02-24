@@ -108,11 +108,15 @@ func (s *ScheduleService) GetScheduleByDate(uuid, date string) (*domain.Schedule
 		return nil, nil, err
 	}
 
-
 	absence, err := s.Repo.FindAbsenceByDate(schedule.ID, date)
 	if err != nil {
 		return nil, nil, INTERNAL_ERROR
 	}
+
+	// res, err := s.Repo.NewFindAbsenceByDate(schedule.ID, date)
+	// if err != nil {
+	// 	return nil, nil, INTERNAL_ERROR
+	// }
 
 	return schedule, absence, nil
 }
