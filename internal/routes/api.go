@@ -58,6 +58,12 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		user.DELETE("master/students/:uuid", handlers.StudentHandler.DeleteStudent)
 		user.GET("pdf/absences/:scheduleUuid/:schoolYearUuid/:month", handlers.AbsenceHandler.GetAbsencesPDF)
 		user.GET("pdf/school-fees/:studentUuid", handlers.SchoolFeeHandler.GetSchoolFeesPDF)
+
+		user.POST("master/school_years", handlers.SchoolYearHandler.CreateSchoolYear)
+		user.GET("master/school_years", handlers.SchoolYearHandler.GetSchoolYearPagination)
+		user.GET("master/school_years/:uuid", handlers.SchoolYearHandler.GetSchoolYear)
+		user.PUT("master/school_years/:uuid", handlers.SchoolYearHandler.UpdateSchoolYear)
+		user.DELETE("master/school_years/:uuid", handlers.SchoolYearHandler.DeleteSchoolYear)
 	}
 
 	admin := router.Group("api").Use(middleware.IsValidJWT(), middleware.IsRole("ADMIN"))
@@ -80,12 +86,6 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.GET("master/subjects/:uuid", handlers.SubjectHandler.GetSubject)
 		admin.PUT("master/subjects/:uuid", handlers.SubjectHandler.UpdateSubject)
 		admin.DELETE("master/subjects/:uuid", handlers.SubjectHandler.DeleteSubject)
-
-		admin.POST("master/school_years", handlers.SchoolYearHandler.CreateSchoolYear)
-		admin.GET("master/school_years", handlers.SchoolYearHandler.GetSchoolYearPagination)
-		admin.GET("master/school_years/:uuid", handlers.SchoolYearHandler.GetSchoolYear)
-		admin.PUT("master/school_years/:uuid", handlers.SchoolYearHandler.UpdateSchoolYear)
-		admin.DELETE("master/school_years/:uuid", handlers.SchoolYearHandler.DeleteSchoolYear)
 
 		admin.POST("master/schedules", handlers.ScheduleHandler.CreateSchedule)
 		admin.GET("master/schedules", handlers.ScheduleHandler.GetSchedulePagination)

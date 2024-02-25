@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -183,6 +184,7 @@ func (r *AbsenceRepoImplementation) GetAbsencesPDF(data *request.AbsencePDFData)
 
 	var API_URL = os.Getenv("LARAVEL_API")
 	if API_URL == "" {
+		log.Println(err.Error())
 		return nil, err
 	}
 
@@ -190,6 +192,7 @@ func (r *AbsenceRepoImplementation) GetAbsencesPDF(data *request.AbsencePDFData)
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 

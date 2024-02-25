@@ -27,7 +27,6 @@ func (s *AuthService) VerifyUser(role string, user *domain.User) (string, error)
 
 	// find user from database
 	result, err := s.Repo.FindByUsername(user.Username)
-	log.Println("Usernamenya : " + result.Username)
 	if err != nil {
 		log.Println("Username Salah")
 		return "", &response.Error{

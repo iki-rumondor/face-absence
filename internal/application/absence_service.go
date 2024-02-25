@@ -273,6 +273,7 @@ func (s *AbsenceService) GetAbsencesUser(userID uint) (*[]domain.Absence, error)
 func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, month int) ([]byte, error) {
 	schedule, err := s.Repo.FindScheduleByUuid(scheduleUuid)
 	if err != nil {
+		log.Println(err.Error())
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
@@ -284,6 +285,7 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 
 	year, err := s.Repo.FindSchoolYear(schoolYearUuid)
 	if err != nil {
+		log.Println(err.Error())
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &response.Error{
 				Code:    404,
@@ -310,11 +312,13 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 
 	yearInt, err := strconv.Atoi(yearName)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, INTERNAL_ERROR
 	}
 
 	absences, err := s.Repo.FindAbsenceByYearMonth(schedule.ID, yearInt, month)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, INTERNAL_ERROR
 	}
 
@@ -328,7 +332,6 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 
 			status := "TANPA KETERANGAN"
 			for _, abs := range *absences {
-				log.Println("day :", abs.CreatedAt.Day())
 				if item.ID == abs.StudentID && i == abs.CreatedAt.Day() {
 					if abs.Status == "HADIR" {
 						status = abs.Status
