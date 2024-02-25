@@ -302,6 +302,7 @@ func (s *AbsenceService) CreateAbsencesPDF(scheduleUuid, schoolYearUuid string, 
 
 	parts := strings.Split(year.Name, "/")
 	if len(parts) != 2 {
+		log.Println(err.Error())
 		return nil, INTERNAL_ERROR
 	}
 

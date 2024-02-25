@@ -3,6 +3,7 @@ package customHTTP
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,15 @@ func (h *SchoolYearHandler) CreateSchoolYear(c *gin.Context) {
 	if _, err := govalidator.ValidateStruct(&body); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
 			Message: err.Error(),
+		})
+		return
+	}
+
+	parts := strings.Split(body.Name, "/")
+	if len(parts) != 2 {
+		utils.HandleError(c, &response.Error{
+			Code:    404,
+			Message: "Nama Tahun Ajaran Harus Dalam Format YYYY/YYYY",
 		})
 		return
 	}
@@ -149,6 +159,15 @@ func (h *SchoolYearHandler) UpdateSchoolYear(c *gin.Context) {
 	res, err := h.Service.GetSchoolYear(uuid)
 	if err != nil {
 		utils.HandleError(c, err)
+		return
+	}
+
+	parts := strings.Split(body.Name, "/")
+	if len(parts) != 2 {
+		utils.HandleError(c, &response.Error{
+			Code:    404,
+			Message: "Nama Tahun Ajaran Harus Dalam Format YYYY/YYYY",
+		})
 		return
 	}
 
