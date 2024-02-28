@@ -111,6 +111,9 @@ func StartServer(handlers *registry.Handlers) *gin.Engine {
 		admin.GET("pdf/students", handlers.StudentHandler.GetStudentsPDF)
 		admin.GET("pdf/teachers", handlers.TeacherHandler.GetTeachersPDF)
 		// admin.GET("download/:filename", customHTTP.DownloadFile)
+
+		admin.PUT("users/:uuid/change-password", handlers.UserHandler.UpdatePassword)
+		admin.GET("users", handlers.UserHandler.GetAllUsers)
 	}
 
 	return router

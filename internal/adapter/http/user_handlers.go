@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/request"
 	"github.com/iki-rumondor/init-golang-service/internal/adapter/http/response"
 	"github.com/iki-rumondor/init-golang-service/internal/application"
 	"github.com/iki-rumondor/init-golang-service/internal/domain"
@@ -121,5 +123,46 @@ func (h *UserHandler) GetDashboardData(c *gin.Context) {
 		Success: true,
 		Message: "Berhasil mendapatkan data dashboard",
 		Data:    resp,
+	})
+}
+
+func (h *UserHandler) UpdatePassword(c *gin.Context) {
+	var body request.ChangePassword
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if _, err := govalidator.ValidateStruct(&body); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.FailedResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	uuid := c.Param("uuid")
+	if err := h.Service.UpdatePassword(uuid, body); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Message: "Berhasil memperbarui data dashboard",
+	})
+}
+
+func (h *UserHandler) GetAllUsers(c *gin.Context) {
+	result, err := h.Service.GetAllUsers()
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Success: true,
+		Data:    result,
 	})
 }

@@ -23,8 +23,28 @@ func (r *UserRepoImplementation) FindUserByID(ID uint) (*domain.User, error) {
 	return &user, nil
 }
 
+func (r *UserRepoImplementation) FindTeacherByUuid(uuid string) (*domain.Teacher, error) {
+	var teacher domain.Teacher
+	if err := r.db.Preload("User").First(&teacher, "uuid = ?", uuid).Error; err != nil {
+		return nil, err
+	}
+	return &teacher, nil
+}
+
 func (r *UserRepoImplementation) UpdateAvatar(model *domain.User) error {
 	return r.db.Model(model).Where("id = ?", model.ID).Update("avatar", model.Avatar).Error
+}
+
+func (r *UserRepoImplementation) Update(model *domain.User) error {
+	return r.db.Updates(model).Error
+}
+
+func (r *UserRepoImplementation) FindUsers() (*[]domain.User, error) {
+	var user []domain.User
+	if err := r.db.Find(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (r *UserRepoImplementation) CountStudentsTeachersAdmins() (map[string]int64, error) {

@@ -20,28 +20,22 @@ type User struct {
 
 func (u *User) BeforeSave(tx *gorm.DB) error {
 
-	if u.Password != ""{
+	if u.Password != "" {
 		hashPass, err := utils.HashPassword(u.Password)
 		if err != nil {
 			return err
 		}
 		u.Password = hashPass
 	}
-
-	if(u.Avatar == nil){
-		defaultName := "default-avatar.jpg"
-		u.Avatar = &defaultName
-	}
-	
 	return nil
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
 
-	if(u.Avatar == nil){
+	if u.Avatar == nil {
 		defaultName := "default-avatar.jpg"
 		u.Avatar = &defaultName
 	}
-	
+
 	return nil
 }
