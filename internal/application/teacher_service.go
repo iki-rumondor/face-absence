@@ -33,12 +33,15 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 		}
 	}
 
-	if user, _ := s.Repo.FindTeacherByColumn("nip", request.Nip); user != nil {
-		return &response.Error{
-			Code:    404,
-			Message: "Nip sudah terdaftar",
+	if request.Nip != nil{
+		if user, _ := s.Repo.FindTeacherByColumn("nip", *request.Nip); user != nil {
+			return &response.Error{
+				Code:    404,
+				Message: "Nip sudah terdaftar",
+			}
 		}
 	}
+
 
 	user := &domain.User{
 		Nama:     request.Nama,
@@ -141,7 +144,7 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
 	}
 
 	user := &domain.User{
-		Nama:     request.Nama,
+		Nama: request.Nama,
 	}
 
 	teacher := &domain.Teacher{
@@ -211,8 +214,8 @@ func (s *TeacherService) CreateTeachersPDF() ([]byte, error) {
 		data = append(data, &request.TeacherPDFData{
 			Nama:          item.User.Nama,
 			JK:            item.JK,
-			Nip:           item.Nip,
-			Nuptk:         item.Nuptk,
+			Nip:           *item.Nip,
+			Nuptk:         *item.Nuptk,
 			StatusPegawai: item.StatusPegawai,
 			TempatLahir:   item.TempatLahir,
 			TanggalLahir:  item.TanggalLahir,

@@ -4,8 +4,8 @@ import "time"
 
 type Teacher struct {
 	Uuid          string    `json:"uuid"`
-	Nip           string    `json:"nip"`
-	Nuptk         string    `json:"nuptk"`
+	Nip           *string    `json:"nip"`
+	Nuptk         *string    `json:"nuptk"`
 	StatusPegawai string    `json:"status_pegawai"`
 	JK            string    `json:"jk"`
 	TempatLahir   string    `json:"tempat_lahir"`
@@ -21,8 +21,8 @@ type Teacher struct {
 
 type TeacherData struct {
 	Uuid          string    `json:"uuid"`
-	Nip           string    `json:"nip"`
-	Nuptk         string    `json:"nuptk"`
+	Nip           string   `json:"nip"`
+	Nuptk         string   `json:"nuptk"`
 	StatusPegawai string    `json:"status_pegawai"`
 	JK            string    `json:"jk"`
 	TempatLahir   string    `json:"tempat_lahir"`

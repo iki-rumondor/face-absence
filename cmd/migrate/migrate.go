@@ -86,7 +86,7 @@ func utilsFresh(db *gorm.DB) error {
 	}
 
 	db.Create(&domain.Utils{
-		Name:   "school_fee_nominal",
+		Name:  "school_fee_nominal",
 		Value: "1150000",
 	})
 
@@ -115,11 +115,14 @@ func seederData(db *gorm.DB) error {
 		return err
 	}
 
+	nuptk := "1234567890"
+	nip := "987654321223"
+
 	teacher1 := domain.Teacher{
 		Uuid:          "teacher1",
-		Nuptk:         "1234567890",
+		Nuptk:         &nuptk,
 		StatusPegawai: "AKTIF",
-		Nip:           "987654321223",
+		Nip:           &nip,
 		JK:            "LAKI-LAKI",
 		TempatLahir:   "Jakarta",
 		TanggalLahir:  "1990-01-01",
@@ -130,11 +133,14 @@ func seederData(db *gorm.DB) error {
 		UserID:        user1.ID,
 	}
 
+	nuptk = "123123123"
+	nip = "23123213"
+
 	teacher2 := domain.Teacher{
 		Uuid:          "teacher2",
-		Nuptk:         "1234567890",
+		Nuptk:         &nuptk,
 		StatusPegawai: "AKTIF",
-		Nip:           "98765432122",
+		Nip:           &nip,
 		JK:            "LAKI-LAKI",
 		TempatLahir:   "Jakarta",
 		TanggalLahir:  "1990-01-01",

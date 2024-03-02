@@ -1,9 +1,9 @@
 package request
 
 type CreateTeacher struct {
-	Nuptk         string `json:"nuptk" valid:"required~field nuptk tidak ditemukan"`
+	Nuptk         *string `json:"nuptk"`
+	Nip           *string `json:"nip"`
 	StatusPegawai string `json:"status_pegawai" valid:"required~field status_pegawai tidak ditemukan"`
-	Nip           string `json:"nip" valid:"required~field nip tidak ditemukan"`
 	JK            string `json:"jk" valid:"required~field jk tidak ditemukan"`
 	TempatLahir   string `json:"tempat_lahir" valid:"required~field tempat_lahir tidak ditemukan"`
 	TanggalLahir  string `json:"tanggal_lahir" valid:"required~field nama tidak ditemukan"`
@@ -15,12 +15,11 @@ type CreateTeacher struct {
 	Username      string `json:"username" valid:"required~field username tidak ditemukan"`
 }
 
-
 type UpdateTeacher struct {
 	Uuid          string
-	Nuptk         string `json:"nuptk" valid:"required~field nuptk tidak ditemukan"`
+	Nuptk         *string `json:"nuptk"`
+	Nip           *string `json:"nip"`
 	StatusPegawai string `json:"status_pegawai" valid:"required~field status_pegawai tidak ditemukan"`
-	Nip           string `json:"nip" valid:"required~field nip tidak ditemukan"`
 	JK            string `json:"jk" valid:"required~field jk tidak ditemukan"`
 	TempatLahir   string `json:"tempat_lahir" valid:"required~field tempat_lahir tidak ditemukan"`
 	TanggalLahir  string `json:"tanggal_lahir" valid:"required~field nama tidak ditemukan"`
