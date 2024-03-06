@@ -143,7 +143,8 @@ func (s *TeacherService) UpdateTeacher(request *request.UpdateTeacher) error {
 	}
 
 	user := &domain.User{
-		Nama: request.Nama,
+		Username: request.Username,
+		Nama:     request.Nama,
 	}
 
 	teacher := &domain.Teacher{
