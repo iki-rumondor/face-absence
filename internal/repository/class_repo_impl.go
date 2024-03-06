@@ -39,15 +39,25 @@ func (r *ClassRepoImplementation) FindClassPagination(pagination *domain.Paginat
 
 	offset := pagination.Page * pagination.Limit
 
-	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher.User").Find(&classes).Error; err != nil {
+	if err := r.db.Limit(pagination.Limit).Offset(offset).Preload("Teacher.User").Preload("Schedules").Find(&classes).Error; err != nil {
 		return nil, err
 	}
 
 	var res = []response.ClassResponse{}
 	for _, class := range classes {
+		var schedules []response.ScheduleResponse
+		for _, item := range *class.Schedules {
+			schedules = append(schedules, response.ScheduleResponse{
+				Uuid:  item.Uuid,
+				Day:   item.Day,
+				Start: item.Start,
+				End:   item.End,
+			})
+		}
 		res = append(res, response.ClassResponse{
-			Uuid: class.Uuid,
-			Name: class.Name,
+			Uuid:      class.Uuid,
+			Name:      class.Name,
+			Schedules: &schedules,
 			Teacher: &response.Teacher{
 				Uuid:          class.Teacher.Uuid,
 				JK:            class.Teacher.JK,
@@ -92,7 +102,7 @@ func (r *ClassRepoImplementation) UpdateClass(class *domain.Class) error {
 
 func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
 	var classes []domain.Class
-	if err := r.db.Preload("Teacher.User").Find(&classes).Error; err != nil {
+	if err := r.db.Preload("Teacher.User").Preload("Schedules").Find(&classes).Error; err != nil {
 		return nil, err
 	}
 
@@ -101,7 +111,7 @@ func (r *ClassRepoImplementation) FindClasses() (*[]domain.Class, error) {
 
 func (r *ClassRepoImplementation) FindClassByUuid(uuid string) (*domain.Class, error) {
 	var class domain.Class
-	if err := r.db.Preload("Teacher.User").First(&class, "uuid = ?", uuid).Error; err != nil {
+	if err := r.db.Preload("Teacher.User").Preload("Schedules").First(&class, "uuid = ?", uuid).Error; err != nil {
 		return nil, err
 	}
 
@@ -156,7 +166,7 @@ func (r *ClassRepoImplementation) FindTeacherClassesByUserID(userID uint) (*doma
 }
 
 func (r *ClassRepoImplementation) FindTeacherClass(userID uint, classUuid string) (*domain.Class, error) {
-	
+
 	var teacher domain.Teacher
 	if err := r.db.First(&teacher, "user_id = ?", userID).Error; err != nil {
 		log.Println("Teacher with user id not found")
@@ -164,11 +174,9 @@ func (r *ClassRepoImplementation) FindTeacherClass(userID uint, classUuid string
 	}
 
 	var class domain.Class
-	if err := r.db.Preload("Students").Preload("Teacher").First(&class, "teacher_id = ? AND uuid = ?", teacher.ID, classUuid).Error; err != nil{
+	if err := r.db.Preload("Students").Preload("Teacher").First(&class, "teacher_id = ? AND uuid = ?", teacher.ID, classUuid).Error; err != nil {
 		return nil, err
 	}
 
 	return &class, nil
 }
-
-

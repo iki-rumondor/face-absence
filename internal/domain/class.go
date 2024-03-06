@@ -10,6 +10,7 @@ type Class struct {
 	Name      string `gorm:"not_null;varchar(32)"`
 	TeacherID uint
 	Teacher   *Teacher
+	Schedules *[]Schedule 
 	Students  *[]Student
 	CreatedAt time.Time
 	UpdatedAt time.Time

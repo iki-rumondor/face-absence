@@ -33,7 +33,7 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 		}
 	}
 
-	if request.Nip != nil{
+	if request.Nip != nil {
 		if user, _ := s.Repo.FindTeacherByColumn("nip", *request.Nip); user != nil {
 			return &response.Error{
 				Code:    404,
@@ -41,7 +41,6 @@ func (s *TeacherService) CreateTeacher(request request.CreateTeacher) error {
 			}
 		}
 	}
-
 
 	user := &domain.User{
 		Nama:     request.Nama,

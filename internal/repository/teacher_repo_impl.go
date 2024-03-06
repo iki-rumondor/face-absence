@@ -121,6 +121,21 @@ func (r *TeacherRepoImplementation) UpdateTeacherUser(teacher *domain.Teacher, u
 			return err
 		}
 
+		if teacher.Nip != nil && *teacher.Nip == "" {
+			if err := tx.Model(teacher).Where("uuid = ?", teacher.Uuid).Updates(map[string]interface{}{"nip": nil}).Error; err != nil {
+				return err
+			}
+			teacher.Nip = nil
+		}
+
+		if teacher.Nuptk != nil && *teacher.Nuptk == "" {
+			if err := tx.Model(teacher).Where("uuid = ?", teacher.Uuid).Updates(map[string]interface{}{"nuptk": nil}).Error; err != nil {
+				return err
+			}
+			teacher.Nuptk = nil
+		}
+
+
 		if err := tx.Model(teacher).Where("uuid = ?", teacher.Uuid).Updates(teacher).Error; err != nil {
 			return err
 		}

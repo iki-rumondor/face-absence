@@ -130,6 +130,16 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 		return
 	}
 
+	var schedules []response.ScheduleResponse
+	for _, item := range *class.Schedules {
+		schedules = append(schedules, response.ScheduleResponse{
+			Uuid:  item.Uuid,
+			Day:   item.Day,
+			Start: item.Start,
+			End:   item.End,
+		})
+	}
+
 	res := response.ClassResponse{
 		Uuid: class.Uuid,
 		Name: class.Name,
@@ -155,6 +165,7 @@ func (h *ClassHandler) GetClass(c *gin.Context) {
 			CreatedAt: class.Teacher.CreatedAt,
 			UpdatedAt: class.Teacher.UpdatedAt,
 		},
+		Schedules: &schedules,
 		CreatedAt: class.CreatedAt,
 		UpdatedAt: class.UpdatedAt,
 	}

@@ -75,9 +75,20 @@ func (s *ClassService) GetAllClasses() (*[]response.ClassResponse, error) {
 	var res []response.ClassResponse
 
 	for _, class := range *classes {
+		var schedules []response.ScheduleResponse
+		for _, item := range *class.Schedules {
+			schedules = append(schedules, response.ScheduleResponse{
+				Uuid:  item.Uuid,
+				Day:   item.Day,
+				Start: item.Start,
+				End:   item.End,
+			})
+		}
+
 		res = append(res, response.ClassResponse{
-			Uuid: class.Uuid,
-			Name: class.Name,
+			Uuid:      class.Uuid,
+			Name:      class.Name,
+			Schedules: &schedules,
 			Teacher: &response.Teacher{
 				Uuid:          class.Teacher.Uuid,
 				JK:            class.Teacher.JK,

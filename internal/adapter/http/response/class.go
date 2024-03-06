@@ -3,11 +3,12 @@ package response
 import "time"
 
 type ClassResponse struct {
-	Uuid      string    `json:"uuid"`
-	Name      string    `json:"name"`
-	Teacher   *Teacher  `json:"teacher"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Uuid      string              `json:"uuid"`
+	Name      string              `json:"name"`
+	Teacher   *Teacher            `json:"teacher"`
+	Schedules *[]ScheduleResponse `json:"schedules"`
+	CreatedAt time.Time           `json:"created_at"`
+	UpdatedAt time.Time           `json:"updated_at"`
 }
 
 type ClassData struct {
